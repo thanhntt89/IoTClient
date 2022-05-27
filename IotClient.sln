@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31410.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IotClient", "Client\IotClient.csproj", "{D38430DE-4766-4D4B-8C20-D381CA720E21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M2Mqtt.Net", "Lib\M2Mqtt\M2Mqtt.Net.csproj", "{A11AEF5A-B246-4FE8-8330-06DB73CC8074}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		BROKER|Any CPU = BROKER|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D38430DE-4766-4D4B-8C20-D381CA720E21}.BROKER|Any CPU.ActiveCfg = Debug|Any CPU
+		{D38430DE-4766-4D4B-8C20-D381CA720E21}.BROKER|Any CPU.Build.0 = Debug|Any CPU
+		{D38430DE-4766-4D4B-8C20-D381CA720E21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D38430DE-4766-4D4B-8C20-D381CA720E21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D38430DE-4766-4D4B-8C20-D381CA720E21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D38430DE-4766-4D4B-8C20-D381CA720E21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A11AEF5A-B246-4FE8-8330-06DB73CC8074}.BROKER|Any CPU.ActiveCfg = BROKER|Any CPU
+		{A11AEF5A-B246-4FE8-8330-06DB73CC8074}.BROKER|Any CPU.Build.0 = BROKER|Any CPU
+		{A11AEF5A-B246-4FE8-8330-06DB73CC8074}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A11AEF5A-B246-4FE8-8330-06DB73CC8074}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A11AEF5A-B246-4FE8-8330-06DB73CC8074}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A11AEF5A-B246-4FE8-8330-06DB73CC8074}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F2D1B90A-8E53-4EA1-9D90-67289AECF593}
+	EndGlobalSection
+EndGlobal
