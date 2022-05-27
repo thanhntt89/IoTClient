@@ -57,12 +57,10 @@ namespace IotClient
             switch (press)
             {
                 case "START":
-                    client.Start();
-                    ShowMessage("Started Client Success!!!");
+                    client.Start();                    
                     break;
                 case "STOP":
-                    client.Stop();
-                    ShowMessage("Stop Client Success!!!");
+                    client.Stop();                    
                     break;
                 case "EXIT":
                     Environment.Exit(0);

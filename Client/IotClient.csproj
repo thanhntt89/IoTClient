@@ -52,6 +52,8 @@
     <Compile Include="ClientSetting.cs" />
     <Compile Include="Contants.cs" />
     <Compile Include="DataProcessing\DcuMessage\DcuMessageProcessing.cs" />
+    <Compile Include="DataProcessing\SingletonDecodeData.cs" />
+    <Compile Include="DataProcessing\SingletonMessageQueue.cs" />
     <Compile Include="DataProcessing\MeterMessage\MeterMessageProcessing.cs" />
     <Compile Include="DataProcessing\ProcessingDataFactory.cs" />
     <Compile Include="IClient.cs" />

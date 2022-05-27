@@ -1,4 +1,5 @@
-﻿using IotClient.Utils;
+﻿using IotClient.DataProcessing;
+using IotClient.Utils;
 using System;
 using System.Text;
 using System.Threading;
@@ -56,6 +57,11 @@ namespace IotClient
                 {
                     //Subsriber message
                     SubsriberTopic();
+
+                    //Start thread decode
+                    SingletonDecodeData.Instance.StartDecodeThread();
+
+                    //Auto reconnect
                     AutoReConnect();
                     LogUtil.WriteLog(LogType.Info, $"Client-Start Success!!!");
                 }
@@ -63,7 +69,7 @@ namespace IotClient
             catch (Exception ex)
             {
                 LogUtil.WriteLog(LogType.Error, $"Client-Start-Error: {ex.Message}");
-                ShowMessageEvent?.Invoke(ex.Message);
+                ShowMessageEvent?.Invoke($"Client-Start-Error: {ex.Message}");
             }
         }
 
@@ -72,10 +78,13 @@ namespace IotClient
             //Check topic data
             MessageData message = new MessageData() { Topic = e.Topic, Message = e.Message };
 
+            //Test enqueue
+            SingletonMessageQueue<MessageData>.Instance.Enqueue(message);
+
             //DataType: Customer set follow to thread processing data
             if (message.Topic.Contains(ClientOptions.TypeData))
             {
-
+                // SingletonMessageQueue<MessageData>.Instance.Enqueue(message);
             }
             else if (message.Topic.Contains(ClientOptions.TypeTime) && message.Topic.Contains("/"))
             {
@@ -121,6 +130,7 @@ namespace IotClient
         public void ShowMessage(DelegateShowMessage showMessage)
         {
             ShowMessageEvent += showMessage;
+            SingletonDecodeData.Instance.ShowMessageEvent += showMessage;
         }
 
         public void AutoReConnect()
@@ -132,13 +142,19 @@ namespace IotClient
                 while (true)
                 {
                     //Check stop byuser
-                    if (!client.IsConnected && isStopClient)
+                    if (!client.IsConnected && !isStopClient)
                     {
-                        countTime++;
-                        client.Connect(ClientOptions.ClientId);
-
-                        ShowMessageEvent?.Invoke($"Client-AutoReConnect-Try reconnect count:{countTime}");
-
+                        try
+                        {
+                            client.Connect(ClientOptions.ClientId);
+                            countTime++;
+                            ShowMessageEvent?.Invoke($"Client-AutoReConnect-Try reconnect count:{countTime}");
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessageEvent?.Invoke($"Client-AutoReConnect-Exception: {ex.Message}");
+                            continue;
+                        }
                         if (client.IsConnected)
                         {
                             LogUtil.WriteLog(LogType.Info, "Client-AutoReConnect-Status:Connected");
