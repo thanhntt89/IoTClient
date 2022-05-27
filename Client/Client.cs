@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IotClient.Utils;
+using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,10 +57,12 @@ namespace IotClient
                     //Subsriber message
                     SubsriberTopic();
                     AutoReConnect();
+                    LogUtil.WriteLog(LogType.Info, $"Client-Start Success!!!");
                 }
             }
             catch (Exception ex)
             {
+                LogUtil.WriteLog(LogType.Error, $"Client-Start-Error: {ex.Message}");
                 ShowMessageEvent?.Invoke(ex.Message);
             }
         }
@@ -78,6 +81,8 @@ namespace IotClient
             {
                 PublishTimeMessage(message.Topic.Split('/')[1]);
             }
+
+            LogUtil.WriteLog(LogType.Info, $"Client-Client_MqttMsgPublishReceived-Topic:{message.Topic}");
         }
 
         private void PublishTimeMessage(string dcuId)
@@ -86,6 +91,7 @@ namespace IotClient
             {
                 client.Publish(ClientOptions.PublisherTopic, Encoding.ASCII.GetBytes(Contants.CURRENT_TIME));
                 ShowMessageEvent?.Invoke($"PuplishTopic: {ClientOptions.PublisherTopic} Data: {Contants.CURRENT_TIME}");
+                LogUtil.WriteLog(LogType.Info, $"Client-PublishTimeMessage: {ClientOptions.PublisherTopic} to DCU: {dcuId}");
             }
         }
 
@@ -102,16 +108,19 @@ namespace IotClient
             {
                 client.Subscribe(topics, qos);
                 ShowMessageEvent?.Invoke($"SupscriberTopic: {ClientOptions.SubscriberTopic} \nQoSLevel:{ClientOptions.QoSLevel}");
+
+                LogUtil.WriteLog(LogType.Info, $"Client-SubsriberTopic: {ClientOptions.SubscriberTopic}");
             }
             catch (Exception ex)
             {
+                LogUtil.WriteLog(LogType.Error, $"Client-SubsriberTopic-Error: {ex.Message}");
                 ShowMessageEvent?.Invoke(ex.Message);
             }
         }
 
         public void ShowMessage(DelegateShowMessage showMessage)
         {
-            ShowMessageEvent = showMessage;
+            ShowMessageEvent += showMessage;
         }
 
         public void AutoReConnect()
@@ -122,19 +131,32 @@ namespace IotClient
             {
                 while (true)
                 {
+                    //Check stop byuser
                     if (!client.IsConnected && isStopClient)
                     {
                         countTime++;
                         client.Connect(ClientOptions.ClientId);
+
+                        ShowMessageEvent?.Invoke($"Client-AutoReConnect-Try reconnect count:{countTime}");
+
+                        if (client.IsConnected)
+                        {
+                            LogUtil.WriteLog(LogType.Info, "Client-AutoReConnect-Status:Connected");
+                            ShowMessageEvent?.Invoke("Client-AutoReConnect-Status:Connected");
+                        }
                         //Sleep 10s try reconnect
                         Thread.Sleep(10000);
+                        //Loop to untill connted
+                        continue;
                     }
 
                     //Sleep 5min check connect status
                     Thread.Sleep(ClientOptions.TimeCheckConnect);
+                    countTime = 0;
                 }
             });
             reconnect.Start();
+            LogUtil.WriteLog(LogType.Info, "Client-AutoReConnect");
             ShowMessageEvent?.Invoke("Start thread: AutoReconnect!!!");
         }
 
@@ -143,9 +165,11 @@ namespace IotClient
             if (client.IsConnected)
             {
                 client.Disconnect();
+                //Set stop by user
                 isStopClient = true;
 
                 ShowMessageEvent?.Invoke("Client STOPPED!!!");
+                LogUtil.WriteLog(LogType.Info, "Client-Stop");
             }
         }
     }

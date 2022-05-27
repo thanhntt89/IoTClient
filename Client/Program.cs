@@ -9,7 +9,7 @@ namespace IotClient
         {
             try
             {
-                ClientSetting setting = Util.Deserialize<ClientSetting>(Util.GetTextFromFile(Contants.SettingPath));
+                ClientSetting setting = FileUtil.Deserialize<ClientSetting>(FileUtil.GetTextFromFile(Contants.SettingPath));
                 ShowMessage("Load Client Setting Success!!!");
 
                 IClient client = new ClientBuilder()
