@@ -27,6 +27,7 @@ namespace IotClient
                .Build();
 
                 client.ShowMessage(ShowMessage);
+
                 do
                 {
                     ShowMenu(client);
@@ -45,12 +46,12 @@ namespace IotClient
 
         private static void ShowMenu(IClient client)
         {
-            Console.WriteLine("======CLIENT MENU========");
+            Console.WriteLine("\n-----------MENUS-----------");
             Console.WriteLine("Select options following");
             Console.WriteLine("START to Start client");
             Console.WriteLine("STOP to Stop client");
             Console.WriteLine("EXIT to Quit client");
-            Console.WriteLine("=========================");
+            Console.WriteLine("\n---------------------------");
 
             string press = Console.ReadLine().ToUpper();
 

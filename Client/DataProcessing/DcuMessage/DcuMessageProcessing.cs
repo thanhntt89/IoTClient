@@ -6,7 +6,16 @@ using System.Threading.Tasks;
 
 namespace IotClient.DataProcessing.DcuMessage
 {
-    public class DcuMessageProcessing
+    public class DcuMessageProcessing : IDcuMessageProcessing
     {
+        public void InsertDcu()
+        {
+            
+        }
+
+        public void UpdateDcuMeter()
+        {
+            
+        }
     }
 }

@@ -52,10 +52,13 @@
     <Compile Include="ClientSetting.cs" />
     <Compile Include="Contants.cs" />
     <Compile Include="DataProcessing\DcuMessage\DcuMessageProcessing.cs" />
+    <Compile Include="DataProcessing\DcuMessage\IDcuMessageProcessing.cs" />
+    <Compile Include="DataProcessing\MeterMessage\IMeterMessageProcessing.cs" />
     <Compile Include="DataProcessing\SingletonDecodeData.cs" />
     <Compile Include="DataProcessing\SingletonMessageQueue.cs" />
     <Compile Include="DataProcessing\MeterMessage\MeterMessageProcessing.cs" />
     <Compile Include="DataProcessing\ProcessingDataFactory.cs" />
+    <Compile Include="Helpers\SqlHelpers.cs" />
     <Compile Include="IClient.cs" />
     <Compile Include="MessageData.cs" />
     <Compile Include="Program.cs" />
@@ -73,6 +76,9 @@
       <Project>{a11aef5a-b246-4fe8-8330-06db73cc8074}</Project>
       <Name>M2Mqtt.Net</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DataProcessing\Queries\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
