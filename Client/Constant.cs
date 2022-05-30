@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace IotClient
 {
-    public class Contants
+    public class Constant
     {
         /// <summary>
         /// Root Folder
@@ -29,7 +29,7 @@ namespace IotClient
 
         public static string CURRENT_TIME = DateTime.Now.ToString("yyMMddHHmmss");
 
-        private Contants()
+        private Constant()
         {
 
         }

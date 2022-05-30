@@ -19,7 +19,7 @@ namespace IotClient.Utils
         {
             try
             {
-                string logPath = logType == LogType.Info ? Contants.INFO_LOG_SYSTEM_PATH : Contants.ERROR_LOG_SYSTEM_PATH;
+                string logPath = logType == LogType.Info ? Constant.INFO_LOG_SYSTEM_PATH : Constant.ERROR_LOG_SYSTEM_PATH;
 
                 if (string.IsNullOrEmpty(logPath))
                 {

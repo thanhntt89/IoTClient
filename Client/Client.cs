@@ -2,11 +2,8 @@
 using IotClient.ThreadManagement;
 using IotClient.Utils;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using static IotClient.ClientEvent;
@@ -15,6 +12,13 @@ namespace IotClient
 {
     public class ClientOptions
     {
+        public string DbServerName { get; set; }
+        public string DatabaseName { get; set; }
+        public string DbUserName { get; set; }
+        public string DbPassword { get; set; }
+        public int DbPort { get; set; }
+        public int DbConnectionTimeOut { get; set; }
+        public int DbCommandTimeOut { get; set; }
         public string ClientId { get; set; }
         public string Broker { get; set; }
         public int Port { get; set; }
@@ -47,7 +51,6 @@ namespace IotClient
         /// </summary>
         private bool isStopClient { get; set; }
 
-
         public Client(ClientOptions options)
         {
             client = new MqttClient(options.Broker, options.Port, false, null, MqttSslProtocols.SSLv3);
@@ -55,6 +58,9 @@ namespace IotClient
             threadCollection = new ThreadCollection();
             // register a callback-function (we have to implement, see below) which is called by the library when a message was received
             client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
+
+            //Register publish message
+            SingletonDecodeMessageTime.Instance.eventPublishMessage += PublishTimeMessage;
         }
 
         public void Start()
@@ -63,6 +69,13 @@ namespace IotClient
             if (client.IsConnected)
             {
                 ShowMessageEvent?.Invoke($"Client:Started!!!");
+                return;
+            }
+
+            //Check database connection
+            if (!SingletonDatabaseConnection.Instance.CheckDatabaseConnect(ClientOptions.DbServerName, ClientOptions.DatabaseName, ClientOptions.DbUserName, ClientOptions.DbPassword, ClientOptions.DbPort, ClientOptions.DbCommandTimeOut, ClientOptions.DbConnectionTimeOut))
+            {
+                ShowMessageEvent?.Invoke($"Database:Disconnected!!!");
                 return;
             }
 
@@ -100,23 +113,23 @@ namespace IotClient
             //DataType: Customer set follow to thread processing data
             if (message.Topic.Contains(ClientOptions.TypeData))
             {
-                SingletonMessageQueue<MessageData>.Instance.Enqueue(message);
+                SingletonMessageDataQueue<MessageData>.Instance.Enqueue(message);
             }
-            else if (message.Topic.Contains(ClientOptions.TypeTime) && message.Topic.Contains("/"))
+            else if (message.Topic.Contains(ClientOptions.TypeTime))
             {
-                PublishTimeMessage(message.Topic.Split('/')[1]);
+                SingletonMessageTimeQueue<MessageData>.Instance.Enqueue(message);
             }
 
             LogUtil.Intance.WriteLog(LogType.Info, $"Client-Client_MqttMsgPublishReceived-Topic:{message.Topic}");
         }
 
-        private void PublishTimeMessage(string dcuId)
+        private void PublishTimeMessage(string topic, string contents)
         {
             if (client.IsConnected)
             {
-                client.Publish(ClientOptions.PublisherTopic, Encoding.ASCII.GetBytes(Contants.CURRENT_TIME));
-                ShowMessageEvent?.Invoke($"PuplishTopic: {ClientOptions.PublisherTopic} Data: {Contants.CURRENT_TIME}");
-                LogUtil.Intance.WriteLog(LogType.Info, $"Client-PublishTimeMessage: {ClientOptions.PublisherTopic} to DCU: {dcuId}");
+                client.Publish(topic, Encoding.ASCII.GetBytes(contents));
+                ShowMessageEvent?.Invoke($"PuplishTopic: {topic} Data: {contents}");
+                LogUtil.Intance.WriteLog(LogType.Info, $"Client-PublishTimeMessage: {topic} to DCU: {contents}");
             }
         }
 
@@ -146,10 +159,12 @@ namespace IotClient
         public void ShowMessage(DelegateShowMessage showMessage)
         {
             ShowMessageEvent += showMessage;
-            SingletonDecodeData.Instance.ShowMessageEvent += showMessage;
+            SingletonDecodeMessageData.Instance.ShowMessageEvent += showMessage;
+            SingletonDatabaseConnection.Instance.ShowMessageEvent += showMessage;
+            SingletonDecodeMessageTime.Instance.eventShowMessage += showMessage;
         }
 
-        private void AutoReConnects(CancellationToken cancellation)
+        private void AutoReConnect(CancellationToken cancellation)
         {
             int countTime = 0;
             LogUtil.Intance.WriteLog(LogType.Info, "Client-AutoReConnect:Started!!!");
@@ -192,7 +207,6 @@ namespace IotClient
                 Thread.Sleep(ClientOptions.TimeCheckConnect);
                 countTime = 0;
             }
-
         }
 
         public void Stop()
@@ -223,7 +237,7 @@ namespace IotClient
             while (true)
             {
                 //Check messageQueue has data
-                if (SingletonMessageQueue<MessageData>.Instance.Count == 0)
+                if (SingletonMessageDataQueue<MessageData>.Instance.Count == 0)
                 {
                     break;
                 }
@@ -253,9 +267,11 @@ namespace IotClient
         private void StartAllThread()
         {
             tokenSource = new CancellationTokenSource();
-            threadCollection.AddThread(AutoReConnects, tokenSource.Token);
-            threadCollection.AddThread(SingletonDecodeData.Instance.DecodeDataThread, tokenSource.Token);
-            threadCollection.AddThread(SingletonDecodeData.Instance.InsertDataThread, tokenSource.Token);
+            threadCollection.AddThread(AutoReConnect, tokenSource.Token);
+            threadCollection.AddThread(SingletonDatabaseConnection.Instance.ThreadCheckConnection, tokenSource.Token);
+            threadCollection.AddThread(SingletonDecodeMessageTime.Instance.ThreadDecode, tokenSource.Token);
+            threadCollection.AddThread(SingletonDecodeMessageData.Instance.DecodeDataThread, tokenSource.Token);
+            threadCollection.AddThread(SingletonDecodeMessageData.Instance.InsertDataThread, tokenSource.Token);
             threadCollection.AddThread(ThreadMessageTest, tokenSource.Token);
 
             threadCollection.StartThread();
@@ -278,7 +294,7 @@ namespace IotClient
 
                 MessageData message = new MessageData() { Topic = $"Topic/Test{count}" };
 
-                SingletonMessageQueue<MessageData>.Instance.Enqueue(message);
+                SingletonMessageDataQueue<MessageData>.Instance.Enqueue(message);
                 Thread.Sleep(500);
             }
         }

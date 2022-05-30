@@ -6,25 +6,25 @@ using static IotClient.ClientEvent;
 
 namespace IotClient.DataProcessing
 {
-    public class SingletonDecodeData
+    public class SingletonDecodeMessageData
     {
         public event DelegateShowMessage ShowMessageEvent;
-        private static readonly SingletonDecodeData instance = new SingletonDecodeData();
+        private static readonly SingletonDecodeMessageData instance = new SingletonDecodeMessageData();
         private ProcessingDataFactory processingDataFactory;
         private DataTable dataTableMeterData = new DataTable();
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
-        static SingletonDecodeData()
+        static SingletonDecodeMessageData()
         {
         }
 
-        private SingletonDecodeData()
+        private SingletonDecodeMessageData()
         {
 
         }
 
-        public static SingletonDecodeData Instance
+        public static SingletonDecodeMessageData Instance
         {
             get
             {
@@ -39,13 +39,13 @@ namespace IotClient.DataProcessing
 
             while (true)
             {
-                if (cancellation.IsCancellationRequested && SingletonMessageQueue<MessageData>.Instance.Count == 0)
+                if (cancellation.IsCancellationRequested && SingletonMessageDataQueue<MessageData>.Instance.Count == 0)
                 {
                     ShowMessageEvent?.Invoke($"SingletonDecodeData-StartDecodeThread:Stopped!!!");
                     break;
                 }
                 //Get data from messagequeue
-                if (SingletonMessageQueue<MessageData>.Instance.TryDequeue(out message) && message != null)
+                if (SingletonMessageDataQueue<MessageData>.Instance.TryDequeue(out message) && message != null)
                 {
                     if (ProcessingMessage(message))
                     {

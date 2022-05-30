@@ -7,14 +7,23 @@ namespace IotClient
 {
     class Program
     {
+        static object objLock = new object();
+
         static void Main(string[] args)
         {
             try
             {
-                ClientSetting setting = FileUtil.Deserialize<ClientSetting>(FileUtil.GetTextFromFile(Contants.SettingPath));
+                ClientSetting setting = FileUtil.Deserialize<ClientSetting>(FileUtil.GetTextFromFile(Constant.SettingPath));
                 ShowMessage("Load Client Setting Success!!!");
 
                 IClient client = new ClientBuilder()
+               .AddDatabaseServer(setting.DATABASE_CONFIG.Server)
+               .AddDatabaseName(setting.DATABASE_CONFIG.DatabaseName)
+               .AddDbUserName(setting.DATABASE_CONFIG.UserName)
+               .AddDbPassword(setting.DATABASE_CONFIG.Password)
+               .AddDbPort(setting.DATABASE_CONFIG.Port)
+               .AddDbConnectionTimeOut(setting.DATABASE_CONFIG.ConnectionTimeOut)
+               .AddDbCommandTimeOut(setting.DATABASE_CONFIG.CommandTimeOut)
                .AddBroker(setting.DCU_CONFIG.Broker)
                .AddPort(setting.DCU_CONFIG.Port)
                .AddClientId(setting.DCU_CONFIG.ClientId)
@@ -35,7 +44,7 @@ namespace IotClient
                 while (menu)
                 {
                     menu = ShowMenu(client);
-                }              
+                }
             }
             catch (Exception ex)
             {
@@ -45,7 +54,10 @@ namespace IotClient
 
         private static void ShowMessage(string message)
         {
-            Console.WriteLine(message);
+            lock (objLock)
+            {
+                Console.WriteLine(message);
+            }
         }
 
         private static bool ShowMenu(IClient client)
@@ -61,7 +73,7 @@ namespace IotClient
 
             switch (press)
             {
-                case "START":                    
+                case "START":
                     client.Start();
                     return true;
                 case "STOP":

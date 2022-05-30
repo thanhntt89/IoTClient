@@ -9,6 +9,42 @@
             ClientOptions = new ClientOptions();
         }
 
+        //Database
+        public ClientBuilder AddDatabaseServer(string serverName)
+        {
+            ClientOptions.DbServerName = serverName;
+            return this;
+        }
+        public ClientBuilder AddDatabaseName(string databaseName)
+        {
+            ClientOptions.DatabaseName = databaseName;
+            return this;
+        }
+        public ClientBuilder AddDbUserName(string userName)
+        {
+            ClientOptions.DbUserName = userName;
+            return this;
+        }
+        public ClientBuilder AddDbPassword(string password)
+        {
+            ClientOptions.DbPassword = password;
+            return this;
+        }
+        public ClientBuilder AddDbPort(int port)
+        {
+            ClientOptions.DbPort = port;
+            return this;
+        }
+        public ClientBuilder AddDbConnectionTimeOut(int timeOut)
+        {
+            ClientOptions.DbConnectionTimeOut = timeOut;
+            return this;
+        }
+        public ClientBuilder AddDbCommandTimeOut(int timeOut)
+        {
+            ClientOptions.DbCommandTimeOut = timeOut;
+            return this;
+        }
         public ClientBuilder AddClientId(string clientId)
         {
             ClientOptions.ClientId = clientId;

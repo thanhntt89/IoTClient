@@ -9,6 +9,8 @@ namespace IotClient
         public string Password { get; set; }
         public int Port { get; set; }
         public string DatabaseName { get; set; }
+        public int ConnectionTimeOut { get; set; }
+        public int CommandTimeOut { get; set; }
     }
 
     public class DcuConfig

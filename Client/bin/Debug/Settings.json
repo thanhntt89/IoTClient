@@ -1,16 +1,18 @@
 {
   "DATABASE_CONFIG": {
-    "Server": "thanhntpc",
+    "Server": "thanhpc",
     "UserName": "sa",
     "Password": "@dmin123",
     "Port": 1433,
-    "DatabaseName": "IotSystem"
+    "DatabaseName": "IotSystem",
+    "ConnectionTimeOut": 30,
+    "CommandTimeOut":  30
   },
   "DCU_CONFIG": {
     "ClientId": "Jimmii88",
     "Port": 1888,
     "Broker": "127.0.0.1",   
-    "QoS": 1,
+    "QoS": 2,
     "SubscriberTopic": "PHH/Customer/Sub_Local/RunTime/*;AMI/*/sTime",
     "PublisherTopic": "DCU/sTime",
     "TypeData": "Customer",

@@ -2,15 +2,15 @@
 
 namespace IotClient.DataProcessing
 {
-    public class SingletonMessageQueue<T> : ConcurrentQueue<T>
+    public class SingletonMessageDataQueue<T> : ConcurrentQueue<T>
     {
-        private static SingletonMessageQueue<T> _instance;
+        private static SingletonMessageDataQueue<T> _instance;
         private static object synObject = new object();
 
-        static SingletonMessageQueue() { }
-        private SingletonMessageQueue() { }
+        static SingletonMessageDataQueue() { }
+        private SingletonMessageDataQueue() { }
 
-        public static SingletonMessageQueue<T> Instance
+        public static SingletonMessageDataQueue<T> Instance
         {
             get
             {
@@ -20,7 +20,7 @@ namespace IotClient.DataProcessing
                     {
                         if (_instance == null)
                         {
-                            _instance = new SingletonMessageQueue<T>();
+                            _instance = new SingletonMessageDataQueue<T>();
                         }
                     }
                 }

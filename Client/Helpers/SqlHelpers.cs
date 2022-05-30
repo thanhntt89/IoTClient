@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace SqlHelpers
+namespace SqlHelper
 {
     public class Parameters
     {
@@ -44,10 +44,11 @@ namespace SqlHelpers
         public string DatabaseName { get; set; }
         public int TimeOutConnection { get; set; }
         public int TimeOutCommand { get; set; }
+        public int Port { get; set; }
     }
 
     public class SqlHelpers
-    {       
+    {
         /// <summary>
         /// Do not create new instanance  
         /// </summary>
@@ -62,9 +63,9 @@ namespace SqlHelpers
         /// <param name="connectionInfo">Connection infomation</param>
         public static void CreateConnectionString(ConnectionInfo connectionInfo)
         {
-            ConnectionString = string.Format("Data Source={0};Initial Catalog={1};Persist Security Info=True;User ID={2};Password={3};Connect Timeout={4};", connectionInfo.ServerName, connectionInfo.DatabaseName, connectionInfo.UserName, connectionInfo.Password, connectionInfo.TimeOutConnection);
+            ConnectionString = string.Format("Data Source={0};Initial Catalog={1};Persist Security Info=True;User ID={2};Password={3};Connect Timeout={4};", connectionInfo.Port > 0 ? connectionInfo.ServerName + "," + connectionInfo.Port : connectionInfo.ServerName, connectionInfo.DatabaseName, connectionInfo.UserName, connectionInfo.Password, connectionInfo.TimeOutConnection);
 
-            ConnectionStringTesting = string.Format("Data Source={0};Initial Catalog={1};Persist Security Info=True;User ID={2};Password={3};Connect Timeout={4};", connectionInfo.ServerName, connectionInfo.DatabaseName, connectionInfo.UserName, connectionInfo.Password, connectionInfo.TimeOutConnection);
+            ConnectionStringTesting = string.Format("Data Source={0};Initial Catalog={1};Persist Security Info=True;User ID={2};Password={3};Connect Timeout={4};", connectionInfo.Port > 0 ? connectionInfo.ServerName + "," + connectionInfo.Port : connectionInfo.ServerName, connectionInfo.DatabaseName, connectionInfo.UserName, connectionInfo.Password, connectionInfo.TimeOutConnection);
 
             CommandTimeOut = connectionInfo.TimeOutCommand;
         }
