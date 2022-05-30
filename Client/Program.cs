@@ -1,5 +1,7 @@
 ﻿using IotClient.Utils;
 using System;
+using System.Runtime.Remoting.Contexts;
+using System.Threading.Tasks;
 
 namespace IotClient
 {
@@ -28,10 +30,11 @@ namespace IotClient
 
                 client.ShowMessage(ShowMessage);
 
-                do
+                bool menu = true;
+                while (menu)
                 {
-                    ShowMenu(client);
-                } while (true);
+                    menu = ShowMenu(client);
+                }              
             }
             catch (Exception ex)
             {
@@ -41,10 +44,10 @@ namespace IotClient
 
         private static void ShowMessage(string message)
         {
-            Console.WriteLine(message);
+             SingletonShowMessage.Instance.ShowMessage(message);
         }
 
-        private static void ShowMenu(IClient client)
+        private static bool ShowMenu(IClient client)
         {
             Console.WriteLine("\n-----------MENUS-----------");
             Console.WriteLine("Select options following");
@@ -57,17 +60,56 @@ namespace IotClient
 
             switch (press)
             {
-                case "START":
-                    client.Start();                    
-                    break;
+                case "START":                    
+                    client.Start();
+                    return true;
                 case "STOP":
-                    client.Stop();                    
-                    break;
+                    client.Stop();
+                    return true;
                 case "EXIT":
+                    client.Stop();
                     Environment.Exit(0);
-                    break;
+                    return false;
                 default:
-                    break;
+                    return true;
+            }
+        }
+    }
+
+    [Synchronization]
+    public class SingletonShowMessage
+    {
+        private static SingletonShowMessage _instance;
+        private static object synObject = new object();
+
+
+        public void ShowMessage(string message)
+        {
+            Console.WriteLine(message);
+        }
+
+        private SingletonShowMessage()
+        {
+
+        }
+
+        static SingletonShowMessage()
+        {
+
+        }
+
+        public static SingletonShowMessage Instance
+        {
+            get
+            {
+                if(_instance == null)
+                {
+                    lock (synObject)
+                    {
+                        _instance = new SingletonShowMessage();
+                    }
+                }
+                return _instance;
             }
         }
     }

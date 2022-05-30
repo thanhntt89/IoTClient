@@ -12,7 +12,9 @@ namespace IotClient.Utils
 
     public class LogUtil
     {
-        public static void WriteLog(LogType logType, string message)
+        private readonly static LogUtil intance = new LogUtil();
+
+        public  void WriteLog(LogType logType, string message)
         {
             try
             {
@@ -36,7 +38,7 @@ namespace IotClient.Utils
             }
         }
 
-        private static void WriteFile(string filePath, string message)
+        private void WriteFile(string filePath, string message)
         {
             using (FileStream file = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.Read))
             using (StreamWriter writer = new StreamWriter(file, Encoding.Unicode))
@@ -46,9 +48,19 @@ namespace IotClient.Utils
             }
         }
 
+        static LogUtil()
+        {
+
+        }
+
         private LogUtil()
         {
 
+        }
+
+        public static LogUtil Intance
+        {
+            get { return intance; }
         }
     }
 }

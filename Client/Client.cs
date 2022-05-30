@@ -32,16 +32,20 @@ namespace IotClient
     {
         private event DelegateShowMessage ShowMessageEvent;
 
-        private List<Task> clientThreads = new List<Task>();
+        private List<Thread> threadCollection = new List<Thread>();
+
         private CancellationTokenSource tokenSource;
 
         private MqttClient client;
         private ClientOptions ClientOptions { get; set; }
 
+        private const int TIME_RECONNECT = 60000;//60s
+
         /// <summary>
-        /// Stop client by user
+        /// Client started
         /// </summary>
-        private bool isStopClient = false;
+        private bool isStopClient { get; set; }
+
 
         public Client(ClientOptions options)
         {
@@ -54,6 +58,13 @@ namespace IotClient
 
         public void Start()
         {
+            //Check client connection status
+            if (client.IsConnected)
+            {
+                ShowMessageEvent?.Invoke($"Client:Started!!!");
+                return;
+            }
+
             // use a unique id as client id, each time we start the application           
             try
             {
@@ -70,12 +81,12 @@ namespace IotClient
                     StartAllThread();
 
                     ShowMessageEvent?.Invoke($"Client-Start Success!!!");
-                    LogUtil.WriteLog(LogType.Info, $"Client-Start Success!!!");
+                    LogUtil.Intance.WriteLog(LogType.Info, $"Client-Start Success!!!");
                 }
             }
             catch (Exception ex)
             {
-                LogUtil.WriteLog(LogType.Error, $"Client-Start-Error: {ex.Message}");
+                LogUtil.Intance.WriteLog(LogType.Error, $"Client-Start-Error: {ex.Message}");
                 ShowMessageEvent?.Invoke($"Client-Start-Error: {ex.Message}");
             }
         }
@@ -95,7 +106,7 @@ namespace IotClient
                 PublishTimeMessage(message.Topic.Split('/')[1]);
             }
 
-            LogUtil.WriteLog(LogType.Info, $"Client-Client_MqttMsgPublishReceived-Topic:{message.Topic}");
+            LogUtil.Intance.WriteLog(LogType.Info, $"Client-Client_MqttMsgPublishReceived-Topic:{message.Topic}");
         }
 
         private void PublishTimeMessage(string dcuId)
@@ -104,7 +115,7 @@ namespace IotClient
             {
                 client.Publish(ClientOptions.PublisherTopic, Encoding.ASCII.GetBytes(Contants.CURRENT_TIME));
                 ShowMessageEvent?.Invoke($"PuplishTopic: {ClientOptions.PublisherTopic} Data: {Contants.CURRENT_TIME}");
-                LogUtil.WriteLog(LogType.Info, $"Client-PublishTimeMessage: {ClientOptions.PublisherTopic} to DCU: {dcuId}");
+                LogUtil.Intance.WriteLog(LogType.Info, $"Client-PublishTimeMessage: {ClientOptions.PublisherTopic} to DCU: {dcuId}");
             }
         }
 
@@ -122,11 +133,11 @@ namespace IotClient
                 client.Subscribe(topics, qos);
                 ShowMessageEvent?.Invoke($"Client-SupscriberTopic: {ClientOptions.SubscriberTopic} \nQoSLevel:{ClientOptions.QoSLevel}");
 
-                LogUtil.WriteLog(LogType.Info, $"Client-SubsriberTopic: {ClientOptions.SubscriberTopic}");
+                LogUtil.Intance.WriteLog(LogType.Info, $"Client-SubsriberTopic: {ClientOptions.SubscriberTopic}");
             }
             catch (Exception ex)
             {
-                LogUtil.WriteLog(LogType.Error, $"Client-SubsriberTopic-Error: {ex.Message}");
+                LogUtil.Intance.WriteLog(LogType.Error, $"Client-SubsriberTopic-Error: {ex.Message}");
                 ShowMessageEvent?.Invoke(ex.Message);
             }
         }
@@ -142,7 +153,7 @@ namespace IotClient
             Task reconnect = new Task(() =>
             {
                 int countTime = 0;
-                LogUtil.WriteLog(LogType.Info, "Client-AutoReConnect:Started!!!");
+                LogUtil.Intance.WriteLog(LogType.Info, "Client-AutoReConnect:Started!!!");
                 ShowMessageEvent?.Invoke("Client-AutoReconnect: Started!!!");
 
                 while (true)
@@ -153,7 +164,7 @@ namespace IotClient
                         break;
                     }
 
-                    //Check stop byuser
+                    //Check stop by user
                     if (!client.IsConnected && !isStopClient)
                     {
                         try
@@ -169,11 +180,11 @@ namespace IotClient
                         }
                         if (client.IsConnected)
                         {
-                            LogUtil.WriteLog(LogType.Info, "Client-AutoReConnect-Status:Connected");
+                            LogUtil.Intance.WriteLog(LogType.Info, "Client-AutoReConnect-Status:Connected");
                             ShowMessageEvent?.Invoke("Client-AutoReConnect-Status:Connected");
                         }
-                        //Sleep 10s try reconnect
-                        Thread.Sleep(10000);
+                        //Sleep 60s try reconnect
+                        Thread.Sleep(TIME_RECONNECT);
                         //Loop to untill connted
                         continue;
                     }
@@ -183,7 +194,54 @@ namespace IotClient
                     countTime = 0;
                 }
             });
+
             return reconnect;
+        }
+
+        private void AutoReConnects(CancellationToken cancellation)
+        {
+            int countTime = 0;
+            LogUtil.Intance.WriteLog(LogType.Info, "Client-AutoReConnect:Started!!!");
+            ShowMessageEvent?.Invoke("Client-AutoReconnect: Started!!!");
+
+            while (true)
+            {
+                if (cancellation.IsCancellationRequested)
+                {
+                    ShowMessageEvent?.Invoke($"Client-AutoReconnect:Stopped!!!");
+                    break;
+                }
+
+                //Check stop by user
+                if (!client.IsConnected && !isStopClient)
+                {
+                    try
+                    {
+                        client.Connect(ClientOptions.ClientId);
+                        countTime++;
+                        ShowMessageEvent?.Invoke($"Client-AutoReConnect-Try reconnect count:{countTime}");
+                    }
+                    catch (Exception ex)
+                    {
+                        ShowMessageEvent?.Invoke($"Client-AutoReConnect-Exception: {ex.Message}");
+                        continue;
+                    }
+                    if (client.IsConnected)
+                    {
+                        LogUtil.Intance.WriteLog(LogType.Info, "Client-AutoReConnect-Status:Connected");
+                        ShowMessageEvent?.Invoke("Client-AutoReConnect-Status:Connected");
+                    }
+                    //Sleep 60s try reconnect
+                    Thread.Sleep(TIME_RECONNECT);
+                    //Loop to untill connted
+                    continue;
+                }
+
+                //Sleep 5min check connect status
+                Thread.Sleep(ClientOptions.TimeCheckConnect);
+                countTime = 0;
+            }
+
         }
 
         public void Stop()
@@ -200,15 +258,15 @@ namespace IotClient
                 StopAllThread();
 
                 ShowMessageEvent?.Invoke("Client-Stop:Done!!!");
-                LogUtil.WriteLog(LogType.Info, "Client-Stop");
+                LogUtil.Intance.WriteLog(LogType.Info, "Client-Stop");
             }
         }
 
         private void StopAllThread()
         {
             ShowMessageEvent?.Invoke("Client-StopAllThread:Waitting for thread stop!!!");
-            
-            //Set thread start
+
+            //Set thread stop
             tokenSource.Cancel();
 
             while (true)
@@ -223,12 +281,12 @@ namespace IotClient
             }
 
             //Stop Thread check connected
-            foreach (var thread in clientThreads)
+            foreach (var thread in threadCollection)
             {
                 try
                 {
                     //Wait until thread finished
-                    thread.Wait();
+                    thread.Join();
                 }
                 catch (Exception ex)
                 {
@@ -239,7 +297,7 @@ namespace IotClient
             //Reset token resouce
             tokenSource = null;
             //Reset thread
-            clientThreads.Clear();
+            threadCollection.Clear();
 
             ShowMessageEvent?.Invoke($"Client-StopAllThread: Done!!!");
         }
@@ -247,42 +305,37 @@ namespace IotClient
         private void StartAllThread()
         {
             tokenSource = new CancellationTokenSource();
-            clientThreads.Add(AutoReConnect(tokenSource.Token));
-            clientThreads.Add(SingletonDecodeData.Instance.DecodeDataThread(tokenSource.Token));
-            clientThreads.Add(SingletonDecodeData.Instance.InsertDataThread(tokenSource.Token));
-            //clientThreads.Add(ThreadTestMessage(tokenSource.Token));
+            threadCollection.Add(new Thread(() => AutoReConnects(tokenSource.Token)));
+            threadCollection.Add(new Thread(() => SingletonDecodeData.Instance.DecodeDataThread(tokenSource.Token)));
+            threadCollection.Add(new Thread(() => SingletonDecodeData.Instance.InsertDataThread(tokenSource.Token)));
+            threadCollection.Add(new Thread(() => ThreadMessageTest(tokenSource.Token)));
 
-            foreach (Task thread in clientThreads)
+            foreach (Thread thread in threadCollection)
             {
-                if (thread.Status == TaskStatus.Created)
-                    thread.Start();
+                thread.Start();
             }
         }
 
-        private Task ThreadTestMessage(CancellationToken cancellation)
+        private int count = 0;
+
+        private void ThreadMessageTest(CancellationToken cancellation)
         {
-            Task task = new Task(() =>
+            ShowMessageEvent?.Invoke($"ThreadTestMessage:Started!!!");
+            while (true)
             {
-                int count = 0;
-
-                ShowMessageEvent?.Invoke($"ThreadTestMessage:Started!!!");
-                while (true)
+                if (cancellation.IsCancellationRequested)
                 {
-                    if (cancellation.IsCancellationRequested)
-                    {
-                        ShowMessageEvent?.Invoke($"ThreadTestMessage:Stopped!!!");
-                        break;
-                    }
-                    count++;
-                    MessageData message = new MessageData() { Topic = $"Topic/Test{count}" };
-
-                    SingletonMessageQueue<MessageData>.Instance.Enqueue(message);
-
-                    Thread.Sleep(500);
+                    ShowMessageEvent?.Invoke($"ThreadTestMessage:Stopped!!!");
+                    break;
                 }
 
-            });
-            return task;
+                count++;
+
+                MessageData message = new MessageData() { Topic = $"Topic/Test{count}" };
+
+                SingletonMessageQueue<MessageData>.Instance.Enqueue(message);
+                Thread.Sleep(500);
+            }
         }
     }
 }

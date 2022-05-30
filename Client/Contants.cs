@@ -27,7 +27,6 @@ namespace IotClient
         public static string INFO_LOG_SYSTEM_PATH = string.Format("{0}\\Info.Log", ROOT_FOLDER);
 
 
-
         public static string CURRENT_TIME = DateTime.Now.ToString("yyMMddHHmmss");
 
         private Contants()
