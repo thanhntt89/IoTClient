@@ -1,4 +1,5 @@
 ﻿using IotClient.DataProcessing;
+using IotClient.ThreadManagement;
 using IotClient.Utils;
 using System;
 using System.Collections.Concurrent;
@@ -32,7 +33,7 @@ namespace IotClient
     {
         private event DelegateShowMessage ShowMessageEvent;
 
-        private List<Thread> threadCollection = new List<Thread>();
+        private ThreadCollection threadCollection;
 
         private CancellationTokenSource tokenSource;
 
@@ -51,7 +52,7 @@ namespace IotClient
         {
             client = new MqttClient(options.Broker, options.Port, false, null, MqttSslProtocols.SSLv3);
             ClientOptions = options;
-
+            threadCollection = new ThreadCollection();
             // register a callback-function (we have to implement, see below) which is called by the library when a message was received
             client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
         }
@@ -148,56 +149,6 @@ namespace IotClient
             SingletonDecodeData.Instance.ShowMessageEvent += showMessage;
         }
 
-        private Task AutoReConnect(CancellationToken cancellation)
-        {
-            Task reconnect = new Task(() =>
-            {
-                int countTime = 0;
-                LogUtil.Intance.WriteLog(LogType.Info, "Client-AutoReConnect:Started!!!");
-                ShowMessageEvent?.Invoke("Client-AutoReconnect: Started!!!");
-
-                while (true)
-                {
-                    if (cancellation.IsCancellationRequested)
-                    {
-                        ShowMessageEvent?.Invoke($"Client-AutoReconnect:Stopped!!!");
-                        break;
-                    }
-
-                    //Check stop by user
-                    if (!client.IsConnected && !isStopClient)
-                    {
-                        try
-                        {
-                            client.Connect(ClientOptions.ClientId);
-                            countTime++;
-                            ShowMessageEvent?.Invoke($"Client-AutoReConnect-Try reconnect count:{countTime}");
-                        }
-                        catch (Exception ex)
-                        {
-                            ShowMessageEvent?.Invoke($"Client-AutoReConnect-Exception: {ex.Message}");
-                            continue;
-                        }
-                        if (client.IsConnected)
-                        {
-                            LogUtil.Intance.WriteLog(LogType.Info, "Client-AutoReConnect-Status:Connected");
-                            ShowMessageEvent?.Invoke("Client-AutoReConnect-Status:Connected");
-                        }
-                        //Sleep 60s try reconnect
-                        Thread.Sleep(TIME_RECONNECT);
-                        //Loop to untill connted
-                        continue;
-                    }
-
-                    //Sleep 5min check connect status
-                    Thread.Sleep(ClientOptions.TimeCheckConnect);
-                    countTime = 0;
-                }
-            });
-
-            return reconnect;
-        }
-
         private void AutoReConnects(CancellationToken cancellation)
         {
             int countTime = 0;
@@ -281,17 +232,14 @@ namespace IotClient
             }
 
             //Stop Thread check connected
-            foreach (var thread in threadCollection)
+            try
             {
-                try
-                {
-                    //Wait until thread finished
-                    thread.Join();
-                }
-                catch (Exception ex)
-                {
-                    ShowMessageEvent?.Invoke($"Client-StopAllThread-Error: {ex.Message}");
-                }
+                //Wait until thread finished
+                threadCollection.StopThread();
+            }
+            catch (Exception ex)
+            {
+                ShowMessageEvent?.Invoke($"Client-StopAllThread-Error: {ex.Message}");
             }
 
             //Reset token resouce
@@ -305,15 +253,12 @@ namespace IotClient
         private void StartAllThread()
         {
             tokenSource = new CancellationTokenSource();
-            threadCollection.Add(new Thread(() => AutoReConnects(tokenSource.Token)));
-            threadCollection.Add(new Thread(() => SingletonDecodeData.Instance.DecodeDataThread(tokenSource.Token)));
-            threadCollection.Add(new Thread(() => SingletonDecodeData.Instance.InsertDataThread(tokenSource.Token)));
-            threadCollection.Add(new Thread(() => ThreadMessageTest(tokenSource.Token)));
+            threadCollection.AddThread(AutoReConnects, tokenSource.Token);
+            threadCollection.AddThread(SingletonDecodeData.Instance.DecodeDataThread, tokenSource.Token);
+            threadCollection.AddThread(SingletonDecodeData.Instance.InsertDataThread, tokenSource.Token);
+            threadCollection.AddThread(ThreadMessageTest, tokenSource.Token);
 
-            foreach (Thread thread in threadCollection)
-            {
-                thread.Start();
-            }
+            threadCollection.StartThread();
         }
 
         private int count = 0;

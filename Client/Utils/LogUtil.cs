@@ -12,9 +12,10 @@ namespace IotClient.Utils
 
     public class LogUtil
     {
-        private readonly static LogUtil intance = new LogUtil();
+        private static LogUtil intance;
+        private static readonly object locker = new object();
 
-        public  void WriteLog(LogType logType, string message)
+        public void WriteLog(LogType logType, string message)
         {
             try
             {
@@ -40,11 +41,15 @@ namespace IotClient.Utils
 
         private void WriteFile(string filePath, string message)
         {
-            using (FileStream file = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.Read))
-            using (StreamWriter writer = new StreamWriter(file, Encoding.Unicode))
+            //Using for mutil thread
+            lock (locker)
             {
-                writer.WriteLine(message);
-                writer.Close();
+                using (FileStream file = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.Read))
+                using (StreamWriter writer = new StreamWriter(file, Encoding.Unicode))
+                {
+                    writer.WriteLine(message);
+                    writer.Close();
+                }
             }
         }
 
@@ -60,7 +65,18 @@ namespace IotClient.Utils
 
         public static LogUtil Intance
         {
-            get { return intance; }
+            get
+            {
+                if (intance == null)
+                {
+                    lock (locker)
+                    {
+                        if (intance == null)
+                            intance = new LogUtil();
+                    }
+                }
+                return intance;
+            }
         }
     }
 }

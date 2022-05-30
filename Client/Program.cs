@@ -31,6 +31,7 @@ namespace IotClient
                 client.ShowMessage(ShowMessage);
 
                 bool menu = true;
+
                 while (menu)
                 {
                     menu = ShowMenu(client);
@@ -44,7 +45,7 @@ namespace IotClient
 
         private static void ShowMessage(string message)
         {
-             SingletonShowMessage.Instance.ShowMessage(message);
+            Console.WriteLine(message);
         }
 
         private static bool ShowMenu(IClient client)
@@ -72,44 +73,6 @@ namespace IotClient
                     return false;
                 default:
                     return true;
-            }
-        }
-    }
-
-    [Synchronization]
-    public class SingletonShowMessage
-    {
-        private static SingletonShowMessage _instance;
-        private static object synObject = new object();
-
-
-        public void ShowMessage(string message)
-        {
-            Console.WriteLine(message);
-        }
-
-        private SingletonShowMessage()
-        {
-
-        }
-
-        static SingletonShowMessage()
-        {
-
-        }
-
-        public static SingletonShowMessage Instance
-        {
-            get
-            {
-                if(_instance == null)
-                {
-                    lock (synObject)
-                    {
-                        _instance = new SingletonShowMessage();
-                    }
-                }
-                return _instance;
             }
         }
     }
