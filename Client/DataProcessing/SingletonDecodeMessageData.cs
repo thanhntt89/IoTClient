@@ -32,7 +32,7 @@ namespace IotClient.DataProcessing
             }
         }
 
-        public void DecodeDataThread(CancellationToken cancellation)
+        public void ThreadDecode(CancellationToken cancellation)
         {
             MessageData message = new MessageData();
             ShowMessageEvent?.Invoke($"SingletonDecodeData-StartDecodeThread:Started!!!");
@@ -59,7 +59,7 @@ namespace IotClient.DataProcessing
             }
         }
 
-        public void InsertDataThread(CancellationToken cancellation)
+        public void ThreadInsertData(CancellationToken cancellation)
         {
             ShowMessageEvent?.Invoke($"SingletonDecodeData-InsertDataThread:Started!!!");
 

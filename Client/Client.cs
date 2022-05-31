@@ -37,8 +37,14 @@ namespace IotClient
     {
         private event DelegateShowMessage ShowMessageEvent;
 
+        /// <summary>
+        /// Threads in client
+        /// </summary>
         private ThreadCollection threadCollection;
 
+        /// <summary>
+        /// Using status for control all thread
+        /// </summary>
         private CancellationTokenSource tokenSource;
 
         private MqttClient client;
@@ -270,8 +276,8 @@ namespace IotClient
             threadCollection.AddThread(AutoReConnect, tokenSource.Token);
             threadCollection.AddThread(SingletonDatabaseConnection.Instance.ThreadCheckConnection, tokenSource.Token);
             threadCollection.AddThread(SingletonDecodeMessageTime.Instance.ThreadDecode, tokenSource.Token);
-            threadCollection.AddThread(SingletonDecodeMessageData.Instance.DecodeDataThread, tokenSource.Token);
-            threadCollection.AddThread(SingletonDecodeMessageData.Instance.InsertDataThread, tokenSource.Token);
+            threadCollection.AddThread(SingletonDecodeMessageData.Instance.ThreadDecode, tokenSource.Token);
+            threadCollection.AddThread(SingletonDecodeMessageData.Instance.ThreadInsertData, tokenSource.Token);
             threadCollection.AddThread(ThreadMessageTest, tokenSource.Token);
 
             threadCollection.StartThread();

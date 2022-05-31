@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
-using static IotClient.ClientEvent;
 
 namespace IotClient.ThreadManagement
 {
     public class ThreadCollection : List<Thread>
     {
+        public delegate void DelegateThread(CancellationToken cancellation);
+
         public ThreadCollection()
         {
 
@@ -20,9 +21,11 @@ namespace IotClient.ThreadManagement
         {
             foreach (Thread thread in this)
             {
+                thread.IsBackground = false;
                 thread.Start();
             }
         }
+
 
         public void StopThread()
         {

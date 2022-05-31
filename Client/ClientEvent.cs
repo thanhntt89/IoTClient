@@ -6,8 +6,6 @@ namespace IotClient
     {
         public delegate void DelegateShowMessage(string message);
 
-        public delegate void DelegateThread(CancellationToken cancellation);
-
         public delegate void DelegatePublishMessage(string topic, string content);
     }
 }
