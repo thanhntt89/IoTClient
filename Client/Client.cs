@@ -64,6 +64,9 @@ namespace IotClient
             threadCollection = new ThreadCollection();
             // register a callback-function (we have to implement, see below) which is called by the library when a message was received
             client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
+            
+            //Init all thread
+            InitAllThread();
 
             //Register publish message
             SingletonDecodeMessageTime.Instance.eventPublishMessage += PublishTimeMessage;
@@ -74,6 +77,7 @@ namespace IotClient
             //Check client connection status
             if (client.IsConnected)
             {
+                StartAllThread();
                 ShowMessageEvent?.Invoke($"Client:Started!!!");
                 return;
             }
@@ -261,16 +265,16 @@ namespace IotClient
             {
                 ShowMessageEvent?.Invoke($"Client-StopAllThread-Error: {ex.Message}");
             }
-
-            //Reset token resouce
-            tokenSource = null;
-            //Reset thread
-            threadCollection.Clear();
-
+                       
             ShowMessageEvent?.Invoke($"Client-StopAllThread: Done!!!");
         }
 
         private void StartAllThread()
+        {
+            threadCollection.StartThread();
+        }
+
+        private void InitAllThread()
         {
             tokenSource = new CancellationTokenSource();
             threadCollection.AddThread(AutoReConnect, tokenSource.Token);
@@ -279,9 +283,8 @@ namespace IotClient
             threadCollection.AddThread(SingletonDecodeMessageData.Instance.ThreadDecode, tokenSource.Token);
             threadCollection.AddThread(SingletonDecodeMessageData.Instance.ThreadInsertData, tokenSource.Token);
             threadCollection.AddThread(ThreadMessageTest, tokenSource.Token);
-
-            threadCollection.StartThread();
         }
+
 
         private int count = 0;
 
