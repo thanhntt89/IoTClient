@@ -1,4 +1,5 @@
-﻿using IotClient.Queues;
+﻿using IotClient.MessageProcessing;
+using IotClient.Queues;
 using System;
 using System.Data;
 using System.Threading;

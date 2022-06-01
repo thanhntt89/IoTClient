@@ -1,4 +1,11 @@
-﻿using System.Collections.Concurrent;
+﻿/**
+*Project name: IotClient 
+* Created by: Nguyen Tat Thanh
+* File Name: SingletonMessageDataQueue.cs
+* Created date:2022/6/1 2:49 PM 
+* Copyright (c) by MVN Viet Nam Inc. All rights reserved
+**/
+using System.Collections.Concurrent;
 
 namespace IotClient.Queues
 {

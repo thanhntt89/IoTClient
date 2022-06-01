@@ -1,4 +1,12 @@
-﻿using IotClient.DataProcessing;
+﻿/**
+*Project name: IotClient 
+* Created by: Nguyen Tat Thanh
+* File Name: Client.cs
+* Created date:2022/5/27 12:48 AM 
+* Copyright (c) by MVN Viet Nam Inc. All rights reserved
+**/
+using IotClient.DataProcessing;
+using IotClient.MessageProcessing;
 using IotClient.Queues;
 using IotClient.ThreadManagement;
 using IotClient.Utils;

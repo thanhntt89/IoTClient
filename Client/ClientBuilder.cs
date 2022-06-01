@@ -1,4 +1,11 @@
-﻿namespace IotClient
+﻿/**
+*Project name: IotClient 
+* Created by: Nguyen Tat Thanh
+* File Name: ClientBuilder.cs
+* Created date:2022/5/27 1:12 AM 
+* Copyright (c) by MVN Viet Nam Inc. All rights reserved
+**/
+namespace IotClient
 {
     public class ClientBuilder
     {

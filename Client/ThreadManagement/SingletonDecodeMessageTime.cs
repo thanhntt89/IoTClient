@@ -1,8 +1,9 @@
-﻿using IotClient.Queues;
+﻿using IotClient.MessageProcessing;
+using IotClient.Queues;
 using System.Threading;
 using static IotClient.ClientEvent;
 
-namespace IotClient.DataProcessing
+namespace IotClient.MessageProcessing
 {
     public class SingletonDecodeMessageTime
     {

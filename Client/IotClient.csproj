@@ -51,19 +51,19 @@
     <Compile Include="ClientEvent.cs" />
     <Compile Include="ClientSetting.cs" />
     <Compile Include="Constant.cs" />
-    <Compile Include="DataProcessing\DcuMessage\DcuMessageProcessing.cs" />
-    <Compile Include="DataProcessing\DcuMessage\IDcuMessageProcessing.cs" />
-    <Compile Include="DataProcessing\MeterMessage\IMeterMessageProcessing.cs" />
+    <Compile Include="MessageProcessing\DcuMessage\DcuMessageProcessing.cs" />
+    <Compile Include="MessageProcessing\DcuMessage\IDcuMessageProcessing.cs" />
+    <Compile Include="MessageProcessing\MeterMessage\IMeterMessageProcessing.cs" />
     <Compile Include="ThreadManagement\SingletonDatabaseConnection.cs" />
     <Compile Include="ThreadManagement\SingletonDecodeMessageData.cs" />
     <Compile Include="ThreadManagement\SingletonDecodeMessageTime.cs" />
     <Compile Include="Queues\SingletonMessageDataQueue.cs" />
-    <Compile Include="DataProcessing\MeterMessage\MeterMessageProcessing.cs" />
-    <Compile Include="DataProcessing\ProcessingDataFactory.cs" />
+    <Compile Include="MessageProcessing\MeterMessage\MeterMessageProcessing.cs" />
+    <Compile Include="MessageProcessing\ProcessingDataFactory.cs" />
     <Compile Include="Queues\SingletonMessageTimeQueue.cs" />
     <Compile Include="Helpers\SqlHelpers.cs" />
     <Compile Include="IClient.cs" />
-    <Compile Include="MessageData.cs" />
+    <Compile Include="MessageProcessing\MessageData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThreadManagement\ThreadCollection.cs" />
@@ -73,6 +73,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="bin\Debug\Settings.json" />
+    <None Include="Client.licenseheader" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -82,7 +83,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DataProcessing\Queries\" />
+    <Folder Include="MessageProcessing\Queries\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

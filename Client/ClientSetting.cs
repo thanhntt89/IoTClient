@@ -1,4 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿/**
+*Project name: IotClient 
+* Created by: Nguyen Tat Thanh
+* File Name: ClientSetting.cs
+* Created date:2022/5/27 2:18 PM 
+* Copyright (c) by MVN Viet Nam Inc. All rights reserved
+**/
+using Newtonsoft.Json;
 
 namespace IotClient
 {
