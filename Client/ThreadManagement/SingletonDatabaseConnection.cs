@@ -1,4 +1,11 @@
-﻿using SqlHelper;
+﻿/**
+*Project name: IotClient 
+* Created by: Nguyen Tat Thanh
+* File Name: SingletonDatabaseConnection.cs
+* Created date:2022/6/1 2:51 PM 
+* Copyright (c) by MVN Viet Nam Inc. All rights reserved
+**/
+using SqlHelper;
 using System.Threading;
 using static IotClient.ClientEvent;
 
@@ -7,6 +14,8 @@ namespace IotClient.DataProcessing
     public class SingletonDatabaseConnection
     {
         public event DelegateShowMessage ShowMessageEvent;
+        public event DelegateSqlConnection eventSqlConnectionStaus;
+
         private static SingletonDatabaseConnection instance;
         private static readonly object objLock = new object();
         
@@ -65,6 +74,10 @@ namespace IotClient.DataProcessing
                     break;
                 }
                 IsConnected = SqlHelpers.CheckConnectionString();
+                
+                //Send event connection status
+                eventSqlConnectionStaus?.Invoke(IsConnected);
+
                 Thread.Sleep(TIME_CHECK_CONNECTION);
             }
         }

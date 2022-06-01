@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace IotClient.DataProcessing
+namespace IotClient.Queues
 {
     public class SingletonMessageDataQueue<T> : ConcurrentQueue<T>
     {

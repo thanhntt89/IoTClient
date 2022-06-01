@@ -1,4 +1,5 @@
 ﻿using IotClient.DataProcessing;
+using IotClient.Queues;
 using IotClient.ThreadManagement;
 using IotClient.Utils;
 using System;
@@ -53,6 +54,16 @@ namespace IotClient
         private const int TIME_RECONNECT = 60000;//60s
 
         /// <summary>
+        /// Count time connection disconnect
+        /// </summary>
+        private int DisconnectCount = 0;
+
+        /// <summary>
+        /// Max sql to try reconnect to server
+        /// </summary>
+        private const int MAX_TRY_RECONNECT_SQL = 3;
+
+        /// <summary>
         /// Client started
         /// </summary>
         private bool isStoppedByClient { get; set; }
@@ -73,6 +84,29 @@ namespace IotClient
 
             //Register publish message
             SingletonDecodeMessageTime.Instance.eventPublishMessage += PublishTimeMessage;
+            SingletonDatabaseConnection.Instance.eventSqlConnectionStaus += SqlConnectionStatus;
+        }
+
+        /// <summary>
+        /// Get sql connect status
+        /// </summary>
+        /// <param name="status"></param>
+        private void SqlConnectionStatus(bool status)
+        {
+            if (!status)
+            {
+                DisconnectCount++;
+            }
+            else
+            {
+                DisconnectCount = 0;
+            }
+
+            if(DisconnectCount >= MAX_TRY_RECONNECT_SQL)
+            {
+                Stop(false);
+                ShowMessageEvent?.Invoke("Client-SqlConnectionStatus:Disconnect!!!");
+            }
         }
 
         public void Start()
@@ -107,7 +141,7 @@ namespace IotClient
                     {
                         // Start all client thread
                         StartAllThread();
-                    }                    
+                    }
 
                     ShowMessageEvent?.Invoke($"Client-Start Success!!!");
                     LogUtil.Intance.WriteLog(LogType.Info, $"Client-Start Success!!!");

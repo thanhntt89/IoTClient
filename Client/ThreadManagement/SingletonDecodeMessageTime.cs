@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using IotClient.Queues;
+using System.Threading;
 using static IotClient.ClientEvent;
 
 namespace IotClient.DataProcessing

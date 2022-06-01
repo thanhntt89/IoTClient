@@ -7,5 +7,6 @@ namespace IotClient
         public delegate void DelegateShowMessage(string message);
 
         public delegate void DelegatePublishMessage(string topic, string content);
+        public delegate void DelegateSqlConnection(bool status);
     }
 }

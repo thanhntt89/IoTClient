@@ -1,0 +1,19 @@
+﻿extensions: designer.cs generated.cs
+extensions: .cs .cpp .h
+/**
+*Project name: %Project% 
+* Created by: Nguyen Tat Thanh
+* File Name: %FileName%
+* Created date:%CreationYear%/%CreationMonth%/%CreationDay% %CreationTime% 
+* Copyright (c) by MVN Viet Nam Inc. All rights reserved
+**/
+extensions: .aspx .ascx
+<%-- 
+Copyright (c) %CreationYear%
+--%>
+extensions: .vb
+'Sample license text.
+extensions:  .xml .config .xsd
+<!--
+Sample license text.
+-->
