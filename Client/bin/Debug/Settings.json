@@ -12,7 +12,7 @@
     "ClientId": "Jimmii88",
     "Port": 1888,
     "Broker": "127.0.0.1",   
-    "QoS": 2,
+    "QoS": 0,
     "SubscriberTopic": "PHH/Customer/Sub_Local/RunTime/*;AMI/*/sTime",
     "PublisherTopic": "DCU/sTime",
     "TypeData": "Customer",

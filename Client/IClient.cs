@@ -6,6 +6,7 @@ namespace IotClient
     {
         void ShowMessage(DelegateShowMessage showMessage);      
         void Start();
-        void Stop();        
+        void Stop(bool isUserStop);
+        void StopAllThread();
     }
 }

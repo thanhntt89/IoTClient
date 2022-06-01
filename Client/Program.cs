@@ -64,9 +64,9 @@ namespace IotClient
         {
             Console.WriteLine("\n-----------MENUS-----------");
             Console.WriteLine("Select options following");
-            Console.WriteLine("START to Start client");
-            Console.WriteLine("STOP to Stop client");
-            Console.WriteLine("EXIT to Quit client");
+            Console.WriteLine("START to Start client CONNECT to broker");
+            Console.WriteLine("STOP to Stop client DISCONNECT to broker");
+            Console.WriteLine("EXIT to Quit client: Stop all thread and exit!!");
             Console.WriteLine("\n---------------------------");
 
             string press = Console.ReadLine().ToUpper();
@@ -77,10 +77,10 @@ namespace IotClient
                     client.Start();
                     return true;
                 case "STOP":
-                    client.Stop();
+                    client.Stop(true);
                     return true;
                 case "EXIT":
-                    client.Stop();
+                    client.StopAllThread();
                     Environment.Exit(0);
                     return false;
                 default:

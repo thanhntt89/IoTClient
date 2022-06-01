@@ -21,7 +21,7 @@ namespace IotClient.ThreadManagement
         {
             foreach (Thread thread in this)
             {
-                if (thread.IsAlive)
+                if (thread.ThreadState == ThreadState.Running)
                     continue;
                 thread.IsBackground = false;
                 thread.Start();

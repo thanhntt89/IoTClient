@@ -55,16 +55,19 @@ namespace IotClient
         /// <summary>
         /// Client started
         /// </summary>
-        private bool isStopClient { get; set; }
+        private bool isStoppedByClient { get; set; }
 
         public Client(ClientOptions options)
         {
-            client = new MqttClient(options.Broker, options.Port, false, null, MqttSslProtocols.SSLv3);
+            client = new MqttClient(options.Broker, options.Port, false, null, MqttSslProtocols.TLSv1_2);
             ClientOptions = options;
+
             threadCollection = new ThreadCollection();
+            tokenSource = new CancellationTokenSource();
+
             // register a callback-function (we have to implement, see below) which is called by the library when a message was received
             client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
-            
+
             //Init all thread
             InitAllThread();
 
@@ -77,15 +80,7 @@ namespace IotClient
             //Check client connection status
             if (client.IsConnected)
             {
-                StartAllThread();
                 ShowMessageEvent?.Invoke($"Client:Started!!!");
-                return;
-            }
-
-            //Check database connection
-            if (!SingletonDatabaseConnection.Instance.CheckDatabaseConnect(ClientOptions.DbServerName, ClientOptions.DatabaseName, ClientOptions.DbUserName, ClientOptions.DbPassword, ClientOptions.DbPort, ClientOptions.DbCommandTimeOut, ClientOptions.DbConnectionTimeOut))
-            {
-                ShowMessageEvent?.Invoke($"Database:Disconnected!!!");
                 return;
             }
 
@@ -98,14 +93,26 @@ namespace IotClient
                 {
                     ShowMessageEvent?.Invoke($"Client-Status: Connected!!!");
 
+                    //Check database connection
+                    if (!SingletonDatabaseConnection.Instance.CheckDatabaseConnect(ClientOptions.DbServerName, ClientOptions.DatabaseName, ClientOptions.DbUserName, ClientOptions.DbPassword, ClientOptions.DbPort, ClientOptions.DbCommandTimeOut, ClientOptions.DbConnectionTimeOut))
+                    {
+                        ShowMessageEvent?.Invoke($"Database:Disconnected!!!");
+                        return;
+                    }
+
                     //Subsriber message
                     SubsriberTopic();
 
-                    // Start all client thread
-                    StartAllThread();
+                    if (!isStoppedByClient)
+                    {
+                        // Start all client thread
+                        StartAllThread();
+                    }                    
 
                     ShowMessageEvent?.Invoke($"Client-Start Success!!!");
                     LogUtil.Intance.WriteLog(LogType.Info, $"Client-Start Success!!!");
+
+                    isStoppedByClient = false;
                 }
             }
             catch (Exception ex)
@@ -189,11 +196,11 @@ namespace IotClient
                 }
 
                 //Check stop by user
-                if (!client.IsConnected && !isStopClient)
+                if (!client.IsConnected && !isStoppedByClient)
                 {
                     try
                     {
-                        client.Connect(ClientOptions.ClientId);
+                        Start();
                         countTime++;
                         ShowMessageEvent?.Invoke($"Client-AutoReConnect-Try reconnect count:{countTime}");
                     }
@@ -209,7 +216,7 @@ namespace IotClient
                     }
                     //Sleep 60s try reconnect
                     Thread.Sleep(TIME_RECONNECT);
-                    //Loop to untill connted
+                    //Loop to untill connected
                     continue;
                 }
 
@@ -219,27 +226,33 @@ namespace IotClient
             }
         }
 
-        public void Stop()
+        public void Stop(bool isUserStop)
         {
-            while (client.IsConnected)
+            if (!client.IsConnected)
             {
-                client.Disconnect();
-
                 ShowMessageEvent?.Invoke("Client-Status:Disconnected!!!");
-                //Set stop by user
-                isStopClient = true;
+            }
+            else
+            {
+                while (client.IsConnected)
+                {
+                    client.Disconnect();
 
-                //Stop all thread
-                StopAllThread();
+                    ShowMessageEvent?.Invoke("Client-Status:Disconnected!!!");
+                    //Set stop by user
+                    isStoppedByClient = isUserStop;
 
-                ShowMessageEvent?.Invoke("Client-Stop:Done!!!");
-                LogUtil.Intance.WriteLog(LogType.Info, "Client-Stop");
+                    LogUtil.Intance.WriteLog(LogType.Info, "Client-Stop:Done!!!");
+                }
             }
         }
 
-        private void StopAllThread()
+        public void StopAllThread()
         {
             ShowMessageEvent?.Invoke("Client-StopAllThread:Waitting for thread stop!!!");
+
+            //Disconnect to broker
+            Stop(false);
 
             //Set thread stop
             tokenSource.Cancel();
@@ -265,7 +278,7 @@ namespace IotClient
             {
                 ShowMessageEvent?.Invoke($"Client-StopAllThread-Error: {ex.Message}");
             }
-                       
+
             ShowMessageEvent?.Invoke($"Client-StopAllThread: Done!!!");
         }
 
@@ -276,7 +289,6 @@ namespace IotClient
 
         private void InitAllThread()
         {
-            tokenSource = new CancellationTokenSource();
             threadCollection.AddThread(AutoReConnect, tokenSource.Token);
             threadCollection.AddThread(SingletonDatabaseConnection.Instance.ThreadCheckConnection, tokenSource.Token);
             threadCollection.AddThread(SingletonDecodeMessageTime.Instance.ThreadDecode, tokenSource.Token);
