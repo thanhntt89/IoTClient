@@ -10,7 +10,7 @@
   },
   "DCU_CONFIG": {
     "ClientId": "Jimmii88",
-    "Port": 1888,
+    "Port": 1883,
     "Broker": "127.0.0.1",   
     "QoS": 0,
     "SubscriberTopic": "PHH/Customer/Sub_Local/RunTime/*;AMI/*/sTime",

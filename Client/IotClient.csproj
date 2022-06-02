@@ -54,6 +54,9 @@
     <Compile Include="MessageProcessing\DcuMessage\DcuMessageProcessing.cs" />
     <Compile Include="MessageProcessing\DcuMessage\IDcuMessageProcessing.cs" />
     <Compile Include="MessageProcessing\MeterMessage\IMeterMessageProcessing.cs" />
+    <Compile Include="MessageProcessing\SingletonDataTable.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ThreadManagement\SingletonDatabaseConnection.cs" />
     <Compile Include="ThreadManagement\SingletonDecodeMessageData.cs" />
     <Compile Include="ThreadManagement\SingletonDecodeMessageTime.cs" />

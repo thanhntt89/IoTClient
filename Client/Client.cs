@@ -112,7 +112,8 @@ namespace IotClient
 
             if(DisconnectCount >= MAX_TRY_RECONNECT_SQL)
             {
-                Stop(false);
+                //Set stop by user
+                Stop(true);
                 ShowMessageEvent?.Invoke("Client-SqlConnectionStatus:Disconnect!!!");
             }
         }
@@ -126,6 +127,13 @@ namespace IotClient
                 return;
             }
 
+            //Check database connection
+            if (!SingletonDatabaseConnection.Instance.CheckDatabaseConnect(ClientOptions.DbServerName, ClientOptions.DatabaseName, ClientOptions.DbUserName, ClientOptions.DbPassword, ClientOptions.DbPort, ClientOptions.DbCommandTimeOut, ClientOptions.DbConnectionTimeOut))
+            {
+                ShowMessageEvent?.Invoke($"Database:Disconnected!!!\nClient: Not start!!!");
+                return;
+            }
+
             // use a unique id as client id, each time we start the application           
             try
             {
@@ -134,13 +142,6 @@ namespace IotClient
                 if (client.IsConnected)
                 {
                     ShowMessageEvent?.Invoke($"Client-Status: Connected!!!");
-
-                    //Check database connection
-                    if (!SingletonDatabaseConnection.Instance.CheckDatabaseConnect(ClientOptions.DbServerName, ClientOptions.DatabaseName, ClientOptions.DbUserName, ClientOptions.DbPassword, ClientOptions.DbPort, ClientOptions.DbCommandTimeOut, ClientOptions.DbConnectionTimeOut))
-                    {
-                        ShowMessageEvent?.Invoke($"Database:Disconnected!!!");
-                        return;
-                    }
 
                     //Subsriber message
                     SubsriberTopic();
@@ -358,7 +359,7 @@ namespace IotClient
                 MessageData message = new MessageData() { Topic = $"Topic/Test{count}" };
 
                 SingletonMessageDataQueue<MessageData>.Instance.Enqueue(message);
-                Thread.Sleep(500);
+                Thread.Sleep(10);
             }
         }
     }

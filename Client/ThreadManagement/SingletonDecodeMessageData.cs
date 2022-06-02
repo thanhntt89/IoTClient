@@ -3,7 +3,6 @@ using IotClient.Queues;
 using System;
 using System.Data;
 using System.Threading;
-using System.Threading.Tasks;
 using static IotClient.ClientEvent;
 
 namespace IotClient.DataProcessing
@@ -12,8 +11,29 @@ namespace IotClient.DataProcessing
     {
         public event DelegateShowMessage ShowMessageEvent;
         private static readonly SingletonDecodeMessageData instance = new SingletonDecodeMessageData();
-        private ProcessingDataFactory processingDataFactory;
-        private DataTable dataTableMeterData = new DataTable();
+        private ProcessingDataFactory processingDataFactory;       
+
+        /// <summary>
+        /// Set time to process message
+        /// </summary>
+        private int TIME_PROCESSING_MESSAGE = 100;
+
+        private int TimeProcessMessage(int countdata)
+        {
+            //if (countdata / 1000 >= 1000)
+            //{
+            //    //TIME_PROCESSING_MESSAGE = 1;
+            //}else if(countdata/ 1000 >= 100)
+            //{
+            //   // TIME_PROCESSING_MESSAGE = 10;
+            //}
+            //else if (countdata / 1000 >= 10)
+            //{
+            //   // TIME_PROCESSING_MESSAGE = 100;
+            //}
+
+            return TIME_PROCESSING_MESSAGE;
+        }
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
@@ -38,10 +58,12 @@ namespace IotClient.DataProcessing
         {
             MessageData message = new MessageData();
             ShowMessageEvent?.Invoke($"SingletonDecodeData-StartDecodeThread:Started!!!");
+            int countData = 0;
 
             while (true)
             {
-                if (cancellation.IsCancellationRequested && SingletonMessageDataQueue<MessageData>.Instance.Count == 0)
+                countData = SingletonMessageDataQueue<MessageData>.Instance.Count;
+                if (cancellation.IsCancellationRequested && countData == 0)
                 {
                     ShowMessageEvent?.Invoke($"SingletonDecodeData-StartDecodeThread:Stopped!!!");
                     break;
@@ -51,7 +73,7 @@ namespace IotClient.DataProcessing
                 {
                     if (ProcessingMessage(message))
                     {
-                        Thread.Sleep(100);
+                        Thread.Sleep(TimeProcessMessage(countData));
                         continue;
                     }
                 }
@@ -64,25 +86,30 @@ namespace IotClient.DataProcessing
         public void ThreadInsertData(CancellationToken cancellation)
         {
             ShowMessageEvent?.Invoke($"SingletonDecodeData-InsertDataThread:Started!!!");
+            DataTable dataTable = new DataTable();
 
             while (true)
             {
-                if (cancellation.IsCancellationRequested && dataTableMeterData.Rows.Count == 0)
+                if (cancellation.IsCancellationRequested && SingletonDataTable.Instance.Rows.Count == 0)
                 {
                     ShowMessageEvent?.Invoke($"SingletonDecodeData-InsertDataThread:Stopped!!!");
                     break;
                 }
 
                 //Check data to insert
-                if (dataTableMeterData.Rows.Count > 0)
+                if (SingletonDataTable.Instance.Rows.Count > 0)
                 {
-                    ProcessingInsertData(dataTableMeterData);
-                }
+                    lock(SingletonDataTable.Instance)
+                    {
+                        dataTable = SingletonDataTable.Instance.Copy();
+                        SingletonDataTable.Instance.Clear();
+                    }
 
+                    ProcessingInsertData(dataTable);
+                }
                 //Wait 10s for check data 
                 Thread.Sleep(10000);
             }
-
         }
 
         private bool ProcessingMessage(MessageData message)
@@ -93,10 +120,10 @@ namespace IotClient.DataProcessing
                 //Code here
 
                 //Lock table to insert
-                lock (dataTableMeterData)
+                lock (SingletonDataTable.Instance)
                 {
-                    dataTableMeterData.Rows.Add();
-                    ShowMessageEvent?.Invoke($"Decode topic: {message.Topic}");
+                    SingletonDataTable.Instance.Rows.Add();
+                    ShowMessageEvent?.Invoke($"Decode topic: {message.Topic} time:{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
                 }
 
                 return true;
