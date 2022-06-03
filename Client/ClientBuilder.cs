@@ -111,7 +111,7 @@ namespace IotSystem
         }
         public Client Build()
         {
-            return new Client(ClientOptions, new DecodeMessageDataThread());
+            return new Client(ClientOptions, new DecodeMessageDataThread(), SingletonDatabaseConnection.Instance);
         }
     }
 }

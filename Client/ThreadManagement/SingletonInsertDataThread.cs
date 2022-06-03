@@ -13,23 +13,23 @@ using static IotSystem.ClientEvent;
 
 namespace IotSystem.ThreadManagement
 {
-    public class SingletonInserDataThread
+    public class SingletonInsertDataThread
     {
         public event DelegateShowMessage ShowMessageEvent;
 
-        private static SingletonInserDataThread instance;
+        private static SingletonInsertDataThread instance;
         private static object objLock = new object();
-        private SingletonInserDataThread()
+        private SingletonInsertDataThread()
         {
 
         }
 
-        static SingletonInserDataThread()
+        static SingletonInsertDataThread()
         {
 
         }
 
-        public static SingletonInserDataThread Instance
+        public static SingletonInsertDataThread Instance
         {
             get
             {
@@ -38,7 +38,7 @@ namespace IotSystem.ThreadManagement
                     lock (objLock)
                     {
                         if (instance == null)
-                            instance = new SingletonInserDataThread();
+                            instance = new SingletonInsertDataThread();
                     }
                 }
                 return instance;

@@ -1,14 +1,15 @@
 ﻿using IotSystem.MessageProcessing;
 using IotSystem.Queues;
+using IotSystem.ThreadManagement;
 using System;
 using System.Threading;
 using static IotSystem.ClientEvent;
 
 namespace IotSystem.DataProcessing
 {
-    public class DecodeMessageDataThread
+    public class DecodeMessageDataThread: IDecodeDataThread
     {
-        public event DelegateShowMessage ShowMessageEvent;        
+        public event DelegateShowMessage eventShowMessage;
         private ProcessingDataFactory processingDataFactory;       
 
         /// <summary>
@@ -36,7 +37,7 @@ namespace IotSystem.DataProcessing
         public void ThreadDecode(CancellationToken cancellation)
         {
             MessageData message = new MessageData();
-            ShowMessageEvent?.Invoke($"SingletonDecodeData-StartDecodeThread:Started!!!");
+            eventShowMessage?.Invoke($"SingletonDecodeData-StartDecodeThread:Started!!!");
             int countData = 0;
 
             while (true)
@@ -44,7 +45,7 @@ namespace IotSystem.DataProcessing
                 countData = SingletonMessageDataQueue<MessageData>.Instance.Count;
                 if (cancellation.IsCancellationRequested && countData == 0)
                 {
-                    ShowMessageEvent?.Invoke($"SingletonDecodeData-StartDecodeThread:Stopped!!!");
+                    eventShowMessage?.Invoke($"SingletonDecodeData-StartDecodeThread:Stopped!!!");
                     break;
                 }
                 //Get data from messagequeue
@@ -74,16 +75,21 @@ namespace IotSystem.DataProcessing
                 lock (SingletonDataTable.Instance)
                 {
                     SingletonDataTable.Instance.Rows.Add();
-                    ShowMessageEvent?.Invoke($"Decode topic: {message.Topic} time:{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
+                    eventShowMessage?.Invoke($"Decode topic: {message.Topic} time:{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
                 }
 
                 return true;
             }
             catch (Exception ex)
             {
-                ShowMessageEvent?.Invoke($"DecodeRunning-Fails:{ex.Message}");
+                eventShowMessage?.Invoke($"DecodeRunning-Fails:{ex.Message}");
                 return false;
             }
+        }
+
+        public void ShowMessage(DelegateShowMessage showMessage)
+        {
+            eventShowMessage += showMessage;
         }
     }
 }

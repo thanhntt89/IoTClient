@@ -5,21 +5,44 @@
 * Created date:2022/6/1 2:51 PM 
 * Copyright (c) by MVN Viet Nam Inc. All rights reserved
 **/
+using IotSystem.ThreadManagement;
 using SqlHelper;
+using System;
+using System.Reflection;
 using System.Threading;
 using static IotSystem.ClientEvent;
 
 namespace IotSystem.DataProcessing
 {
-    public class SingletonDatabaseConnection
+    public class SingletonDatabaseConnection: IDatabaseConnectionThread
     {
-        public event DelegateShowMessage ShowMessageEvent;
-        public event DelegateSqlConnection eventSqlConnectionStaus;
-
-        private static SingletonDatabaseConnection instance;
+        public event DelegateShowMessage eventShowMessage;
+        public event DelegateSqlConnection eventSqlConnectionStatus;
+          
+        private static IDatabaseConnectionThread _instance;
+        
         private static readonly object objLock = new object();
         
         private const int TIME_CHECK_CONNECTION = 60000;//1 min
+
+        public static IDatabaseConnectionThread Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (objLock)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new SingletonDatabaseConnection();
+                        }
+                    }
+                }
+
+                return _instance;
+            }
+        }
 
         static SingletonDatabaseConnection()
         {
@@ -28,23 +51,6 @@ namespace IotSystem.DataProcessing
         private SingletonDatabaseConnection()
         {
 
-        }
-
-        public static SingletonDatabaseConnection Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    lock (objLock)
-                    {
-                        if (instance == null)
-                            instance = new SingletonDatabaseConnection();
-                    }
-                }
-
-                return instance;
-            }
         }
 
         public bool IsConnected { get; set; }
@@ -65,21 +71,31 @@ namespace IotSystem.DataProcessing
 
         public void ThreadCheckConnection(CancellationToken cancellation)
         {
-            ShowMessageEvent?.Invoke($"ThreadCheckConnection: Started!!!");
+            eventShowMessage?.Invoke($"ThreadCheckConnection: Started!!!");
             while (true)
             {
                 if (cancellation.IsCancellationRequested)
                 {
-                    ShowMessageEvent?.Invoke($"ThreadCheckConnection: Stopped!!!");
+                    eventShowMessage?.Invoke($"ThreadCheckConnection: Stopped!!!");
                     break;
                 }
                 IsConnected = SqlHelpers.CheckConnectionString();
                 
                 //Send event connection status
-                eventSqlConnectionStaus?.Invoke(IsConnected);
+                eventSqlConnectionStatus?.Invoke(IsConnected);
 
                 Thread.Sleep(TIME_CHECK_CONNECTION);
             }
+        }
+
+        void IDatabaseConnectionThread.ShowMessage(DelegateShowMessage showMessage)
+        {
+            eventShowMessage += showMessage;
+        }
+
+        public void SqlConnectionStatus(DelegateSqlConnection sqlConnection)
+        {
+            eventSqlConnectionStatus += sqlConnection;
         }
     }
 }

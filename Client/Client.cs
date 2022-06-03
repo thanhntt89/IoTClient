@@ -51,12 +51,15 @@ namespace IotSystem
         /// </summary>
         private ThreadCollection threadCollection;
 
+        private ThreadCollection decodeThreads;
+
+
         /// <summary>
         /// Using status for control all thread
         /// </summary>
         private CancellationTokenSource tokenSource;
-        private DecodeMessageDataThread decodeMessageDataThread { get; set; }
-
+        private IDecodeDataThread iDecodeDataThread { get; set; }
+        private IDatabaseConnectionThread iDatabaseConnectionThread { get; set; }
         private MqttClient client;
         private ClientOptions ClientOptions { get; set; }
 
@@ -77,14 +80,19 @@ namespace IotSystem
         /// </summary>
         private bool isStoppedByClient { get; set; }
 
-        public Client(ClientOptions options, DecodeMessageDataThread decodeMessageData)
+        public Client(ClientOptions options, IDecodeDataThread iDecodeData, IDatabaseConnectionThread IDatabaseConnection)
         {
             client = new MqttClient(options.Broker, options.Port, false, null, MqttSslProtocols.TLSv1_2);
             ClientOptions = options;
 
+
+            decodeThreads = new ThreadCollection();
+
             threadCollection = new ThreadCollection();
             tokenSource = new CancellationTokenSource();
-            decodeMessageDataThread = decodeMessageData;
+
+            iDecodeDataThread = iDecodeData;
+            iDatabaseConnectionThread = IDatabaseConnection;
 
             // register a callback-function (we have to implement, see below) which is called by the library when a message was received
             client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
@@ -94,7 +102,7 @@ namespace IotSystem
 
             //Register publish message
             SingletonMessageTimeThread.Instance.eventPublishMessage += PublishTimeMessage;
-            SingletonDatabaseConnection.Instance.eventSqlConnectionStaus += SqlConnectionStatus;
+            iDatabaseConnectionThread.SqlConnectionStatus(SqlConnectionStatus);
         }
 
         /// <summary>
@@ -130,7 +138,7 @@ namespace IotSystem
             }
 
             //Check database connection
-            if (!SingletonDatabaseConnection.Instance.CheckDatabaseConnect(ClientOptions.DbServerName, ClientOptions.DatabaseName, ClientOptions.DbUserName, ClientOptions.DbPassword, ClientOptions.DbPort, ClientOptions.DbCommandTimeOut, ClientOptions.DbConnectionTimeOut))
+            if (!iDatabaseConnectionThread.CheckDatabaseConnect(ClientOptions.DbServerName, ClientOptions.DatabaseName, ClientOptions.DbUserName, ClientOptions.DbPassword, ClientOptions.DbPort, ClientOptions.DbCommandTimeOut, ClientOptions.DbConnectionTimeOut))
             {
                 ShowMessageEvent?.Invoke($"Database:Disconnected!!!\nClient: Not start!!!");
                 return;
@@ -221,8 +229,8 @@ namespace IotSystem
         public void ShowMessage(DelegateShowMessage showMessage)
         {
             ShowMessageEvent += showMessage;
-            decodeMessageDataThread.ShowMessageEvent += showMessage;
-            SingletonDatabaseConnection.Instance.ShowMessageEvent += showMessage;
+            iDecodeDataThread.ShowMessage(showMessage);
+            iDatabaseConnectionThread.ShowMessage(showMessage);
             SingletonMessageTimeThread.Instance.eventShowMessage += showMessage;
         }
 
@@ -329,25 +337,44 @@ namespace IotSystem
 
         private void StartAllThread()
         {
+            decodeThreads.StartThread(1);
             threadCollection.StartThread();
         }
 
         private void InitAllThread()
         {
             threadCollection.AddThread(AutoReConnect, tokenSource.Token);
-            threadCollection.AddThread(SingletonDatabaseConnection.Instance.ThreadCheckConnection, tokenSource.Token);
+            threadCollection.AddThread(iDatabaseConnectionThread.ThreadCheckConnection, tokenSource.Token);
             threadCollection.AddThread(SingletonMessageTimeThread.Instance.ThreadDecode, tokenSource.Token);
-          
-            //Create thread decode
-            for (int thread = 0; thread < SystemUtil.Instance.GetMaxThreadNumber; thread++)
-            {
-                threadCollection.AddThread(decodeMessageDataThread.ThreadDecode, tokenSource.Token);
-            }            
 
-            threadCollection.AddThread(SingletonInserDataThread.Instance.InsertData, tokenSource.Token);
+            //Create thread decode
+            for (int thread = 0; thread < SystemUtil.Instance.GetMaxThreadNumber - 1; thread++)
+            {
+                decodeThreads.AddThread(iDecodeDataThread.ThreadDecode, tokenSource.Token);
+            }
+
+            threadCollection.AddThread(SingletonInsertDataThread.Instance.InsertData, tokenSource.Token);
             threadCollection.AddThread(ThreadMessageTest, tokenSource.Token);
         }
 
+        private void ActiveDecodeThread()
+        {
+            if (SingletonMessageDataQueue<MessageData>.Instance.Count < 2000)
+            {
+                decodeThreads.KeepOneThread();
+                return;
+            }
+            if (SingletonMessageDataQueue<MessageData>.Instance.Count > 5000)
+            {
+                decodeThreads.StartThread(5);
+                return;
+            }
+            if (SingletonMessageDataQueue<MessageData>.Instance.Count > 10000)
+            {
+                decodeThreads.StartThread(10);
+                return;
+            }
+        }
 
         private int count = 0;
 
@@ -368,6 +395,8 @@ namespace IotSystem
 
                 SingletonMessageDataQueue<MessageData>.Instance.Enqueue(message);
                 Thread.Sleep(10);
+
+                ActiveDecodeThread();
             }
         }
     }
