@@ -13,6 +13,7 @@ using IotSystem.Utils;
 using System;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using static IotSystem.ClientEvent;
@@ -58,7 +59,6 @@ namespace IotSystem
         /// Using status for control all thread
         /// </summary>
         private CancellationTokenSource tokenSource;
-        private CancellationTokenSource tokenDecode;
 
         private IDecodeDataThread iDecodeDataThread { get; set; }
         private IDatabaseConnectionThread iDatabaseConnectionThread { get; set; }
@@ -92,7 +92,6 @@ namespace IotSystem
 
             threadCollection = new ThreadCollection();
             tokenSource = new CancellationTokenSource();
-            tokenDecode = new CancellationTokenSource();
 
             iDecodeDataThread = iDecodeData;
             iDatabaseConnectionThread = IDatabaseConnection;
@@ -313,6 +312,7 @@ namespace IotSystem
             //Set thread stop
             tokenSource.Cancel();
 
+            //Waiting for empty queue
             while (true)
             {
                 //Check messageQueue has data
@@ -325,15 +325,8 @@ namespace IotSystem
             }
 
             //Stop Thread check connected
-            try
-            {
-                //Wait until thread finished
-                threadCollection.Join();
-            }
-            catch (Exception ex)
-            {
-                ShowMessageEvent?.Invoke($"Client-StopAllThread-Error: {ex.Message}");
-            }
+            //Wait until thread finished
+            threadCollection.Join();
 
             ShowMessageEvent?.Invoke($"Client-StopAllThread: Done!!!");
         }
@@ -349,32 +342,25 @@ namespace IotSystem
             threadCollection.AddThread(AutoReConnect, tokenSource.Token);
             threadCollection.AddThread(iDatabaseConnectionThread.ThreadCheckConnection, tokenSource.Token);
             threadCollection.AddThread(SingletonMessageTimeThread.Instance.ThreadDecode, tokenSource.Token);
-
-            //Create thread decode
-            for (int thread = 0; thread < SystemUtil.Instance.GetMaxThreadNumber - 1; thread++)
-            {
-                decodeThreads.AddThread(iDecodeDataThread.ThreadDecode, tokenDecode.Token, $"ThreadName_{thread}");
-            }
-
             threadCollection.AddThread(SingletonInsertDataThread.Instance.InsertData, tokenSource.Token);
             threadCollection.AddThread(ThreadMessageTest, tokenSource.Token);
+            //Create thread decode
+            for (int thread = 0; thread < SystemUtil.Instance.GetMaxThreadNumber - threadCollection.Count - 1; thread++)
+            {
+                decodeThreads.AddThread(iDecodeDataThread.ThreadDecode, tokenSource.Token, $"ThreadName_{thread}");
+            }
         }
 
         private void ActiveDecodeThread()
         {
             if (SingletonMessageDataQueue<MessageData>.Instance.Count < 1000)
             {
-                decodeThreads.KeepOneThread();
+                decodeThreads.KeepAliveOne();
                 return;
             }
-            if (SingletonMessageDataQueue<MessageData>.Instance.Count > 3000)
+            if (SingletonMessageDataQueue<MessageData>.Instance.Count > 5000)
             {
-                decodeThreads.StartThread(5);
-                return;
-            }
-            if (SingletonMessageDataQueue<MessageData>.Instance.Count > 10000)
-            {
-                decodeThreads.StartThread(10);
+                decodeThreads.StartThread(decodeThreads.Count);
                 return;
             }
         }

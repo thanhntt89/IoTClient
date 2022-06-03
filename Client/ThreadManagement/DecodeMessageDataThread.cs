@@ -47,7 +47,8 @@ namespace IotSystem.DataProcessing
                 {
                     eventShowMessage?.Invoke($"SingletonDecodeData-StartDecodeThread:Stopped!!!");
                     break;
-                }
+                }                                
+
                 //Get data from messagequeue
                 if (SingletonMessageDataQueue<MessageData>.Instance.TryDequeue(out message) && message != null)
                 {

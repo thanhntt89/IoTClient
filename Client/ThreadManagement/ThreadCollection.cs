@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace IotSystem.ThreadManagement
 {
@@ -53,9 +55,9 @@ namespace IotSystem.ThreadManagement
 
         public int RunningCount => this.FindAll(r => r.ThreadState == ThreadState.Running).Count;
 
-        public void KeepOneThread()
+        public void KeepAliveOne()
         {
-            if (this.RunningCount == 1)
+            if (this.RunningCount <= 1)
                 return;
             int count = 0;
 
@@ -78,6 +80,18 @@ namespace IotSystem.ThreadManagement
             {
                 thread.Join();
             }
+        }
+
+        public async Task<bool> Stop()
+        {
+            await Task.Run(new Action(() =>
+            {
+                while (this.RunningCount != 0)
+                {
+                    Thread.Sleep(10);
+                }
+            }));
+            return true;
         }
     }
 }
