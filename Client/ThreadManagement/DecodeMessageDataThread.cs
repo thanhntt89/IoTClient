@@ -1,16 +1,14 @@
-﻿using IotClient.MessageProcessing;
-using IotClient.Queues;
+﻿using IotSystem.MessageProcessing;
+using IotSystem.Queues;
 using System;
-using System.Data;
 using System.Threading;
-using static IotClient.ClientEvent;
+using static IotSystem.ClientEvent;
 
-namespace IotClient.DataProcessing
+namespace IotSystem.DataProcessing
 {
-    public class SingletonDecodeMessageData
+    public class DecodeMessageDataThread
     {
-        public event DelegateShowMessage ShowMessageEvent;
-        private static readonly SingletonDecodeMessageData instance = new SingletonDecodeMessageData();
+        public event DelegateShowMessage ShowMessageEvent;        
         private ProcessingDataFactory processingDataFactory;       
 
         /// <summary>
@@ -33,25 +31,6 @@ namespace IotClient.DataProcessing
             //}
 
             return TIME_PROCESSING_MESSAGE;
-        }
-
-        // Explicit static constructor to tell C# compiler
-        // not to mark type as beforefieldinit
-        static SingletonDecodeMessageData()
-        {
-        }
-
-        private SingletonDecodeMessageData()
-        {
-
-        }
-
-        public static SingletonDecodeMessageData Instance
-        {
-            get
-            {
-                return instance;
-            }
         }
 
         public void ThreadDecode(CancellationToken cancellation)
@@ -83,34 +62,6 @@ namespace IotClient.DataProcessing
             }
         }
 
-        public void ThreadInsertData(CancellationToken cancellation)
-        {
-            ShowMessageEvent?.Invoke($"SingletonDecodeData-InsertDataThread:Started!!!");
-            DataTable dataTable = new DataTable();
-
-            while (true)
-            {
-                if (cancellation.IsCancellationRequested && SingletonDataTable.Instance.Rows.Count == 0)
-                {
-                    ShowMessageEvent?.Invoke($"SingletonDecodeData-InsertDataThread:Stopped!!!");
-                    break;
-                }
-
-                //Check data to insert
-                if (SingletonDataTable.Instance.Rows.Count > 0)
-                {
-                    lock(SingletonDataTable.Instance)
-                    {
-                        dataTable = SingletonDataTable.Instance.Copy();
-                        SingletonDataTable.Instance.Clear();
-                    }
-
-                    ProcessingInsertData(dataTable);
-                }
-                //Wait 10s for check data 
-                Thread.Sleep(10000);
-            }
-        }
 
         private bool ProcessingMessage(MessageData message)
         {
@@ -131,30 +82,6 @@ namespace IotClient.DataProcessing
             catch (Exception ex)
             {
                 ShowMessageEvent?.Invoke($"DecodeRunning-Fails:{ex.Message}");
-                return false;
-            }
-        }
-
-        private bool ProcessingInsertData(DataTable dataTable)
-        {
-            try
-            {
-                //Insert to database
-                //Code here
-
-
-                ShowMessageEvent?.Invoke($"InsertData-Test-RowsCount: {dataTable.Rows.Count}");
-                //Clear data in table
-                lock (dataTable)
-                {
-                    dataTable.Rows.Clear();
-                }
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                ShowMessageEvent?.Invoke($"ProcessingInsertData-Fails:{ex.Message}");
                 return false;
             }
         }

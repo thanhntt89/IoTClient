@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IotClient.MessageProcessing.MeterMessage
+namespace IotSystem.MessageProcessing.MeterMessage
 {
     public class MeterMessageProcessing
     {

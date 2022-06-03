@@ -7,7 +7,7 @@
 **/
 using Newtonsoft.Json;
 
-namespace IotClient
+namespace IotSystem
 {
     public class DatabaseConfig
     {

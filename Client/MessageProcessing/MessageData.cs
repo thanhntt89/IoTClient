@@ -5,7 +5,7 @@
 * Created date:2022/5/27 12:57 AM 
 * Copyright (c) by MVN Viet Nam Inc. All rights reserved
 **/
-namespace IotClient.MessageProcessing
+namespace IotSystem.MessageProcessing
 {
     public class MessageData
     {

@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{D38430DE-4766-4D4B-8C20-D381CA720E21}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>IotClient</RootNamespace>
-    <AssemblyName>IotClient</AssemblyName>
+    <RootNamespace>IotSystem</RootNamespace>
+    <AssemblyName>IotSystem</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -58,8 +58,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ThreadManagement\SingletonDatabaseConnection.cs" />
-    <Compile Include="ThreadManagement\SingletonDecodeMessageData.cs" />
-    <Compile Include="ThreadManagement\SingletonDecodeMessageTime.cs" />
+    <Compile Include="ThreadManagement\DecodeMessageDataThread.cs" />
+    <Compile Include="ThreadManagement\SingletonMessageTimeThread.cs" />
     <Compile Include="Queues\SingletonMessageDataQueue.cs" />
     <Compile Include="MessageProcessing\MeterMessage\MeterMessageProcessing.cs" />
     <Compile Include="MessageProcessing\ProcessingDataFactory.cs" />
@@ -69,9 +69,11 @@
     <Compile Include="MessageProcessing\MessageData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ThreadManagement\SingletonInserDataThread.cs" />
     <Compile Include="ThreadManagement\ThreadCollection.cs" />
     <Compile Include="Utils\LogUtil.cs" />
     <Compile Include="Utils\FileUtil.cs" />
+    <Compile Include="Utils\SystemUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

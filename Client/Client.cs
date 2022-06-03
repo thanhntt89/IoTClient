@@ -5,19 +5,19 @@
 * Created date:2022/5/27 12:48 AM 
 * Copyright (c) by MVN Viet Nam Inc. All rights reserved
 **/
-using IotClient.DataProcessing;
-using IotClient.MessageProcessing;
-using IotClient.Queues;
-using IotClient.ThreadManagement;
-using IotClient.Utils;
+using IotSystem.DataProcessing;
+using IotSystem.MessageProcessing;
+using IotSystem.Queues;
+using IotSystem.ThreadManagement;
+using IotSystem.Utils;
 using System;
 using System.Text;
 using System.Threading;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
-using static IotClient.ClientEvent;
+using static IotSystem.ClientEvent;
 
-namespace IotClient
+namespace IotSystem
 {
     public class ClientOptions
     {
@@ -55,6 +55,7 @@ namespace IotClient
         /// Using status for control all thread
         /// </summary>
         private CancellationTokenSource tokenSource;
+        private DecodeMessageDataThread decodeMessageDataThread { get; set; }
 
         private MqttClient client;
         private ClientOptions ClientOptions { get; set; }
@@ -76,13 +77,14 @@ namespace IotClient
         /// </summary>
         private bool isStoppedByClient { get; set; }
 
-        public Client(ClientOptions options)
+        public Client(ClientOptions options, DecodeMessageDataThread decodeMessageData)
         {
             client = new MqttClient(options.Broker, options.Port, false, null, MqttSslProtocols.TLSv1_2);
             ClientOptions = options;
 
             threadCollection = new ThreadCollection();
             tokenSource = new CancellationTokenSource();
+            decodeMessageDataThread = decodeMessageData;
 
             // register a callback-function (we have to implement, see below) which is called by the library when a message was received
             client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
@@ -91,7 +93,7 @@ namespace IotClient
             InitAllThread();
 
             //Register publish message
-            SingletonDecodeMessageTime.Instance.eventPublishMessage += PublishTimeMessage;
+            SingletonMessageTimeThread.Instance.eventPublishMessage += PublishTimeMessage;
             SingletonDatabaseConnection.Instance.eventSqlConnectionStaus += SqlConnectionStatus;
         }
 
@@ -110,7 +112,7 @@ namespace IotClient
                 DisconnectCount = 0;
             }
 
-            if(DisconnectCount >= MAX_TRY_RECONNECT_SQL)
+            if (DisconnectCount >= MAX_TRY_RECONNECT_SQL)
             {
                 //Set stop by user
                 Stop(true);
@@ -219,9 +221,9 @@ namespace IotClient
         public void ShowMessage(DelegateShowMessage showMessage)
         {
             ShowMessageEvent += showMessage;
-            SingletonDecodeMessageData.Instance.ShowMessageEvent += showMessage;
+            decodeMessageDataThread.ShowMessageEvent += showMessage;
             SingletonDatabaseConnection.Instance.ShowMessageEvent += showMessage;
-            SingletonDecodeMessageTime.Instance.eventShowMessage += showMessage;
+            SingletonMessageTimeThread.Instance.eventShowMessage += showMessage;
         }
 
         private void AutoReConnect(CancellationToken cancellation)
@@ -334,9 +336,15 @@ namespace IotClient
         {
             threadCollection.AddThread(AutoReConnect, tokenSource.Token);
             threadCollection.AddThread(SingletonDatabaseConnection.Instance.ThreadCheckConnection, tokenSource.Token);
-            threadCollection.AddThread(SingletonDecodeMessageTime.Instance.ThreadDecode, tokenSource.Token);
-            threadCollection.AddThread(SingletonDecodeMessageData.Instance.ThreadDecode, tokenSource.Token);
-            threadCollection.AddThread(SingletonDecodeMessageData.Instance.ThreadInsertData, tokenSource.Token);
+            threadCollection.AddThread(SingletonMessageTimeThread.Instance.ThreadDecode, tokenSource.Token);
+          
+            //Create thread decode
+            for (int thread = 0; thread < SystemUtil.Instance.GetMaxThreadNumber; thread++)
+            {
+                threadCollection.AddThread(decodeMessageDataThread.ThreadDecode, tokenSource.Token);
+            }            
+
+            threadCollection.AddThread(SingletonInserDataThread.Instance.InsertData, tokenSource.Token);
             threadCollection.AddThread(ThreadMessageTest, tokenSource.Token);
         }
 

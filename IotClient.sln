@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31410.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IotClient", "Client\IotClient.csproj", "{D38430DE-4766-4D4B-8C20-D381CA720E21}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IotSystem", "Client\IotSystem.csproj", "{D38430DE-4766-4D4B-8C20-D381CA720E21}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M2Mqtt.Net", "Lib\M2Mqtt\M2Mqtt.Net.csproj", "{A11AEF5A-B246-4FE8-8330-06DB73CC8074}"
 EndProject

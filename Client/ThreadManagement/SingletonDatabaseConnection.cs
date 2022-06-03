@@ -7,9 +7,9 @@
 **/
 using SqlHelper;
 using System.Threading;
-using static IotClient.ClientEvent;
+using static IotSystem.ClientEvent;
 
-namespace IotClient.DataProcessing
+namespace IotSystem.DataProcessing
 {
     public class SingletonDatabaseConnection
     {

@@ -1,4 +1,4 @@
-﻿namespace IotClient.MessageProcessing.DcuMessage
+﻿namespace IotSystem.MessageProcessing.DcuMessage
 {
     public interface IDcuMessageProcessing
     {

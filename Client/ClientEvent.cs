@@ -7,7 +7,7 @@
 **/
 using System.Threading;
 
-namespace IotClient
+namespace IotSystem
 {
     public class ClientEvent
     {

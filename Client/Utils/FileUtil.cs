@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Text;
 
-namespace IotClient.Utils
+namespace IotSystem.Utils
 {
     public class FileUtil
     {

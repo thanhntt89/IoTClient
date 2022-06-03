@@ -4,9 +4,9 @@
     "UserName": "sa",
     "Password": "@dmin123",
     "Port": 1433,
-    "DatabaseName": "IotSystem",
+    "DatabaseName": "Sensor",
     "ConnectionTimeOut": 30,
-    "CommandTimeOut":  30
+    "CommandTimeOut": 30
   },
   "DCU_CONFIG": {
     "ClientId": "Jimmii88",

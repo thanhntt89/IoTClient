@@ -1,4 +1,4 @@
-﻿namespace IotClient.MessageProcessing.MeterMessage
+﻿namespace IotSystem.MessageProcessing.MeterMessage
 {
     public interface IMeterMessageProcessing
     {

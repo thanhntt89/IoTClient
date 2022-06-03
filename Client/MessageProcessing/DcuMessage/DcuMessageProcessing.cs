@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IotClient.MessageProcessing.DcuMessage
+namespace IotSystem.MessageProcessing.DcuMessage
 {
     public class DcuMessageProcessing : IDcuMessageProcessing
     {

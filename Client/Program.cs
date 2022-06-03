@@ -1,9 +1,9 @@
-﻿using IotClient.Utils;
+﻿using IotSystem.Utils;
 using System;
 using System.Runtime.Remoting.Contexts;
 using System.Threading.Tasks;
 
-namespace IotClient
+namespace IotSystem
 {
     class Program
     {

@@ -5,9 +5,9 @@
 * Created date:2022/5/27 12:54 AM 
 * Copyright (c) by MVN Viet Nam Inc. All rights reserved
 **/
-using static IotClient.ClientEvent;
+using static IotSystem.ClientEvent;
 
-namespace IotClient
+namespace IotSystem
 {
     public interface IClient
     {

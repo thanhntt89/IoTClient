@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 
-namespace IotClient.ThreadManagement
+namespace IotSystem.ThreadManagement
 {
     public class ThreadCollection : List<Thread>
     {
