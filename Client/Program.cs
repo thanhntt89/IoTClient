@@ -81,7 +81,7 @@ namespace IotSystem
                     return true;
                 case "EXIT":
                     client.StopAllThread();
-                    Environment.Exit(0);
+                    //Environment.Exit(0);
                     return false;
                 default:
                     return true;

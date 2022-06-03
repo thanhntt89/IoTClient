@@ -12,9 +12,11 @@ namespace IotSystem.ThreadManagement
 
         }
 
-        public void AddThread(DelegateThread delegateThread, CancellationToken cancellation)
+        public void AddThread(DelegateThread delegateThread, CancellationToken cancellation, string threadName = null)
         {
-            this.Add(new Thread(() => delegateThread(cancellation)));
+            var thread = new Thread(() => delegateThread(cancellation));
+            thread.Name = threadName;
+            this.Add(thread);
         }
 
         public void StartThread()
@@ -62,7 +64,7 @@ namespace IotSystem.ThreadManagement
                 if (thread.ThreadState == ThreadState.Running)
                 {
                     if (count > 0)
-                    {                        
+                    {
                         thread.Abort();
                     }
                     count++;
@@ -70,7 +72,7 @@ namespace IotSystem.ThreadManagement
             }
         }
 
-        public void StopThread()
+        public void Join()
         {
             foreach (Thread thread in this)
             {

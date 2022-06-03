@@ -58,6 +58,8 @@ namespace IotSystem
         /// Using status for control all thread
         /// </summary>
         private CancellationTokenSource tokenSource;
+        private CancellationTokenSource tokenDecode;
+
         private IDecodeDataThread iDecodeDataThread { get; set; }
         private IDatabaseConnectionThread iDatabaseConnectionThread { get; set; }
         private MqttClient client;
@@ -90,6 +92,7 @@ namespace IotSystem
 
             threadCollection = new ThreadCollection();
             tokenSource = new CancellationTokenSource();
+            tokenDecode = new CancellationTokenSource();
 
             iDecodeDataThread = iDecodeData;
             iDatabaseConnectionThread = IDatabaseConnection;
@@ -325,7 +328,7 @@ namespace IotSystem
             try
             {
                 //Wait until thread finished
-                threadCollection.StopThread();
+                threadCollection.Join();
             }
             catch (Exception ex)
             {
@@ -350,7 +353,7 @@ namespace IotSystem
             //Create thread decode
             for (int thread = 0; thread < SystemUtil.Instance.GetMaxThreadNumber - 1; thread++)
             {
-                decodeThreads.AddThread(iDecodeDataThread.ThreadDecode, tokenSource.Token);
+                decodeThreads.AddThread(iDecodeDataThread.ThreadDecode, tokenDecode.Token, $"ThreadName_{thread}");
             }
 
             threadCollection.AddThread(SingletonInsertDataThread.Instance.InsertData, tokenSource.Token);
@@ -359,12 +362,12 @@ namespace IotSystem
 
         private void ActiveDecodeThread()
         {
-            if (SingletonMessageDataQueue<MessageData>.Instance.Count < 2000)
+            if (SingletonMessageDataQueue<MessageData>.Instance.Count < 1000)
             {
                 decodeThreads.KeepOneThread();
                 return;
             }
-            if (SingletonMessageDataQueue<MessageData>.Instance.Count > 5000)
+            if (SingletonMessageDataQueue<MessageData>.Instance.Count > 3000)
             {
                 decodeThreads.StartThread(5);
                 return;
