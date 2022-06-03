@@ -57,13 +57,44 @@ namespace IotSystem.DataProcessing
                         Thread.Sleep(TimeProcessMessage(countData));
                         continue;
                     }
-                }
-
+                }               
                 //Sleep thread 10sec if queue has no data
                 Thread.Sleep(10000);
             }
         }
 
+        public void ThreadDecodeByTraffic(CancellationToken cancellation)
+        {
+            MessageData message = new MessageData();
+            eventShowMessage?.Invoke($"SingletonDecodeData-StartDecodeThread:Started!!!");
+            int countData = 0;
+
+            while (true)
+            {
+                if (cancellation.IsCancellationRequested)
+                {
+                    eventShowMessage?.Invoke($"SingletonDecodeData-StartDecodeThread:Stopped!!!");
+                    break;
+                }
+                countData = SingletonMessageDataQueue<MessageData>.Instance.Count;
+                if (countData == 0)
+                {
+                    eventShowMessage?.Invoke($"SingletonDecodeData-StartDecodeThread:Stopped!!!");
+                    break;
+                }
+                //Get data from messagequeue
+                if (SingletonMessageDataQueue<MessageData>.Instance.TryDequeue(out message) && message != null)
+                {
+                    if (ProcessingMessage(message))
+                    {
+                        Thread.Sleep(TimeProcessMessage(countData));
+                        continue;
+                    }
+                }
+                //Sleep thread 10sec if queue has no data
+                Thread.Sleep(10000);
+            }
+        }
 
         private bool ProcessingMessage(MessageData message)
         {

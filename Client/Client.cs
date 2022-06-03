@@ -59,6 +59,7 @@ namespace IotSystem
         /// Using status for control all thread
         /// </summary>
         private CancellationTokenSource tokenSource;
+        private CancellationTokenSource tokenDecode;
 
         private IDecodeDataThread iDecodeDataThread { get; set; }
         private IDatabaseConnectionThread iDatabaseConnectionThread { get; set; }
@@ -92,6 +93,7 @@ namespace IotSystem
 
             threadCollection = new ThreadCollection();
             tokenSource = new CancellationTokenSource();
+            tokenDecode = new CancellationTokenSource();
 
             iDecodeDataThread = iDecodeData;
             iDatabaseConnectionThread = IDatabaseConnection;
@@ -327,6 +329,7 @@ namespace IotSystem
             //Stop Thread check connected
             //Wait until thread finished
             threadCollection.Join();
+            decodeThreads.Join();
 
             ShowMessageEvent?.Invoke($"Client-StopAllThread: Done!!!");
         }
@@ -341,27 +344,57 @@ namespace IotSystem
         {
             threadCollection.AddThread(AutoReConnect, tokenSource.Token);
             threadCollection.AddThread(iDatabaseConnectionThread.ThreadCheckConnection, tokenSource.Token);
+            threadCollection.AddThread(iDecodeDataThread.ThreadDecode, tokenSource.Token);
             threadCollection.AddThread(SingletonMessageTimeThread.Instance.ThreadDecode, tokenSource.Token);
             threadCollection.AddThread(SingletonInsertDataThread.Instance.InsertData, tokenSource.Token);
             threadCollection.AddThread(ThreadMessageTest, tokenSource.Token);
+
             //Create thread decode
-            for (int thread = 0; thread < SystemUtil.Instance.GetMaxThreadNumber - threadCollection.Count - 1; thread++)
+            for (int thread = 0; thread < SystemUtil.Instance.GetMaxThreadNumber - threadCollection.Count; thread++)
             {
-                decodeThreads.AddThread(iDecodeDataThread.ThreadDecode, tokenSource.Token, $"ThreadName_{thread}");
+                decodeThreads.AddThread(iDecodeDataThread.ThreadDecodeByTraffic, tokenDecode.Token, $"ThreadName_{thread}");
             }
         }
 
-        private void ActiveDecodeThread()
+        private void ActiveDecodeThreadByTraffic()
         {
             if (SingletonMessageDataQueue<MessageData>.Instance.Count < 1000)
             {
-                decodeThreads.KeepAliveOne();
-                return;
+                if (decodeThreads.RunningCount > 1)
+                {
+                    tokenDecode.Cancel();                    
+                    decodeThreads.Clear();
+                    tokenDecode = new CancellationTokenSource();
+                    CreateThreadTraffic(1);
+                    decodeThreads.StartThread();
+                }   
             }
-            if (SingletonMessageDataQueue<MessageData>.Instance.Count > 5000)
+            if (SingletonMessageDataQueue<MessageData>.Instance.Count > 3000)
+            {                
+                if(decodeThreads.RunningCount > 1)
+                {
+                    return;
+                }
+
+                tokenDecode.Cancel();
+                decodeThreads.Clear();
+                tokenDecode = new CancellationTokenSource();
+                CreateThreadTraffic(SystemUtil.Instance.GetMaxThreadNumber - threadCollection.Count - 1);
+                decodeThreads.StartThread();
+            }
+        }
+
+        private void CreateThreadTraffic(int threadNumber)
+        {
+            if (threadNumber == 0) 
+                return;            
+
+            if (decodeThreads.Count == 0)
             {
-                decodeThreads.StartThread(decodeThreads.Count);
-                return;
+                for (int thread = 0; thread < threadNumber; thread++)
+                {
+                    decodeThreads.AddThread(iDecodeDataThread.ThreadDecodeByTraffic, tokenDecode.Token, $"ThreadName_{thread}");
+                }
             }
         }
 
@@ -385,7 +418,7 @@ namespace IotSystem
                 SingletonMessageDataQueue<MessageData>.Instance.Enqueue(message);
                 Thread.Sleep(10);
 
-                ActiveDecodeThread();
+                ActiveDecodeThreadByTraffic();
             }
         }
     }

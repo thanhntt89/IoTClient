@@ -14,6 +14,7 @@ namespace IotSystem.ThreadManagement
     public interface IDecodeDataThread
     {
         void ShowMessage(DelegateShowMessage showMessageEvent);
+        void ThreadDecodeByTraffic(CancellationToken cancellation);
         void ThreadDecode(CancellationToken cancellation);
     }
 }
