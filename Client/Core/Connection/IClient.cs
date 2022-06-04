@@ -7,7 +7,7 @@
 **/
 using static IotSystem.ClientEvent;
 
-namespace IotSystem
+namespace IotSystem.Core
 {
     public interface IClient
     {

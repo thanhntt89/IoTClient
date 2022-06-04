@@ -5,13 +5,14 @@
 * Created date:2022/6/3 9:14 AM 
 * Copyright (c) by MVN Viet Nam Inc. All rights reserved
 **/
-using IotSystem.MessageProcessing;
+using IotSystem.Core;
+using IotSystem.Core.ThreadManagement;
 using System;
 using System.Data;
 using System.Threading;
 using static IotSystem.ClientEvent;
 
-namespace IotSystem.ThreadManagement
+namespace IotSystem.MessageProcessing
 {
     public class SingletonInsertDataThread: IInsertDataThread
     {

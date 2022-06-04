@@ -9,7 +9,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace IotSystem
+namespace IotSystem.Core
 {
     public class Constant
     {

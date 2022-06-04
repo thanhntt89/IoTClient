@@ -1,4 +1,8 @@
-﻿using IotSystem.Utils;
+﻿using IotSystem.Core;
+using IotSystem.Core.Connection;
+using IotSystem.Core.ThreadManagement;
+using IotSystem.MessageProcessing;
+using IotSystem.Utils;
 using System;
 using System.Runtime.Remoting.Contexts;
 using System.Threading.Tasks;
@@ -35,6 +39,10 @@ namespace IotSystem
                .AddTypeData(setting.DCU_CONFIG.TypeData)
                .AddTypeTime(setting.DCU_CONFIG.TypeTime)
                .AddTimeCheckConnect(setting.DCU_CONFIG.TimeCheckConnect)
+               .AddIDatabaseConnectionThread(SingletonDatabaseConnection.Instance)
+               .AddIDecodeDataThread(new DecodeMessageDataThread())
+               .AddIInsertDataThread(SingletonInsertDataThread.Instance)
+               .AddIPublishMessageThread(SingletonPublishThread.Instance)
                .Build();
 
                 client.ShowMessage(ShowMessage);

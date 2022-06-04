@@ -1,9 +1,10 @@
-﻿using IotSystem.MessageProcessing;
+﻿using IotSystem.Core;
+using IotSystem.Core.ThreadManagement;
 using IotSystem.Queues;
 using System.Threading;
 using static IotSystem.ClientEvent;
 
-namespace IotSystem.ThreadManagement
+namespace IotSystem.MessageProcessing
 {
     public class SingletonPublishThread: IPublishMessageThread
     {
@@ -12,8 +13,7 @@ namespace IotSystem.ThreadManagement
 
         private static IPublishMessageThread intance;
         private static readonly object objLock = new object();
-
-        public string Topic { get; set; }
+             
 
         public void ThreadDecode(CancellationToken cancellation)
         {

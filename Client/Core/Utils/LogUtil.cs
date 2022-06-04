@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace IotSystem.Utils
+namespace IotSystem.Core.Utils
 {
     public enum LogType
     {

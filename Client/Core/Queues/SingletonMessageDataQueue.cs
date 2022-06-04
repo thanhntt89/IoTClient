@@ -7,7 +7,7 @@
 **/
 using System.Collections.Concurrent;
 
-namespace IotSystem.Queues
+namespace IotSystem.Core.Queues
 {
     public class SingletonMessageDataQueue<T> : ConcurrentQueue<T>
     {

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace SqlHelper
+namespace IotSystem.Core
 {
     public class Parameters
     {

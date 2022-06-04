@@ -8,7 +8,7 @@
 using System.Threading;
 using static IotSystem.ClientEvent;
 
-namespace IotSystem.ThreadManagement
+namespace IotSystem.Core.ThreadManagement
 {
     public interface IPublishMessageThread
     {

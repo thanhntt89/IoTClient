@@ -1,4 +1,4 @@
-﻿using IotSystem.ThreadManagement;
+﻿using IotSystem.Core.ThreadManagement;
 /**
 *Project name: IotClient 
 * Created by: Nguyen Tat Thanh
@@ -6,7 +6,7 @@
 * Created date:2022/5/27 1:12 AM 
 * Copyright (c) by MVN Viet Nam Inc. All rights reserved
 **/
-namespace IotSystem
+namespace IotSystem.Core.Connection
 {
     public class ClientBuilder
     {
@@ -108,9 +108,29 @@ namespace IotSystem
             clientOptions.Port = port;
             return this;
         }
+        public ClientBuilder AddIDecodeDataThread(IDecodeDataThread iDecodeDataThread)
+        {
+            clientOptions.iDecodeDataThread = iDecodeDataThread;
+            return this;
+        }
+        public ClientBuilder AddIDatabaseConnectionThread(IDatabaseConnectionThread iDatabaseConnectionThread)
+        {
+            clientOptions.iDatabaseConnectionThread = iDatabaseConnectionThread;
+            return this;
+        }
+        public ClientBuilder AddIInsertDataThread(IInsertDataThread iInsertDataThread)
+        {
+            clientOptions.iInsertDataThread = iInsertDataThread;
+            return this;
+        }
+        public ClientBuilder AddIPublishMessageThread(IPublishMessageThread iPublishMessageThread)
+        {
+            clientOptions.iPublishMessageThread = iPublishMessageThread;
+            return this;
+        }
         public Client Build()
         {
-            return new Client(clientOptions,new DecodeMessageDataThread(), SingletonDatabaseConnection.Instance, SingletonInsertDataThread.Instance, SingletonPublishThread.Instance);
+            return new Client(clientOptions);
         }
     }
 }

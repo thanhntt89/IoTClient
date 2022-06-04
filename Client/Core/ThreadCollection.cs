@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace IotSystem.ThreadManagement
+namespace IotSystem.Core
 {
     public class ThreadCollection : List<Thread>
     {

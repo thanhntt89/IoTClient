@@ -9,7 +9,7 @@ using static IotSystem.ClientEvent;
 * Created date:2022/6/3 11:47 AM 
 * Copyright (c) by MVN Viet Nam Inc. All rights reserved
 **/
-namespace IotSystem.ThreadManagement
+namespace IotSystem.Core.ThreadManagement
 {
     public interface IDecodeDataThread
     {

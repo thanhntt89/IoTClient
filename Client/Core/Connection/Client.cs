@@ -5,10 +5,10 @@
 * Created date:2022/5/27 12:48 AM 
 * Copyright (c) by MVN Viet Nam Inc. All rights reserved
 **/
-using IotSystem.MessageProcessing;
+using IotSystem.Core.Queues;
+using IotSystem.Core.ThreadManagement;
+using IotSystem.Core.Utils;
 using IotSystem.Queues;
-using IotSystem.ThreadManagement;
-using IotSystem.Utils;
 using System;
 using System.Text;
 using System.Threading;
@@ -16,7 +16,7 @@ using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using static IotSystem.ClientEvent;
 
-namespace IotSystem
+namespace IotSystem.Core.Connection
 {
     public partial class Client
     {
@@ -40,6 +40,11 @@ namespace IotSystem
         private string Password { get; set; }
         private int TimeCheckConnect { get; set; }
 
+        private IDecodeDataThread iDecodeDataThread { get; set; }
+        private IDatabaseConnectionThread iDatabaseConnectionThread { get; set; }
+        private IInsertDataThread iInsertDataThread { get; set; }
+        private IPublishMessageThread iPublishMessageThread { get; set; }
+
         void LoadOptions(ClientOptions clientOptions)
         {
             DbServerName = clientOptions.DbServerName;
@@ -62,6 +67,11 @@ namespace IotSystem
             UserName = clientOptions.UserName;
             Password = clientOptions.Password;
             TimeCheckConnect = clientOptions.TimeCheckConnect;
+
+            iDecodeDataThread = clientOptions.iDecodeDataThread;
+            iDatabaseConnectionThread = clientOptions.iDatabaseConnectionThread;
+            iInsertDataThread = clientOptions.iInsertDataThread;
+            iPublishMessageThread = clientOptions.iPublishMessageThread;
         }
     }
 
@@ -81,15 +91,10 @@ namespace IotSystem
         /// </summary>
         private CancellationTokenSource tokenSource;
         private CancellationTokenSource tokenDecode;
-
-        private IDecodeDataThread iDecodeDataThread { get; set; }
-        private IDatabaseConnectionThread iDatabaseConnectionThread { get; set; }
-        private IInsertDataThread iInsertDataThread { get; set; }
-        private IPublishMessageThread iPublishMessageThread { get; set; }
+                
 
         private MqttClient client;
-        //private ClientOptions ClientOptions { get; set; }
-
+        
         private const int TIME_RECONNECT = 60000;//60s
 
         /// <summary>
@@ -107,7 +112,7 @@ namespace IotSystem
         /// </summary>
         private bool isStoppedByClient { get; set; }
              
-        public Client(ClientOptions clientOptions, IDecodeDataThread iDecodeData, IDatabaseConnectionThread iDatabaseConnection, IInsertDataThread iInsertData, IPublishMessageThread iPublishMessage)
+        public Client(ClientOptions clientOptions)
         {
             //Get option
             LoadOptions(clientOptions);
@@ -117,12 +122,7 @@ namespace IotSystem
 
             threadCollection = new ThreadCollection();
             tokenSource = new CancellationTokenSource();
-            tokenDecode = new CancellationTokenSource();
-
-            iDecodeDataThread = iDecodeData;
-            iDatabaseConnectionThread = iDatabaseConnection;
-            iInsertDataThread = iInsertData;
-            iPublishMessageThread = iPublishMessage;
+            tokenDecode = new CancellationTokenSource();                       
 
             // register a callback-function (we have to implement, see below) which is called by the library when a message was received
             client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;

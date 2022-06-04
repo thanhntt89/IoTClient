@@ -5,25 +5,21 @@
 * Created date:2022/6/1 2:51 PM 
 * Copyright (c) by MVN Viet Nam Inc. All rights reserved
 **/
-using IotSystem.ThreadManagement;
-using SqlHelper;
-using System;
-using System.Reflection;
+using IotSystem.Core;
 using System.Threading;
 using static IotSystem.ClientEvent;
 
-namespace IotSystem.ThreadManagement
+namespace IotSystem.Core.ThreadManagement
 {
     public class SingletonDatabaseConnection: IDatabaseConnectionThread
     {
         public event DelegateShowMessage eventShowMessage;
         public event DelegateSqlConnection eventSqlConnectionStatus;
-          
+        private const int TIME_CHECK_CONNECTION = 60000;//1 min
+
         private static IDatabaseConnectionThread _instance;
         
-        private static readonly object objLock = new object();
-        
-        private const int TIME_CHECK_CONNECTION = 60000;//1 min
+        private static readonly object objLock = new object();   
 
         public static IDatabaseConnectionThread Instance
         {

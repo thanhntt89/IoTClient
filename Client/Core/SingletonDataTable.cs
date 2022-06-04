@@ -7,7 +7,7 @@
 **/
 using System.Data;
 
-namespace IotSystem.MessageProcessing
+namespace IotSystem.Core
 {
     public class SingletonDataTable : DataTable
     {

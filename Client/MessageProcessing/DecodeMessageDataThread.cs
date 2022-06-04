@@ -1,10 +1,11 @@
-﻿using IotSystem.MessageProcessing;
-using IotSystem.Queues;
+﻿using IotSystem.Core;
+using IotSystem.Core.Queues;
+using IotSystem.Core.ThreadManagement;
 using System;
 using System.Threading;
 using static IotSystem.ClientEvent;
 
-namespace IotSystem.ThreadManagement
+namespace IotSystem.MessageProcessing
 {
     public class DecodeMessageDataThread: IDecodeDataThread
     {

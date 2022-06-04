@@ -7,7 +7,7 @@
 **/
 using System;
 
-namespace IotSystem.Utils
+namespace IotSystem.Core.Utils
 {
     public class SystemUtil
     {
