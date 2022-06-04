@@ -37,15 +37,16 @@ namespace IotSystem.MessageProcessing
         public void ThreadDecode(CancellationToken cancellation)
         {
             MessageData message = new MessageData();
-            eventShowMessage?.Invoke($"SingletonDecodeData-StartDecodeThread:Started!!!");
             int countData = 0;
+            Thread currentThread = Thread.CurrentThread;
+            eventShowMessage?.Invoke($"SingletonDecodeData-ThreadDecode-Name-{currentThread.Name}:Started!!!");
 
             while (true)
             {
                 countData = SingletonMessageDataQueue<MessageData>.Instance.Count;
                 if (cancellation.IsCancellationRequested && countData == 0)
                 {
-                    eventShowMessage?.Invoke($"SingletonDecodeData-StartDecodeThread:Stopped!!!");
+                    eventShowMessage?.Invoke($"ThreadDecode-Name-{currentThread.Name}:Stopped!!!");
                     break;
                 }                                
 
@@ -66,28 +67,27 @@ namespace IotSystem.MessageProcessing
         public void ThreadDecodeByTraffic(CancellationToken cancellation)
         {
             MessageData message = new MessageData();
-            eventShowMessage?.Invoke($"SingletonDecodeData-ThreadDecodeByTraffic:Started!!!");
+            Thread currentThread = Thread.CurrentThread;
+
+            eventShowMessage?.Invoke($"ThreadDecodeByTraffic-Name-{currentThread.Name}:Started!!!");
             int countData = 0;
+            
 
             while (true)
-            {
-                if (cancellation.IsCancellationRequested)
-                {
-                    eventShowMessage?.Invoke($"SingletonDecodeData-ThreadDecodeByTraffic:Stopped!!!");
-                    break;
-                }
+            {                
                 countData = SingletonMessageDataQueue<MessageData>.Instance.Count;
-                if (countData == 0)
+                if (cancellation.IsCancellationRequested || countData == 0)
                 {
-                    eventShowMessage?.Invoke($"SingletonDecodeData-ThreadDecodeByTraffic:Stopped!!!");
+                    eventShowMessage?.Invoke($"ThreadDecodeByTraffic-Name-{currentThread.Name}:Stopped!!!");
                     break;
                 }
+                
                 //Get data from messagequeue
                 if (SingletonMessageDataQueue<MessageData>.Instance.TryDequeue(out message) && message != null)
                 {
                     //if (ProcessingMessage(message))
                     {
-                        eventShowMessage?.Invoke($"ThreadDecodeByTraffic-Decode topic: {message.Topic} time:{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
+                        eventShowMessage?.Invoke($"ThreadDecodeByTraffic-Name-{currentThread.Name}-Decode topic: {message.Topic} time:{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
                         Thread.Sleep(TimeProcessMessage(countData));
                         continue;
                     }

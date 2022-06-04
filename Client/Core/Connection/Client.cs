@@ -371,7 +371,7 @@ namespace IotSystem.Core.Connection
         {
             threadCollection.AddThread(AutoReConnect, tokenSource.Token);
             threadCollection.AddThread(iDatabaseConnectionThread.ThreadCheckConnection, tokenSource.Token);
-            threadCollection.AddThread(iDecodeDataThread.ThreadDecode, tokenSource.Token);
+            threadCollection.AddThread(iDecodeDataThread.ThreadDecode, tokenSource.Token,"DecodeMain");
             threadCollection.AddThread(iPublishMessageThread.ThreadDecode, tokenSource.Token);
             threadCollection.AddThread(iInsertDataThread.InsertData, tokenSource.Token);
             threadCollection.AddThread(ThreadMessageTest, tokenSource.Token);
@@ -399,8 +399,7 @@ namespace IotSystem.Core.Connection
             if (SingletonMessageDataQueue<MessageData>.Instance.Count > 3000)
             {                
                 if(decodeThreads.RunningCount == 0)
-                {                    
-                    tokenDecode = new CancellationTokenSource();
+                {    
                     CreateThreadTraffic(SystemUtil.Instance.GetMaxThreadNumber - threadCollection.Count - 1);
                     decodeThreads.StartThread();
                 }
@@ -414,9 +413,13 @@ namespace IotSystem.Core.Connection
 
             if (decodeThreads.Count == 0)
             {
+                tokenDecode.Dispose();
+                //Reset token
+                tokenDecode = new CancellationTokenSource();
+                
                 for (int thread = 0; thread < threadNumber; thread++)
                 {
-                    decodeThreads.AddThread(iDecodeDataThread.ThreadDecodeByTraffic, tokenDecode.Token, $"ThreadName_{thread}");
+                    decodeThreads.AddThread(iDecodeDataThread.ThreadDecodeByTraffic, tokenDecode.Token, $"Thread-{thread}");
                 }
             }
         }
