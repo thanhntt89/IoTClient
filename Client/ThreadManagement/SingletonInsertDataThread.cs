@@ -13,11 +13,12 @@ using static IotSystem.ClientEvent;
 
 namespace IotSystem.ThreadManagement
 {
-    public class SingletonInsertDataThread
+    public class SingletonInsertDataThread: IInsertDataThread
     {
         public event DelegateShowMessage ShowMessageEvent;
 
-        private static SingletonInsertDataThread instance;
+        private static IInsertDataThread instance;
+
         private static object objLock = new object();
         private SingletonInsertDataThread()
         {
@@ -29,7 +30,7 @@ namespace IotSystem.ThreadManagement
 
         }
 
-        public static SingletonInsertDataThread Instance
+        public static IInsertDataThread Instance
         {
             get
             {
@@ -97,6 +98,11 @@ namespace IotSystem.ThreadManagement
                 ShowMessageEvent?.Invoke($"ProcessingInsertData-Fails:{ex.Message}");
                 return false;
             }
+        }
+
+        public void ShowMessage(DelegateShowMessage showMessage)
+        {
+            ShowMessageEvent += showMessage;
         }
     }
 }

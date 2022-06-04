@@ -1,11 +1,10 @@
 ﻿using IotSystem.MessageProcessing;
 using IotSystem.Queues;
-using IotSystem.ThreadManagement;
 using System;
 using System.Threading;
 using static IotSystem.ClientEvent;
 
-namespace IotSystem.DataProcessing
+namespace IotSystem.ThreadManagement
 {
     public class DecodeMessageDataThread: IDecodeDataThread
     {
@@ -66,27 +65,28 @@ namespace IotSystem.DataProcessing
         public void ThreadDecodeByTraffic(CancellationToken cancellation)
         {
             MessageData message = new MessageData();
-            eventShowMessage?.Invoke($"SingletonDecodeData-StartDecodeThread:Started!!!");
+            eventShowMessage?.Invoke($"SingletonDecodeData-ThreadDecodeByTraffic:Started!!!");
             int countData = 0;
 
             while (true)
             {
                 if (cancellation.IsCancellationRequested)
                 {
-                    eventShowMessage?.Invoke($"SingletonDecodeData-StartDecodeThread:Stopped!!!");
+                    eventShowMessage?.Invoke($"SingletonDecodeData-ThreadDecodeByTraffic:Stopped!!!");
                     break;
                 }
                 countData = SingletonMessageDataQueue<MessageData>.Instance.Count;
                 if (countData == 0)
                 {
-                    eventShowMessage?.Invoke($"SingletonDecodeData-StartDecodeThread:Stopped!!!");
+                    eventShowMessage?.Invoke($"SingletonDecodeData-ThreadDecodeByTraffic:Stopped!!!");
                     break;
                 }
                 //Get data from messagequeue
                 if (SingletonMessageDataQueue<MessageData>.Instance.TryDequeue(out message) && message != null)
                 {
-                    if (ProcessingMessage(message))
+                    //if (ProcessingMessage(message))
                     {
+                        eventShowMessage?.Invoke($"ThreadDecodeByTraffic-Decode topic: {message.Topic} time:{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
                         Thread.Sleep(TimeProcessMessage(countData));
                         continue;
                     }

@@ -1,15 +1,16 @@
-﻿using IotSystem.Queues;
+﻿using IotSystem.MessageProcessing;
+using IotSystem.Queues;
 using System.Threading;
 using static IotSystem.ClientEvent;
 
-namespace IotSystem.MessageProcessing
+namespace IotSystem.ThreadManagement
 {
-    public class SingletonMessageTimeThread
+    public class SingletonPublishThread: IPublishMessageThread
     {
         public event DelegatePublishMessage eventPublishMessage;
         public event DelegateShowMessage eventShowMessage;
 
-        private static SingletonMessageTimeThread intance;
+        private static IPublishMessageThread intance;
         private static readonly object objLock = new object();
 
         public string Topic { get; set; }
@@ -42,17 +43,27 @@ namespace IotSystem.MessageProcessing
             eventPublishMessage?.Invoke(dcuId, Constant.CURRENT_TIME);
         }
 
-        static SingletonMessageTimeThread()
+        public void ShowMessage(DelegateShowMessage showMessage)
+        {
+            eventShowMessage += showMessage;
+        }
+
+        public void PublishMessage(DelegatePublishMessage publishMessage)
+        {
+            eventPublishMessage += publishMessage;
+        }
+
+        static SingletonPublishThread()
         {
 
         }
 
-        private SingletonMessageTimeThread()
+        private SingletonPublishThread()
         {
 
         }
 
-        public static SingletonMessageTimeThread Instance
+        public static IPublishMessageThread Instance
         {
             get
             {
@@ -62,7 +73,7 @@ namespace IotSystem.MessageProcessing
                     {
                         if (intance == null)
                         {
-                            intance = new SingletonMessageTimeThread();
+                            intance = new SingletonPublishThread();
                         }
                     }
                 }

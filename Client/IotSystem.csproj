@@ -49,6 +49,7 @@
     <Compile Include="Client.cs" />
     <Compile Include="ClientBuilder.cs" />
     <Compile Include="ClientEvent.cs" />
+    <Compile Include="ClientOptions.cs" />
     <Compile Include="ClientSetting.cs" />
     <Compile Include="Constant.cs" />
     <Compile Include="MessageProcessing\DcuMessage\DcuMessageProcessing.cs" />
@@ -59,9 +60,11 @@
     </Compile>
     <Compile Include="ThreadManagement\IDatabaseConnectionThread.cs" />
     <Compile Include="ThreadManagement\IDecodeDataThread.cs" />
+    <Compile Include="ThreadManagement\IInsertDataThread.cs" />
+    <Compile Include="ThreadManagement\IPublishMessageThread.cs" />
     <Compile Include="ThreadManagement\SingletonDatabaseConnection.cs" />
     <Compile Include="ThreadManagement\DecodeMessageDataThread.cs" />
-    <Compile Include="ThreadManagement\SingletonMessageTimeThread.cs" />
+    <Compile Include="ThreadManagement\SingletonPublishThread.cs" />
     <Compile Include="Queues\SingletonMessageDataQueue.cs" />
     <Compile Include="MessageProcessing\MeterMessage\MeterMessageProcessing.cs" />
     <Compile Include="MessageProcessing\ProcessingDataFactory.cs" />

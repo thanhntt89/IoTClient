@@ -12,7 +12,7 @@ using System.Reflection;
 using System.Threading;
 using static IotSystem.ClientEvent;
 
-namespace IotSystem.DataProcessing
+namespace IotSystem.ThreadManagement
 {
     public class SingletonDatabaseConnection: IDatabaseConnectionThread
     {

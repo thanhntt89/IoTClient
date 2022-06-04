@@ -1,5 +1,4 @@
-﻿
-using IotSystem.DataProcessing;
+﻿using IotSystem.ThreadManagement;
 /**
 *Project name: IotClient 
 * Created by: Nguyen Tat Thanh
@@ -11,107 +10,107 @@ namespace IotSystem
 {
     public class ClientBuilder
     {
-        private ClientOptions ClientOptions;
+        private ClientOptions clientOptions;
 
         public ClientBuilder()
         {
-            ClientOptions = new ClientOptions();
+            clientOptions = new ClientOptions();
         }
 
         //Database
         public ClientBuilder AddDatabaseServer(string serverName)
         {
-            ClientOptions.DbServerName = serverName;
+            clientOptions.DbServerName = serverName;
             return this;
         }
         public ClientBuilder AddDatabaseName(string databaseName)
         {
-            ClientOptions.DatabaseName = databaseName;
+            clientOptions.DatabaseName = databaseName;
             return this;
         }
         public ClientBuilder AddDbUserName(string userName)
         {
-            ClientOptions.DbUserName = userName;
+            clientOptions.DbUserName = userName;
             return this;
         }
         public ClientBuilder AddDbPassword(string password)
         {
-            ClientOptions.DbPassword = password;
+            clientOptions.DbPassword = password;
             return this;
         }
         public ClientBuilder AddDbPort(int port)
         {
-            ClientOptions.DbPort = port;
+            clientOptions.DbPort = port;
             return this;
         }
         public ClientBuilder AddDbConnectionTimeOut(int timeOut)
         {
-            ClientOptions.DbConnectionTimeOut = timeOut;
+            clientOptions.DbConnectionTimeOut = timeOut;
             return this;
         }
         public ClientBuilder AddDbCommandTimeOut(int timeOut)
         {
-            ClientOptions.DbCommandTimeOut = timeOut;
+            clientOptions.DbCommandTimeOut = timeOut;
             return this;
         }
         public ClientBuilder AddClientId(string clientId)
         {
-            ClientOptions.ClientId = clientId;
+            clientOptions.ClientId = clientId;
             return this;
         }
         public ClientBuilder AddUserName(string userName)
         {
-            ClientOptions.UserName = userName;
+            clientOptions.UserName = userName;
             return this;
         }
         public ClientBuilder AddPassword(string password)
         {
-            ClientOptions.Password = password;
+            clientOptions.Password = password;
             return this;
         }
         public ClientBuilder AddWillTopic(string subcriberTopic)
         {
-            ClientOptions.SubscriberTopic = subcriberTopic;
+            clientOptions.SubscriberTopic = subcriberTopic;
             return this;
         }
         public ClientBuilder AddWillPublisherTopic(string willPubishTopic)
         {
-            ClientOptions.PublisherTopic = willPubishTopic;
+            clientOptions.PublisherTopic = willPubishTopic;
             return this;
         }
         public ClientBuilder AddWillQosLevel(int willQosLevel)
         {
-            ClientOptions.QoSLevel = (byte)willQosLevel;
+            clientOptions.QoSLevel = (byte)willQosLevel;
             return this;
         }
         public ClientBuilder AddBroker(string broker)
         {
-            ClientOptions.Broker = broker;
+            clientOptions.Broker = broker;
             return this;
         }
         public ClientBuilder AddTypeData(string typeData)
         {
-            ClientOptions.TypeData = typeData;
+            clientOptions.TypeData = typeData;
             return this;
         }
         public ClientBuilder AddTypeTime(string typeTime)
         {
-            ClientOptions.TypeTime = typeTime;
+            clientOptions.TypeTime = typeTime;
             return this;
         }
         public ClientBuilder AddTimeCheckConnect(int timeCheckConnect)
         {
-            ClientOptions.TimeCheckConnect = timeCheckConnect;
+            clientOptions.TimeCheckConnect = timeCheckConnect;
             return this;
         }
         public ClientBuilder AddPort(int port)
         {
-            ClientOptions.Port = port;
+            clientOptions.Port = port;
             return this;
         }
         public Client Build()
         {
-            return new Client(ClientOptions, new DecodeMessageDataThread(), SingletonDatabaseConnection.Instance);
+            return new Client(clientOptions,new DecodeMessageDataThread(), SingletonDatabaseConnection.Instance, SingletonInsertDataThread.Instance, SingletonPublishThread.Instance);
         }
     }
 }

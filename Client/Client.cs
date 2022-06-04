@@ -5,7 +5,6 @@
 * Created date:2022/5/27 12:48 AM 
 * Copyright (c) by MVN Viet Nam Inc. All rights reserved
 **/
-using IotSystem.DataProcessing;
 using IotSystem.MessageProcessing;
 using IotSystem.Queues;
 using IotSystem.ThreadManagement;
@@ -13,37 +12,60 @@ using IotSystem.Utils;
 using System;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using static IotSystem.ClientEvent;
 
 namespace IotSystem
 {
-    public class ClientOptions
+    public partial class Client
     {
-        public string DbServerName { get; set; }
-        public string DatabaseName { get; set; }
-        public string DbUserName { get; set; }
-        public string DbPassword { get; set; }
-        public int DbPort { get; set; }
-        public int DbConnectionTimeOut { get; set; }
-        public int DbCommandTimeOut { get; set; }
-        public string ClientId { get; set; }
-        public string Broker { get; set; }
-        public int Port { get; set; }
-        public string SubscriberTopic { get; set; }
-        public string PublisherTopic { get; set; }
-        public byte QoSLevel { get; set; }
-        public string TypeData { get; set; }
-        public string TypeTime { get; set; }
-        public bool IsClearSection { get; set; }
-        public string UserName { get; set; }
-        public string Password { get; set; }
-        public int TimeCheckConnect { get; set; }
+        private string DbServerName { get; set; }
+        private string DatabaseName { get; set; }
+        private string DbUserName { get; set; }
+        private string DbPassword { get; set; }
+        private int DbPort { get; set; }
+        private int DbConnectionTimeOut { get; set; }
+        private int DbCommandTimeOut { get; set; }
+        private string ClientId { get; set; }
+        private string Broker { get; set; }
+        private int Port { get; set; }
+        private string SubscriberTopic { get; set; }
+        private string PublisherTopic { get; set; }
+        private byte QoSLevel { get; set; }
+        private string TypeData { get; set; }
+        private string TypeTime { get; set; }
+        private bool IsClearSection { get; set; }
+        private string UserName { get; set; }
+        private string Password { get; set; }
+        private int TimeCheckConnect { get; set; }
+
+        void LoadOptions(ClientOptions clientOptions)
+        {
+            DbServerName = clientOptions.DbServerName;
+            DatabaseName = clientOptions.DatabaseName;
+            DbUserName = clientOptions.DbUserName;
+            DbPassword = clientOptions.DbPassword;
+            DbCommandTimeOut = clientOptions.DbCommandTimeOut;
+            DbConnectionTimeOut = clientOptions.DbConnectionTimeOut;
+            DbPort = clientOptions.DbPort;
+
+            ClientId = clientOptions.ClientId;
+            Broker = clientOptions.Broker;
+            Port = clientOptions.Port;
+            SubscriberTopic = clientOptions.SubscriberTopic;
+            PublisherTopic = clientOptions.PublisherTopic;
+            QoSLevel = clientOptions.QoSLevel;
+            TypeData = clientOptions.TypeData;
+            TypeTime = clientOptions.TypeTime;
+            IsClearSection = clientOptions.IsClearSection;
+            UserName = clientOptions.UserName;
+            Password = clientOptions.Password;
+            TimeCheckConnect = clientOptions.TimeCheckConnect;
+        }
     }
 
-    public class Client : IClient
+    public partial class Client : IClient
     {
         private event DelegateShowMessage ShowMessageEvent;
 
@@ -54,7 +76,6 @@ namespace IotSystem
 
         private ThreadCollection decodeThreads;
 
-
         /// <summary>
         /// Using status for control all thread
         /// </summary>
@@ -63,8 +84,11 @@ namespace IotSystem
 
         private IDecodeDataThread iDecodeDataThread { get; set; }
         private IDatabaseConnectionThread iDatabaseConnectionThread { get; set; }
+        private IInsertDataThread iInsertDataThread { get; set; }
+        private IPublishMessageThread iPublishMessageThread { get; set; }
+
         private MqttClient client;
-        private ClientOptions ClientOptions { get; set; }
+        //private ClientOptions ClientOptions { get; set; }
 
         private const int TIME_RECONNECT = 60000;//60s
 
@@ -82,13 +106,13 @@ namespace IotSystem
         /// Client started
         /// </summary>
         private bool isStoppedByClient { get; set; }
-
-        public Client(ClientOptions options, IDecodeDataThread iDecodeData, IDatabaseConnectionThread IDatabaseConnection)
+             
+        public Client(ClientOptions clientOptions, IDecodeDataThread iDecodeData, IDatabaseConnectionThread iDatabaseConnection, IInsertDataThread iInsertData, IPublishMessageThread iPublishMessage)
         {
-            client = new MqttClient(options.Broker, options.Port, false, null, MqttSslProtocols.TLSv1_2);
-            ClientOptions = options;
+            //Get option
+            LoadOptions(clientOptions);
 
-
+            client = new MqttClient(Broker, Port, false, null, MqttSslProtocols.TLSv1_2);  
             decodeThreads = new ThreadCollection();
 
             threadCollection = new ThreadCollection();
@@ -96,7 +120,9 @@ namespace IotSystem
             tokenDecode = new CancellationTokenSource();
 
             iDecodeDataThread = iDecodeData;
-            iDatabaseConnectionThread = IDatabaseConnection;
+            iDatabaseConnectionThread = iDatabaseConnection;
+            iInsertDataThread = iInsertData;
+            iPublishMessageThread = iPublishMessage;
 
             // register a callback-function (we have to implement, see below) which is called by the library when a message was received
             client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
@@ -105,7 +131,7 @@ namespace IotSystem
             InitAllThread();
 
             //Register publish message
-            SingletonMessageTimeThread.Instance.eventPublishMessage += PublishTimeMessage;
+            iPublishMessageThread.PublishMessage(PublishTimeMessage);
             iDatabaseConnectionThread.SqlConnectionStatus(SqlConnectionStatus);
         }
 
@@ -142,7 +168,7 @@ namespace IotSystem
             }
 
             //Check database connection
-            if (!iDatabaseConnectionThread.CheckDatabaseConnect(ClientOptions.DbServerName, ClientOptions.DatabaseName, ClientOptions.DbUserName, ClientOptions.DbPassword, ClientOptions.DbPort, ClientOptions.DbCommandTimeOut, ClientOptions.DbConnectionTimeOut))
+            if (!iDatabaseConnectionThread.CheckDatabaseConnect(DbServerName, DatabaseName, DbUserName, DbPassword, DbPort, DbCommandTimeOut, DbConnectionTimeOut))
             {
                 ShowMessageEvent?.Invoke($"Database:Disconnected!!!\nClient: Not start!!!");
                 return;
@@ -151,7 +177,7 @@ namespace IotSystem
             // use a unique id as client id, each time we start the application           
             try
             {
-                client.Connect(ClientOptions.ClientId);
+                client.Connect(ClientId);
 
                 if (client.IsConnected)
                 {
@@ -185,11 +211,11 @@ namespace IotSystem
             MessageData message = new MessageData() { Topic = e.Topic, Message = e.Message };
 
             //DataType: Customer set follow to thread processing data
-            if (message.Topic.Contains(ClientOptions.TypeData))
+            if (message.Topic.Contains(TypeData))
             {
                 SingletonMessageDataQueue<MessageData>.Instance.Enqueue(message);
             }
-            else if (message.Topic.Contains(ClientOptions.TypeTime))
+            else if (message.Topic.Contains(TypeTime))
             {
                 SingletonMessageTimeQueue<MessageData>.Instance.Enqueue(message);
             }
@@ -209,19 +235,19 @@ namespace IotSystem
 
         private void SubsriberTopic()
         {
-            string[] topics = ClientOptions.SubscriberTopic.Split(';');
+            string[] topics = SubscriberTopic.Split(';');
             byte[] qos = new byte[topics.Length];
             //Create Qos foreach message
             for (int index = 0; index < topics.Length; index++)
             {
-                qos[index] = ClientOptions.QoSLevel;
+                qos[index] = QoSLevel;
             }
             try
             {
                 client.Subscribe(topics, qos);
-                ShowMessageEvent?.Invoke($"Client-SupscriberTopic: {ClientOptions.SubscriberTopic} \nQoSLevel:{ClientOptions.QoSLevel}");
+                ShowMessageEvent?.Invoke($"Client-SupscriberTopic: {SubscriberTopic} \nQoSLevel:{QoSLevel}");
 
-                LogUtil.Intance.WriteLog(LogType.Info, $"Client-SubsriberTopic: {ClientOptions.SubscriberTopic}");
+                LogUtil.Intance.WriteLog(LogType.Info, $"Client-SubsriberTopic: {SubscriberTopic}");
             }
             catch (Exception ex)
             {
@@ -235,7 +261,8 @@ namespace IotSystem
             ShowMessageEvent += showMessage;
             iDecodeDataThread.ShowMessage(showMessage);
             iDatabaseConnectionThread.ShowMessage(showMessage);
-            SingletonMessageTimeThread.Instance.eventShowMessage += showMessage;
+            iInsertDataThread.ShowMessage(showMessage);
+            iPublishMessageThread.ShowMessage(showMessage);
         }
 
         private void AutoReConnect(CancellationToken cancellation)
@@ -278,7 +305,7 @@ namespace IotSystem
                 }
 
                 //Sleep 5min check connect status
-                Thread.Sleep(ClientOptions.TimeCheckConnect);
+                Thread.Sleep(TimeCheckConnect);
                 countTime = 0;
             }
         }
@@ -326,6 +353,7 @@ namespace IotSystem
                 Thread.Sleep(1000);
             }
 
+            tokenDecode.Cancel();
             //Stop Thread check connected
             //Wait until thread finished
             threadCollection.Join();
@@ -335,8 +363,7 @@ namespace IotSystem
         }
 
         private void StartAllThread()
-        {
-            decodeThreads.StartThread(1);
+        {            
             threadCollection.StartThread();
         }
 
@@ -345,8 +372,8 @@ namespace IotSystem
             threadCollection.AddThread(AutoReConnect, tokenSource.Token);
             threadCollection.AddThread(iDatabaseConnectionThread.ThreadCheckConnection, tokenSource.Token);
             threadCollection.AddThread(iDecodeDataThread.ThreadDecode, tokenSource.Token);
-            threadCollection.AddThread(SingletonMessageTimeThread.Instance.ThreadDecode, tokenSource.Token);
-            threadCollection.AddThread(SingletonInsertDataThread.Instance.InsertData, tokenSource.Token);
+            threadCollection.AddThread(iPublishMessageThread.ThreadDecode, tokenSource.Token);
+            threadCollection.AddThread(iInsertDataThread.InsertData, tokenSource.Token);
             threadCollection.AddThread(ThreadMessageTest, tokenSource.Token);
 
             //Create thread decode
@@ -362,25 +389,21 @@ namespace IotSystem
             {
                 if (decodeThreads.RunningCount > 1)
                 {
-                    tokenDecode.Cancel();                    
+                    //Stop all decode thread
+                    tokenDecode.Cancel();
+                    Thread.Sleep(1000);
+                    //Clear all thread traffic
                     decodeThreads.Clear();
-                    tokenDecode = new CancellationTokenSource();
-                    CreateThreadTraffic(1);
-                    decodeThreads.StartThread();
                 }   
             }
             if (SingletonMessageDataQueue<MessageData>.Instance.Count > 3000)
             {                
-                if(decodeThreads.RunningCount > 1)
-                {
-                    return;
+                if(decodeThreads.RunningCount == 0)
+                {                    
+                    tokenDecode = new CancellationTokenSource();
+                    CreateThreadTraffic(SystemUtil.Instance.GetMaxThreadNumber - threadCollection.Count - 1);
+                    decodeThreads.StartThread();
                 }
-
-                tokenDecode.Cancel();
-                decodeThreads.Clear();
-                tokenDecode = new CancellationTokenSource();
-                CreateThreadTraffic(SystemUtil.Instance.GetMaxThreadNumber - threadCollection.Count - 1);
-                decodeThreads.StartThread();
             }
         }
 
