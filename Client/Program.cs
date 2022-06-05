@@ -4,15 +4,11 @@ using IotSystem.Core.ThreadManagement;
 using IotSystem.MessageProcessing;
 using IotSystem.Utils;
 using System;
-using System.Runtime.Remoting.Contexts;
-using System.Threading.Tasks;
 
 namespace IotSystem
 {
     class Program
-    {
-        static object objLock = new object();
-
+    {       
         static void Main(string[] args)
         {
             try
@@ -46,12 +42,36 @@ namespace IotSystem
                .Build();
 
                 client.ShowMessage(ShowMessage);
+                               
 
-                bool menu = true;
-
-                while (menu)
+                while (true)
                 {
-                    menu = ShowMenu(client);
+                    Console.WriteLine("\n-----------MENUS-----------");
+                    Console.WriteLine("Select options following");
+                    Console.WriteLine("START to Start client CONNECT to broker");
+                    Console.WriteLine("STOP to Stop client DISCONNECT to broker");
+                    Console.WriteLine("EXIT to Quit client: Stop all thread and exit!!");
+                    Console.WriteLine("\n---------------------------");
+                    Console.WriteLine("Press option:");
+                    string press = Console.ReadLine().ToUpper();
+
+                    switch (press)
+                    {
+                        case "START":
+                            client.Start();
+                            break;
+                        case "STOP":
+                            client.Stop(true);
+                            break;
+                        case "EXIT":
+                            client.Exit();
+                            //Environment.Exit(0);
+                            break;
+                        default:
+                            Console.WriteLine("Wrong selection!!!");
+                            break;
+                    }
+                    
                 }
             }
             catch (Exception ex)
@@ -61,39 +81,8 @@ namespace IotSystem
         }
 
         private static void ShowMessage(string message)
-        {
-            lock (objLock)
-            {
-                Console.WriteLine(message);
-            }
-        }
-
-        private static bool ShowMenu(IClient client)
-        {
-            Console.WriteLine("\n-----------MENUS-----------");
-            Console.WriteLine("Select options following");
-            Console.WriteLine("START to Start client CONNECT to broker");
-            Console.WriteLine("STOP to Stop client DISCONNECT to broker");
-            Console.WriteLine("EXIT to Quit client: Stop all thread and exit!!");
-            Console.WriteLine("\n---------------------------");
-
-            string press = Console.ReadLine().ToUpper();
-
-            switch (press)
-            {
-                case "START":
-                    client.Start();
-                    return true;
-                case "STOP":
-                    client.Stop(true);
-                    return true;
-                case "EXIT":
-                    client.StopAllThread();
-                    //Environment.Exit(0);
-                    return false;
-                default:
-                    return true;
-            }
+        {            
+            Console.WriteLine(message);            
         }
     }
 }

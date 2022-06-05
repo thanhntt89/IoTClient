@@ -110,7 +110,7 @@ namespace IotSystem.Core.Connection
         /// <summary>
         /// Client started
         /// </summary>
-        private bool isStoppedByClient { get; set; }
+        private bool isUserStopReceived { get; set; }
              
         public Client(ClientOptions clientOptions)
         {
@@ -185,17 +185,12 @@ namespace IotSystem.Core.Connection
 
                     //Subsriber message
                     SubsriberTopic();
+                    
+                    // Start all client thread
+                    StartAllThread();                    
 
-                    if (!isStoppedByClient)
-                    {
-                        // Start all client thread
-                        StartAllThread();
-                    }
-
-                    ShowMessageEvent?.Invoke($"Client-Start Success!!!");
+                    ShowMessageEvent?.Invoke($"Client-Start: Success!!!");
                     LogUtil.Intance.WriteLog(LogType.Info, $"Client-Start Success!!!");
-
-                    isStoppedByClient = false;
                 }
             }
             catch (Exception ex)
@@ -280,11 +275,11 @@ namespace IotSystem.Core.Connection
                 }
 
                 //Check stop by user
-                if (!client.IsConnected && !isStoppedByClient)
+                if (!client.IsConnected && !isUserStopReceived)
                 {
                     try
                     {
-                        Start();
+                        client.Connect(ClientId);
                         countTime++;
                         ShowMessageEvent?.Invoke($"Client-AutoReConnect-Try reconnect count:{countTime}");
                     }
@@ -318,20 +313,21 @@ namespace IotSystem.Core.Connection
             }
             else
             {
+                //Set stop by user
+                isUserStopReceived = isUserStop;
+
                 while (client.IsConnected)
                 {
                     client.Disconnect();
 
-                    ShowMessageEvent?.Invoke("Client-Status:Disconnected!!!");
-                    //Set stop by user
-                    isStoppedByClient = isUserStop;
+                    ShowMessageEvent?.Invoke("Client-Status:Disconnected!!!");                    
 
                     LogUtil.Intance.WriteLog(LogType.Info, "Client-Stop:Done!!!");
                 }
             }
         }
 
-        public void StopAllThread()
+        public void Exit()
         {
             ShowMessageEvent?.Invoke("Client-StopAllThread:Waitting for thread stop!!!");
 

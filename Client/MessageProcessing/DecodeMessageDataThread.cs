@@ -55,6 +55,7 @@ namespace IotSystem.MessageProcessing
                 {
                     if (ProcessingMessage(message))
                     {
+                        //eventShowMessage?.Invoke($"Decode topic: {message.Topic} time:{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
                         Thread.Sleep(TimeProcessMessage(countData));
                         continue;
                     }
@@ -72,7 +73,6 @@ namespace IotSystem.MessageProcessing
             eventShowMessage?.Invoke($"ThreadDecodeByTraffic-Name-{currentThread.Name}:Started!!!");
             int countData = 0;
             
-
             while (true)
             {                
                 countData = SingletonMessageDataQueue<MessageData>.Instance.Count;
@@ -85,9 +85,9 @@ namespace IotSystem.MessageProcessing
                 //Get data from messagequeue
                 if (SingletonMessageDataQueue<MessageData>.Instance.TryDequeue(out message) && message != null)
                 {
-                    //if (ProcessingMessage(message))
+                    if (ProcessingMessage(message))
                     {
-                        eventShowMessage?.Invoke($"ThreadDecodeByTraffic-Name-{currentThread.Name}-Decode topic: {message.Topic} time:{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
+                        //eventShowMessage?.Invoke($"ThreadDecodeByTraffic-Name-{currentThread.Name}-Decode topic: {message.Topic} time:{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
                         Thread.Sleep(TimeProcessMessage(countData));
                         continue;
                     }
@@ -107,8 +107,7 @@ namespace IotSystem.MessageProcessing
                 //Lock table to insert
                 lock (SingletonDataTable.Instance)
                 {
-                    SingletonDataTable.Instance.Rows.Add();
-                    eventShowMessage?.Invoke($"Decode topic: {message.Topic} time:{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
+                    SingletonDataTable.Instance.Rows.Add();                    
                 }
 
                 return true;

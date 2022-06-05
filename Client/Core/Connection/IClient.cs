@@ -14,6 +14,6 @@ namespace IotSystem.Core
         void ShowMessage(DelegateShowMessage showMessage);      
         void Start();
         void Stop(bool isUserStop);
-        void StopAllThread();
+        void Exit();
     }
 }

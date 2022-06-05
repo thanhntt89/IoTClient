@@ -85,7 +85,7 @@ namespace IotSystem.MessageProcessing
                 //Code here
 
 
-                ShowMessageEvent?.Invoke($"InsertData-Test-RowsCount: {dataTable.Rows.Count}");
+                ShowMessageEvent?.Invoke($"InsertData-Test-RowsCount: {dataTable.Rows.Count} {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
                 //Clear data in table
                 lock (dataTable)
                 {
