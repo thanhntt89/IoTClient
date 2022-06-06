@@ -16,7 +16,7 @@ namespace IotSystem.MessageProcessing
 {
     public class SingletonInsertDataThread: IInsertDataThread
     {
-        public event DelegateShowMessage ShowMessageEvent;
+        public event DelegateShowMessage EventShowMessage;
 
         private static IInsertDataThread instance;
 
@@ -50,14 +50,14 @@ namespace IotSystem.MessageProcessing
 
         public void InsertData(CancellationToken cancellation)
         {
-            ShowMessageEvent?.Invoke($"SingletonDecodeData-InsertDataThread:Started!!!");
+            EventShowMessage?.Invoke($"SingletonDecodeData-InsertDataThread:Started!!!");
             DataTable dataTable = new DataTable();
 
             while (true)
             {
                 if (cancellation.IsCancellationRequested && SingletonDataTable.Instance.Rows.Count == 0)
                 {
-                    ShowMessageEvent?.Invoke($"SingletonDecodeData-InsertDataThread:Stopped!!!");
+                    EventShowMessage?.Invoke($"SingletonDecodeData-InsertDataThread:Stopped!!!");
                     break;
                 }
 
@@ -85,7 +85,7 @@ namespace IotSystem.MessageProcessing
                 //Code here
 
 
-                ShowMessageEvent?.Invoke($"InsertData-Test-RowsCount: {dataTable.Rows.Count} {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
+                EventShowMessage?.Invoke($"InsertData-Test-RowsCount: {dataTable.Rows.Count} {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
                 //Clear data in table
                 lock (dataTable)
                 {
@@ -96,14 +96,14 @@ namespace IotSystem.MessageProcessing
             }
             catch (Exception ex)
             {
-                ShowMessageEvent?.Invoke($"ProcessingInsertData-Fails:{ex.Message}");
+                EventShowMessage?.Invoke($"ProcessingInsertData-Fails:{ex.Message}");
                 return false;
             }
         }
 
         public void ShowMessage(DelegateShowMessage showMessage)
         {
-            ShowMessageEvent += showMessage;
+            EventShowMessage += showMessage;
         }
     }
 }

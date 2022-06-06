@@ -8,7 +8,7 @@ using System;
 namespace IotSystem
 {
     class Program
-    {       
+    {
         static void Main(string[] args)
         {
             try
@@ -42,7 +42,7 @@ namespace IotSystem
                .Build();
 
                 client.ShowMessage(ShowMessage);
-                               
+
 
                 while (true)
                 {
@@ -65,13 +65,13 @@ namespace IotSystem
                             break;
                         case "EXIT":
                             client.Exit();
-                            //Environment.Exit(0);
+                            Environment.Exit(0);
                             break;
                         default:
                             Console.WriteLine("Wrong selection!!!");
                             break;
                     }
-                    
+
                 }
             }
             catch (Exception ex)
@@ -81,8 +81,8 @@ namespace IotSystem
         }
 
         private static void ShowMessage(string message)
-        {            
-            Console.WriteLine(message);            
+        {
+            Console.WriteLine(message);
         }
     }
 }

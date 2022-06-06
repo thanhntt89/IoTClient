@@ -12,6 +12,7 @@ using IotSystem.Queues;
 using System;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using static IotSystem.ClientEvent;
@@ -91,10 +92,10 @@ namespace IotSystem.Core.Connection
         /// </summary>
         private CancellationTokenSource tokenSource;
         private CancellationTokenSource tokenDecode;
-                
+
 
         private MqttClient client;
-        
+
         private const int TIME_RECONNECT = 60000;//60s
 
         /// <summary>
@@ -111,18 +112,18 @@ namespace IotSystem.Core.Connection
         /// Client started
         /// </summary>
         private bool isUserStopReceived { get; set; }
-             
+
         public Client(ClientOptions clientOptions)
         {
             //Get option
             LoadOptions(clientOptions);
 
-            client = new MqttClient(Broker, Port, false, null, MqttSslProtocols.TLSv1_2);  
+            client = new MqttClient(Broker, Port, false, null, MqttSslProtocols.TLSv1_2);
             decodeThreads = new ThreadCollection();
 
             threadCollection = new ThreadCollection();
             tokenSource = new CancellationTokenSource();
-            tokenDecode = new CancellationTokenSource();                       
+            tokenDecode = new CancellationTokenSource();
 
             // register a callback-function (we have to implement, see below) which is called by the library when a message was received
             client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
@@ -185,9 +186,9 @@ namespace IotSystem.Core.Connection
 
                     //Subsriber message
                     SubsriberTopic();
-                    
+
                     // Start all client thread
-                    StartAllThread();                    
+                    StartAllThread();
 
                     ShowMessageEvent?.Invoke($"Client-Start: Success!!!");
                     LogUtil.Intance.WriteLog(LogType.Info, $"Client-Start Success!!!");
@@ -197,6 +198,7 @@ namespace IotSystem.Core.Connection
             {
                 LogUtil.Intance.WriteLog(LogType.Error, $"Client-Start-Error: {ex.Message}");
                 ShowMessageEvent?.Invoke($"Client-Start-Error: {ex.Message}");
+
             }
         }
 
@@ -320,7 +322,7 @@ namespace IotSystem.Core.Connection
                 {
                     client.Disconnect();
 
-                    ShowMessageEvent?.Invoke("Client-Status:Disconnected!!!");                    
+                    ShowMessageEvent?.Invoke("Client-Status:Disconnected!!!");
 
                     LogUtil.Intance.WriteLog(LogType.Info, "Client-Stop:Done!!!");
                 }
@@ -359,7 +361,7 @@ namespace IotSystem.Core.Connection
         }
 
         private void StartAllThread()
-        {            
+        {
             threadCollection.StartThread();
         }
 
@@ -367,7 +369,7 @@ namespace IotSystem.Core.Connection
         {
             threadCollection.AddThread(AutoReConnect, tokenSource.Token);
             threadCollection.AddThread(iDatabaseConnectionThread.ThreadCheckConnection, tokenSource.Token);
-            threadCollection.AddThread(iDecodeDataThread.ThreadDecode, tokenSource.Token,"DecodeMain");
+            threadCollection.AddThread(iDecodeDataThread.ThreadDecode, tokenSource.Token, "DecodeMain");
             threadCollection.AddThread(iPublishMessageThread.ThreadDecode, tokenSource.Token);
             threadCollection.AddThread(iInsertDataThread.InsertData, tokenSource.Token);
             threadCollection.AddThread(ThreadMessageTest, tokenSource.Token);
@@ -390,12 +392,12 @@ namespace IotSystem.Core.Connection
                     Thread.Sleep(1000);
                     //Clear all thread traffic
                     decodeThreads.Clear();
-                }   
+                }
             }
-            if (SingletonMessageDataQueue<MessageData>.Instance.Count > 3000)
-            {                
-                if(decodeThreads.RunningCount == 0)
-                {    
+            if (SingletonMessageDataQueue<MessageData>.Instance.Count > 5000)
+            {
+                if (decodeThreads.RunningCount == 0)
+                {
                     CreateThreadTraffic(SystemUtil.Instance.GetMaxThreadNumber - threadCollection.Count - 1);
                     decodeThreads.StartThread();
                 }
@@ -404,15 +406,15 @@ namespace IotSystem.Core.Connection
 
         private void CreateThreadTraffic(int threadNumber)
         {
-            if (threadNumber == 0) 
-                return;            
+            if (threadNumber == 0)
+                return;
 
             if (decodeThreads.Count == 0)
             {
                 tokenDecode.Dispose();
                 //Reset token
                 tokenDecode = new CancellationTokenSource();
-                
+
                 for (int thread = 0; thread < threadNumber; thread++)
                 {
                     decodeThreads.AddThread(iDecodeDataThread.ThreadDecodeByTraffic, tokenDecode.Token, $"Thread-{thread}");

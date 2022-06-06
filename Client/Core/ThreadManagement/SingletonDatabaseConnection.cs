@@ -5,7 +5,6 @@
 * Created date:2022/6/1 2:51 PM 
 * Copyright (c) by MVN Viet Nam Inc. All rights reserved
 **/
-using IotSystem.Core;
 using System.Threading;
 using static IotSystem.ClientEvent;
 
@@ -13,8 +12,8 @@ namespace IotSystem.Core.ThreadManagement
 {
     public class SingletonDatabaseConnection: IDatabaseConnectionThread
     {
-        public event DelegateShowMessage eventShowMessage;
-        public event DelegateSqlConnection eventSqlConnectionStatus;
+        public event DelegateShowMessage EventShowMessage;
+        public event DelegateSqlConnection EventSqlConnectionStatus;
         private const int TIME_CHECK_CONNECTION = 60000;//1 min
 
         private static IDatabaseConnectionThread _instance;
@@ -67,18 +66,18 @@ namespace IotSystem.Core.ThreadManagement
 
         public void ThreadCheckConnection(CancellationToken cancellation)
         {
-            eventShowMessage?.Invoke($"ThreadCheckConnection: Started!!!");
+            EventShowMessage?.Invoke($"ThreadCheckConnection: Started!!!");
             while (true)
             {
                 if (cancellation.IsCancellationRequested)
                 {
-                    eventShowMessage?.Invoke($"ThreadCheckConnection: Stopped!!!");
+                    EventShowMessage?.Invoke($"ThreadCheckConnection: Stopped!!!");
                     break;
                 }
                 IsConnected = SqlHelpers.CheckConnectionString();
                 
                 //Send event connection status
-                eventSqlConnectionStatus?.Invoke(IsConnected);
+                EventSqlConnectionStatus?.Invoke(IsConnected);
 
                 Thread.Sleep(TIME_CHECK_CONNECTION);
             }
@@ -86,12 +85,12 @@ namespace IotSystem.Core.ThreadManagement
 
         void IDatabaseConnectionThread.ShowMessage(DelegateShowMessage showMessage)
         {
-            eventShowMessage += showMessage;
+            EventShowMessage += showMessage;
         }
 
         public void SqlConnectionStatus(DelegateSqlConnection sqlConnection)
         {
-            eventSqlConnectionStatus += sqlConnection;
+            EventSqlConnectionStatus += sqlConnection;
         }
     }
 }
