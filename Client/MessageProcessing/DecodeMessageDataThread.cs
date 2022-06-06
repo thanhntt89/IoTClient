@@ -37,14 +37,14 @@ namespace IotSystem.MessageProcessing
             MessageData message = new MessageData();
             int countData = 0;
             Thread currentThread = Thread.CurrentThread;
-            EventShowMessage?.Invoke($"SingletonDecodeData-ThreadDecode-Name-{currentThread.Name}:Started!!!");
+            EventShowMessage?.Invoke($"ThreadDecode-{currentThread.Name}:Started!!!");
 
             while (true)
             {
                 countData = SingletonMessageDataQueue<MessageData>.Instance.Count;
                 if (cancellation.IsCancellationRequested && countData == 0)
                 {
-                    EventShowMessage?.Invoke($"ThreadDecode-Name-{currentThread.Name}:Stopped!!!");
+                    EventShowMessage?.Invoke($"ThreadDecode-{currentThread.Name}:Stopped!!!");
                     break;
                 }                                
 
@@ -52,8 +52,7 @@ namespace IotSystem.MessageProcessing
                 if (SingletonMessageDataQueue<MessageData>.Instance.TryDequeue(out message) && message != null)
                 {
                     if (ProcessingMessage(message))
-                    {
-                        //eventShowMessage?.Invoke($"Decode topic: {message.Topic} time:{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
+                    {                       
                         Thread.Sleep(TimeProcessMessage(countData));
                         continue;
                     }
@@ -68,7 +67,7 @@ namespace IotSystem.MessageProcessing
             MessageData message = new MessageData();
             Thread currentThread = Thread.CurrentThread;
 
-            EventShowMessage?.Invoke($"ThreadDecodeByTraffic-Name-{currentThread.Name}:Started!!!");
+            EventShowMessage?.Invoke($"ThreadDecodeByTraffic-{currentThread.Name}:Started!!!");
             int countData = 0;
             
             while (true)
@@ -76,7 +75,7 @@ namespace IotSystem.MessageProcessing
                 countData = SingletonMessageDataQueue<MessageData>.Instance.Count;
                 if (cancellation.IsCancellationRequested || countData == 0)
                 {
-                    EventShowMessage?.Invoke($"ThreadDecodeByTraffic-Name-{currentThread.Name}:Stopped!!!");
+                    EventShowMessage?.Invoke($"ThreadDecodeByTraffic-{currentThread.Name}:Stopped!!!");
                     break;
                 }
                 
@@ -84,8 +83,7 @@ namespace IotSystem.MessageProcessing
                 if (SingletonMessageDataQueue<MessageData>.Instance.TryDequeue(out message) && message != null)
                 {
                     if (ProcessingMessage(message))
-                    {
-                        //eventShowMessage?.Invoke($"ThreadDecodeByTraffic-Name-{currentThread.Name}-Decode topic: {message.Topic} time:{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
+                    {                       
                         Thread.Sleep(TimeProcessMessage(countData));
                         continue;
                     }

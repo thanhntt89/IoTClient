@@ -8,16 +8,15 @@ namespace IotSystem.MessageProcessing
 {
     public class SingletonPublishThread: IPublishMessageThread
     {
-        public event DelegatePublishMessage eventPublishMessage;
-        public event DelegateShowMessage eventShowMessage;
+        public event DelegatePublishMessage EventPublishMessage;
+        public event DelegateShowMessage EventShowMessage;
 
         private static IPublishMessageThread intance;
-        private static readonly object objLock = new object();
-             
+        private static readonly object objLock = new object();             
 
         public void ThreadDecode(CancellationToken cancellation)
         {
-            eventShowMessage?.Invoke("ThreadDecodeMessageTime: Started!!!");
+            EventShowMessage?.Invoke("ThreadDecodeMessageTime: Started!!!");
             MessageData message = new MessageData();
             while (!cancellation.IsCancellationRequested)
             {
@@ -34,23 +33,23 @@ namespace IotSystem.MessageProcessing
                 Thread.Sleep(1000);
             }
 
-            eventShowMessage?.Invoke("ThreadDecodeMessageTime: Stopped!!!");
+            EventShowMessage?.Invoke("ThreadDecodeMessageTime: Stopped!!!");
         }
 
         private void MessageProcessing(MessageData message)
         {
             string dcuId = message.Topic.Split('/')[1];
-            eventPublishMessage?.Invoke(dcuId, Constant.CURRENT_TIME);
+            EventPublishMessage?.Invoke(dcuId, Constant.CURRENT_TIME);
         }
 
         public void ShowMessage(DelegateShowMessage showMessage)
         {
-            eventShowMessage += showMessage;
+            EventShowMessage += showMessage;
         }
 
         public void PublishMessage(DelegatePublishMessage publishMessage)
         {
-            eventPublishMessage += publishMessage;
+            EventPublishMessage += publishMessage;
         }
 
         static SingletonPublishThread()

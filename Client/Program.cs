@@ -4,6 +4,7 @@ using IotSystem.Core.ThreadManagement;
 using IotSystem.MessageProcessing;
 using IotSystem.Utils;
 using System;
+using System.Runtime.InteropServices;
 
 namespace IotSystem
 {
@@ -41,8 +42,7 @@ namespace IotSystem
                .AddIPublishMessageThread(SingletonPublishThread.Instance)
                .Build();
 
-                client.ShowMessage(ShowMessage);
-
+                client.ShowMessage(ShowMessage);               
 
                 while (true)
                 {
@@ -71,7 +71,6 @@ namespace IotSystem
                             Console.WriteLine("Wrong selection!!!");
                             break;
                     }
-
                 }
             }
             catch (Exception ex)

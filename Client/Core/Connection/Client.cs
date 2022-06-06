@@ -12,7 +12,6 @@ using IotSystem.Queues;
 using System;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using static IotSystem.ClientEvent;
@@ -74,10 +73,7 @@ namespace IotSystem.Core.Connection
             iInsertDataThread = clientOptions.iInsertDataThread;
             iPublishMessageThread = clientOptions.iPublishMessageThread;
         }
-    }
 
-    public partial class Client : IClient
-    {
         private event DelegateShowMessage ShowMessageEvent;
 
         /// <summary>
@@ -92,7 +88,6 @@ namespace IotSystem.Core.Connection
         /// </summary>
         private CancellationTokenSource tokenSource;
         private CancellationTokenSource tokenDecode;
-
 
         private MqttClient client;
 
@@ -111,8 +106,11 @@ namespace IotSystem.Core.Connection
         /// <summary>
         /// Client started
         /// </summary>
-        private bool isUserStopReceived { get; set; }
+        private bool IsUserStopReceived { get; set; }
+    }
 
+    public partial class Client : IClient
+    {        
         public Client(ClientOptions clientOptions)
         {
             //Get option
@@ -277,7 +275,7 @@ namespace IotSystem.Core.Connection
                 }
 
                 //Check stop by user
-                if (!client.IsConnected && !isUserStopReceived)
+                if (!client.IsConnected && !IsUserStopReceived)
                 {
                     try
                     {
@@ -300,7 +298,7 @@ namespace IotSystem.Core.Connection
                     //Loop to untill connected
                     continue;
                 }
-
+                
                 //Sleep 5min check connect status
                 Thread.Sleep(TimeCheckConnect);
                 countTime = 0;
@@ -316,7 +314,7 @@ namespace IotSystem.Core.Connection
             else
             {
                 //Set stop by user
-                isUserStopReceived = isUserStop;
+                IsUserStopReceived = isUserStop;
 
                 while (client.IsConnected)
                 {
@@ -373,19 +371,13 @@ namespace IotSystem.Core.Connection
             threadCollection.AddThread(iPublishMessageThread.ThreadDecode, tokenSource.Token);
             threadCollection.AddThread(iInsertDataThread.InsertData, tokenSource.Token);
             threadCollection.AddThread(ThreadMessageTest, tokenSource.Token);
-
-            //Create thread decode
-            for (int thread = 0; thread < SystemUtil.Instance.GetMaxThreadNumber - threadCollection.Count; thread++)
-            {
-                decodeThreads.AddThread(iDecodeDataThread.ThreadDecodeByTraffic, tokenDecode.Token, $"ThreadName_{thread}");
-            }
         }
 
         private void ActiveDecodeThreadByTraffic()
         {
             if (SingletonMessageDataQueue<MessageData>.Instance.Count < 1000)
             {
-                if (decodeThreads.RunningCount > 1)
+                if (decodeThreads.RunningCount > 0)
                 {
                     //Stop all decode thread
                     tokenDecode.Cancel();
@@ -397,30 +389,24 @@ namespace IotSystem.Core.Connection
             if (SingletonMessageDataQueue<MessageData>.Instance.Count > 5000)
             {
                 if (decodeThreads.RunningCount == 0)
-                {
-                    CreateThreadTraffic(SystemUtil.Instance.GetMaxThreadNumber - threadCollection.Count - 1);
+                {                  
+                    if (decodeThreads.Count == 0)
+                    {
+                        tokenDecode.Dispose();
+                        //Reset token
+                        tokenDecode = new CancellationTokenSource();
+
+                        for (int thread = 0; thread < SystemUtil.Instance.GetMaxThreadNumber - threadCollection.Count - 1; thread++)
+                        {
+                            decodeThreads.AddThread(iDecodeDataThread.ThreadDecodeByTraffic, tokenDecode.Token, $"ThreadName_{thread}");
+                        }
+                    }
+
                     decodeThreads.StartThread();
                 }
             }
         }
-
-        private void CreateThreadTraffic(int threadNumber)
-        {
-            if (threadNumber == 0)
-                return;
-
-            if (decodeThreads.Count == 0)
-            {
-                tokenDecode.Dispose();
-                //Reset token
-                tokenDecode = new CancellationTokenSource();
-
-                for (int thread = 0; thread < threadNumber; thread++)
-                {
-                    decodeThreads.AddThread(iDecodeDataThread.ThreadDecodeByTraffic, tokenDecode.Token, $"Thread-{thread}");
-                }
-            }
-        }
+      
 
         private int count = 0;
 
