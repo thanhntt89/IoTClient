@@ -83,7 +83,7 @@ namespace IotSystem.Core.ThreadManagement
             }
         }
 
-        void IDatabaseConnectionThread.ShowMessage(DelegateShowMessage showMessage)
+        public void ShowMessage(DelegateShowMessage showMessage)
         {
             EventShowMessage += showMessage;
         }

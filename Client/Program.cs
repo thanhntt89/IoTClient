@@ -4,7 +4,6 @@ using IotSystem.Core.ThreadManagement;
 using IotSystem.MessageProcessing;
 using IotSystem.Utils;
 using System;
-using System.Runtime.InteropServices;
 
 namespace IotSystem
 {
