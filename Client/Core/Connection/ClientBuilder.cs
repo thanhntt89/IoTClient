@@ -83,6 +83,11 @@ namespace IotSystem.Core.Connection
             clientOptions.QoSLevel = (byte)willQosLevel;
             return this;
         }
+        public ClientBuilder AddIsClearSection(bool isClearSection)
+        {
+            clientOptions.IsClearSection = isClearSection;
+            return this;
+        }
         public ClientBuilder AddBroker(string broker)
         {
             clientOptions.Broker = broker;

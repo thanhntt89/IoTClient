@@ -11,8 +11,9 @@
   "DCU_CONFIG": {
     "ClientId": "Jimmii88",
     "Port": 1883,
-    "Broker": "127.0.0.1",   
+    "Broker": "127.0.0.1",
     "QoS": 1,
+    "IsClearSection": false,
     "SubscriberTopic": "PHH/Customer/Sub_Local/RunTime/*;AMI/*/sTime",
     "PublisherTopic": "DCU/sTime",
     "TypeData": "Customer",

@@ -31,6 +31,7 @@ namespace IotSystem
                .AddWillTopic(setting.DCU_CONFIG.SubscriberTopic)
                .AddWillPublisherTopic(setting.DCU_CONFIG.PublisherTopic)
                .AddWillQosLevel(setting.DCU_CONFIG.QoS)
+               .AddIsClearSection(setting.DCU_CONFIG.IsClearSection)
                .AddUserName(setting.DCU_CONFIG.UserName)
                .AddPassword(setting.DCU_CONFIG.Password)
                .AddTypeData(setting.DCU_CONFIG.TypeData)
