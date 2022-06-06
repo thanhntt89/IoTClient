@@ -15,9 +15,7 @@ namespace IotSystem.Core.ThreadManagement
         public event DelegateShowMessage EventShowMessage;
         public event DelegateSqlConnection EventSqlConnectionStatus;
         private const int TIME_CHECK_CONNECTION = 60000;//1 min
-
-        private static IDatabaseConnectionThread _instance;
-        
+        private static IDatabaseConnectionThread _instance;        
         private static readonly object objLock = new object();   
 
         public static IDatabaseConnectionThread Instance
@@ -43,6 +41,7 @@ namespace IotSystem.Core.ThreadManagement
         {
 
         }
+      
         private SingletonDatabaseConnection()
         {
 
@@ -74,6 +73,7 @@ namespace IotSystem.Core.ThreadManagement
                     EventShowMessage?.Invoke($"ThreadCheckConnection: Stopped!!!");
                     break;
                 }
+
                 IsConnected = SqlHelpers.CheckConnectionString();
                 
                 //Send event connection status
