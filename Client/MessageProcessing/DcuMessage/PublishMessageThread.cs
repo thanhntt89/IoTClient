@@ -4,7 +4,7 @@ using IotSystem.Queues;
 using System.Threading;
 using static IotSystem.ClientEvent;
 
-namespace IotSystem.MessageProcessing
+namespace IotSystem.MessageProcessing.DcuMessage
 {
     public class PublishMessageTopic
     {
@@ -38,6 +38,8 @@ namespace IotSystem.MessageProcessing
                     {
                         if (message.Topic.Contains(MessageTopic.MessageTypeTime))
                             PublishMessageTime(message);
+                        else if (message.Topic.Contains(MessageTopic.MessageTypeSetup))
+                            PublishMessageSetupDcu(message);
                     }
                     Thread.Sleep(10);
                     continue;
@@ -47,6 +49,12 @@ namespace IotSystem.MessageProcessing
             }
 
             EventShowMessage?.Invoke("PublishMessageThread: Stopped!!!");
+        }
+
+        private void PublishMessageSetupDcu(MessageBase message)
+        {
+            string dcuId = message.Topic.Split('/')[4];
+            EventPublishMessage?.Invoke(string.Format(MessageTopic.MessageSetupDcuTopic, dcuId), Constant.CURRENT_TIME);
         }
 
         private void PublishMessageTime(MessageBase message)

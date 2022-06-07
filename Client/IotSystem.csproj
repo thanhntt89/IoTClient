@@ -53,7 +53,6 @@
     <Compile Include="Core\Connection\ClientOptions.cs" />
     <Compile Include="Core\Connection\ClientSetting.cs" />
     <Compile Include="Core\Constant.cs" />
-    <Compile Include="MessageProcessing\MessageContant.cs" />
     <Compile Include="MessageProcessing\MessageStructure\AlertMessageStructure.cs" />
     <Compile Include="MessageProcessing\BusinessBase.cs" />
     <Compile Include="MessageProcessing\DcuMessage\DcuMessageProcessing.cs" />

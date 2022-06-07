@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using static IotSystem.ClientEvent;
 
-namespace IotSystem.MessageProcessing
+namespace IotSystem.MessageProcessing.MeterMessage
 {
     public class DecodeMessageDataThread: IDecodeDataThread
     {
