@@ -14,7 +14,7 @@ namespace IotSystem.Core.ThreadManagement
     {
         void ShowMessage(DelegateShowMessage showMessage);
         void SqlConnectionStatus(DelegateSqlConnection sqlConnection);
-        bool CheckDatabaseConnect(string serverName, string databaseName, string userName, string password, int port, int commandTimeOut, int connectionTimeOut);
+        bool CheckDatabaseConnect();
         void ThreadCheckConnection(CancellationToken cancellation);
     }
 }

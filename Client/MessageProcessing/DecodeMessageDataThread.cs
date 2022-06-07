@@ -34,14 +34,14 @@ namespace IotSystem.MessageProcessing
 
         public void ThreadDecode(CancellationToken cancellation)
         {
-            MessageData message = new MessageData();
+            MessageBase message = new MessageBase();
             int countData = 0;
             Thread currentThread = Thread.CurrentThread;
             EventShowMessage?.Invoke($"ThreadDecode-{currentThread.Name}:Started!!!");
 
             while (true)
             {
-                countData = SingletonMessageDataQueue<MessageData>.Instance.Count;
+                countData = SingletonMessageDataQueue<MessageBase>.Instance.Count;
                 if (cancellation.IsCancellationRequested && countData == 0)
                 {
                     EventShowMessage?.Invoke($"ThreadDecode-{currentThread.Name}:Stopped!!!");
@@ -49,7 +49,7 @@ namespace IotSystem.MessageProcessing
                 }                                
 
                 //Get data from messagequeue
-                if (SingletonMessageDataQueue<MessageData>.Instance.TryDequeue(out message) && message != null)
+                if (SingletonMessageDataQueue<MessageBase>.Instance.TryDequeue(out message) && message != null)
                 {
                     if (ProcessingMessage(message))
                     {                       
@@ -64,7 +64,7 @@ namespace IotSystem.MessageProcessing
 
         public void ThreadDecodeByTraffic(CancellationToken cancellation)
         {
-            MessageData message = new MessageData();
+            MessageBase message = new MessageBase();
             Thread currentThread = Thread.CurrentThread;
 
             EventShowMessage?.Invoke($"ThreadDecodeByTraffic-{currentThread.Name}:Started!!!");
@@ -72,7 +72,7 @@ namespace IotSystem.MessageProcessing
             
             while (true)
             {                
-                countData = SingletonMessageDataQueue<MessageData>.Instance.Count;
+                countData = SingletonMessageDataQueue<MessageBase>.Instance.Count;
                 if (cancellation.IsCancellationRequested || countData == 0)
                 {
                     EventShowMessage?.Invoke($"ThreadDecodeByTraffic-{currentThread.Name}:Stopped!!!");
@@ -80,7 +80,7 @@ namespace IotSystem.MessageProcessing
                 }
                 
                 //Get data from messagequeue
-                if (SingletonMessageDataQueue<MessageData>.Instance.TryDequeue(out message) && message != null)
+                if (SingletonMessageDataQueue<MessageBase>.Instance.TryDequeue(out message) && message != null)
                 {
                     if (ProcessingMessage(message))
                     {                       
@@ -93,7 +93,7 @@ namespace IotSystem.MessageProcessing
             }
         }
 
-        private bool ProcessingMessage(MessageData message)
+        private bool ProcessingMessage(MessageBase message)
         {
             try
             {
@@ -103,8 +103,7 @@ namespace IotSystem.MessageProcessing
                 //Lock table to insert
                 lock (SingletonDcuTable.Instance)
                 {
-                    SingletonDcuTable.Instance.Rows.Add(message.Topic);
-                    
+                    SingletonDcuTable.Instance.Rows.Add(message.Topic);                    
                 }
 
                 return true;

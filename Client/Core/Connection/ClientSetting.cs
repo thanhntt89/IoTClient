@@ -32,9 +32,11 @@ namespace IotSystem
         public bool IsRetain { get; set; }
         public bool IsAutoReconnect { get; set; }
         public string SubscriberTopic { get; set; }
-        public string PublisherTopic { get; set; }
+        public string PublishMessageTimeTopic { get; set; }
+        public string PublishMessageSetupDcuTopic { get; set; }
         public string TypeData { get; set; }
         public string TypeTime { get; set; }
+        public string TypeAlarm { get; set; }
 
         private int timeCheckConnect;
         public int TimeCheckConnect
@@ -43,8 +45,7 @@ namespace IotSystem
             set
             {
                 timeCheckConnect = value;
-            }
-            
+            }            
         }
     }
 

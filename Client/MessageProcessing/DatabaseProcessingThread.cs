@@ -5,7 +5,6 @@
 * Created date:2022/6/3 9:14 AM 
 * Copyright (c) by MVN Viet Nam Inc. All rights reserved
 **/
-using IotSystem.Core;
 using IotSystem.Core.ThreadManagement;
 using System;
 using System.Data;
@@ -14,40 +13,10 @@ using static IotSystem.ClientEvent;
 
 namespace IotSystem.MessageProcessing
 {
-    public class SingletonInsertDataThread: IInsertDataThread
+    public class DatabaseProcessingThread: IDatabaseProcessingThread
     {
         public event DelegateShowMessage EventShowMessage;
         private ProcessingDataFactory dataFactory = new ProcessingDataFactory();
-
-        private static IInsertDataThread instance;
-
-        private static object objLock = new object();
-        private SingletonInsertDataThread()
-        {
-
-        }
-
-        static SingletonInsertDataThread()
-        {
-
-        }
-
-        public static IInsertDataThread Instance
-        {
-            get
-            {
-                if(instance == null)
-                {
-                    lock (objLock)
-                    {
-                        if (instance == null)
-                            instance = new SingletonInsertDataThread();
-                    }
-                }
-                return instance;
-            }
-        }
-
 
         public void InsertData(CancellationToken cancellation)
         {

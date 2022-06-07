@@ -20,13 +20,6 @@ namespace IotSystem.Core.Connection
 {
     public partial class Client
     {
-        private string DbServerName { get; set; }
-        private string DatabaseName { get; set; }
-        private string DbUserName { get; set; }
-        private string DbPassword { get; set; }
-        private int DbPort { get; set; }
-        private int DbConnectionTimeOut { get; set; }
-        private int DbCommandTimeOut { get; set; }
         private string ClientId { get; set; }
         private string Broker { get; set; }
         private int Port { get; set; }
@@ -35,6 +28,7 @@ namespace IotSystem.Core.Connection
         private byte QoSLevel { get; set; }
         private string TypeData { get; set; }
         private string TypeTime { get; set; }
+        private string TypeAlarm { get; set; }
         private bool IsClearSection { get; set; }
         private string UserName { get; set; }
         private string Password { get; set; }
@@ -42,27 +36,19 @@ namespace IotSystem.Core.Connection
 
         private IDecodeDataThread iDecodeDataThread { get; set; }
         private IDatabaseConnectionThread iDatabaseConnectionThread { get; set; }
-        private IInsertDataThread iInsertDataThread { get; set; }
+        private IDatabaseProcessingThread iInsertDataThread { get; set; }
         private IPublishMessageThread iPublishMessageThread { get; set; }
 
         void LoadOptions(ClientOptions clientOptions)
         {
-            DbServerName = clientOptions.DbServerName;
-            DatabaseName = clientOptions.DatabaseName;
-            DbUserName = clientOptions.DbUserName;
-            DbPassword = clientOptions.DbPassword;
-            DbCommandTimeOut = clientOptions.DbCommandTimeOut;
-            DbConnectionTimeOut = clientOptions.DbConnectionTimeOut;
-            DbPort = clientOptions.DbPort;
-
             ClientId = clientOptions.ClientId;
             Broker = clientOptions.Broker;
             Port = clientOptions.Port;
             SubscriberTopic = clientOptions.SubscriberTopic;
-            PublisherTopic = clientOptions.PublisherTopic;
             QoSLevel = clientOptions.QoSLevel;
             TypeData = clientOptions.TypeData;
             TypeTime = clientOptions.TypeTime;
+            TypeAlarm = clientOptions.TypeAlarm;
             IsClearSection = clientOptions.IsClearSection;
             UserName = clientOptions.UserName;
             Password = clientOptions.Password;
@@ -110,13 +96,13 @@ namespace IotSystem.Core.Connection
     }
 
     public partial class Client : IClient
-    {        
+    {
         public Client(ClientOptions clientOptions)
         {
             //Get option
             LoadOptions(clientOptions);
 
-            client = new MqttClient(Broker, Port, false, null, MqttSslProtocols.TLSv1_2);
+            client = new MqttClient(Broker, Port, IsClearSection, null, MqttSslProtocols.TLSv1_2);
             decodeThreads = new ThreadCollection();
 
             threadCollection = new ThreadCollection();
@@ -167,7 +153,7 @@ namespace IotSystem.Core.Connection
             }
 
             //Check database connection
-            if (!iDatabaseConnectionThread.CheckDatabaseConnect(DbServerName, DatabaseName, DbUserName, DbPassword, DbPort, DbCommandTimeOut, DbConnectionTimeOut))
+            if (!iDatabaseConnectionThread.CheckDatabaseConnect())
             {
                 ShowMessageEvent?.Invoke($"Database:Disconnected!!!\nClient: Not start!!!");
                 return;
@@ -196,23 +182,23 @@ namespace IotSystem.Core.Connection
             {
                 LogUtil.Intance.WriteLog(LogType.Error, $"Client-Start-Error: {ex.Message}");
                 ShowMessageEvent?.Invoke($"Client-Start-Error: {ex.Message}");
-
             }
         }
 
         private void Client_MqttMsgPublishReceived(object obj, MqttMsgPublishEventArgs e)
         {
             //Check topic data
-            MessageData message = new MessageData() { Topic = e.Topic, Message = e.Message };
+            MessageBase message = new MessageBase() { Topic = e.Topic, Message = e.Message };
 
             //DataType: Customer set follow to thread processing data
-            if (message.Topic.Contains(TypeData))
+            if (message.Topic.Contains(TypeData) || message.Topic.Contains(TypeAlarm))
             {
-                SingletonMessageDataQueue<MessageData>.Instance.Enqueue(message);
+                SingletonMessageDataQueue<MessageBase>.Instance.Enqueue(message);
             }
+            //Message must publish message
             else if (message.Topic.Contains(TypeTime))
             {
-                SingletonMessageTimeQueue<MessageData>.Instance.Enqueue(message);
+                SingletonMessageTimeQueue<MessageBase>.Instance.Enqueue(message);
             }
 
             LogUtil.Intance.WriteLog(LogType.Info, $"Client-Client_MqttMsgPublishReceived-Topic:{message.Topic}");
@@ -222,9 +208,17 @@ namespace IotSystem.Core.Connection
         {
             if (client.IsConnected)
             {
-                client.Publish(topic, Encoding.ASCII.GetBytes(contents));
+                PublishMessage(topic, Encoding.ASCII.GetBytes(contents));
                 ShowMessageEvent?.Invoke($"PuplishTopic: {topic} Data: {contents}");
                 LogUtil.Intance.WriteLog(LogType.Info, $"Client-PublishTimeMessage: {topic} to DCU: {contents}");
+            }
+        }
+
+        private void PublishMessage(string topic, byte[] data)
+        {
+            if (client.IsConnected)
+            {
+                client.Publish(topic, data);
             }
         }
 
@@ -298,7 +292,7 @@ namespace IotSystem.Core.Connection
                     //Loop to untill connected
                     continue;
                 }
-                
+
                 //Sleep 5min check connect status
                 Thread.Sleep(TimeCheckConnect);
                 countTime = 0;
@@ -341,7 +335,7 @@ namespace IotSystem.Core.Connection
             while (true)
             {
                 //Check messageQueue has data
-                if (SingletonMessageDataQueue<MessageData>.Instance.Count == 0)
+                if (SingletonMessageDataQueue<MessageBase>.Instance.Count == 0)
                 {
                     break;
                 }
@@ -375,7 +369,7 @@ namespace IotSystem.Core.Connection
 
         private void ActiveDecodeThreadByTraffic()
         {
-            if (SingletonMessageDataQueue<MessageData>.Instance.Count < 1000)
+            if (SingletonMessageDataQueue<MessageBase>.Instance.Count < 1000)
             {
                 if (decodeThreads.RunningCount > 0)
                 {
@@ -386,10 +380,10 @@ namespace IotSystem.Core.Connection
                     decodeThreads.Clear();
                 }
             }
-            if (SingletonMessageDataQueue<MessageData>.Instance.Count > 5000)
+            if (SingletonMessageDataQueue<MessageBase>.Instance.Count > 5000)
             {
                 if (decodeThreads.RunningCount == 0)
-                {                  
+                {
                     if (decodeThreads.Count == 0)
                     {
                         tokenDecode.Dispose();
@@ -406,7 +400,7 @@ namespace IotSystem.Core.Connection
                 }
             }
         }
-      
+
 
         private int count = 0;
 
@@ -423,9 +417,9 @@ namespace IotSystem.Core.Connection
 
                 count++;
 
-                MessageData message = new MessageData() { Topic = $"Topic/DCU{count}" };
+                MessageBase message = new MessageBase() { Topic = $"Topic/DCU{count}" };
 
-                SingletonMessageDataQueue<MessageData>.Instance.Enqueue(message);
+                SingletonMessageDataQueue<MessageBase>.Instance.Enqueue(message);
                 Thread.Sleep(10);
 
                 ActiveDecodeThreadByTraffic();

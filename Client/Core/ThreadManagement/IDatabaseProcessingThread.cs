@@ -10,7 +10,7 @@ using static IotSystem.ClientEvent;
 
 namespace IotSystem.Core.ThreadManagement
 {
-    public interface IInsertDataThread
+    public interface IDatabaseProcessingThread
     {
         void ShowMessage(DelegateShowMessage showMessage);       
         void InsertData(CancellationToken cancellation);

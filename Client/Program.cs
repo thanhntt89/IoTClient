@@ -4,6 +4,7 @@ using IotSystem.Core.ThreadManagement;
 using IotSystem.MessageProcessing;
 using IotSystem.Utils;
 using System;
+using System.Threading.Tasks;
 
 namespace IotSystem
 {
@@ -16,33 +17,39 @@ namespace IotSystem
                 ClientSetting setting = FileUtil.Deserialize<ClientSetting>(FileUtil.GetTextFromFile(Constant.SettingPath));
                 ShowMessage("Load Client Setting Success!!!");
 
-                IClient client = new ClientBuilder()
-               .AddDatabaseServer(setting.DATABASE_CONFIG.Server)
-               .AddDatabaseName(setting.DATABASE_CONFIG.DatabaseName)
-               .AddDbUserName(setting.DATABASE_CONFIG.UserName)
-               .AddDbPassword(setting.DATABASE_CONFIG.Password)
-               .AddDbPort(setting.DATABASE_CONFIG.Port)
-               .AddDbConnectionTimeOut(setting.DATABASE_CONFIG.ConnectionTimeOut)
-               .AddDbCommandTimeOut(setting.DATABASE_CONFIG.CommandTimeOut)
+                IClient client = new ClientBuilder()               
                .AddBroker(setting.DCU_CONFIG.Broker)
                .AddPort(setting.DCU_CONFIG.Port)
                .AddClientId(setting.DCU_CONFIG.ClientId)
                .AddWillTopic(setting.DCU_CONFIG.SubscriberTopic)
-               .AddWillPublisherTopic(setting.DCU_CONFIG.PublisherTopic)
                .AddWillQosLevel(setting.DCU_CONFIG.QoS)
                .AddIsClearSection(setting.DCU_CONFIG.IsClearSection)
                .AddUserName(setting.DCU_CONFIG.UserName)
                .AddPassword(setting.DCU_CONFIG.Password)
                .AddTypeData(setting.DCU_CONFIG.TypeData)
                .AddTypeTime(setting.DCU_CONFIG.TypeTime)
+               .AddTypeAlarm(setting.DCU_CONFIG.TypeAlarm)
                .AddTimeCheckConnect(setting.DCU_CONFIG.TimeCheckConnect)
-               .AddIDatabaseConnectionThread(SingletonDatabaseConnection.Instance)
+               .AddIDatabaseConnectionThread(new DatabaseConnectionThread(new DatabaseConfig
+               {
+                   Server = setting.DATABASE_CONFIG.Server,
+                   DatabaseName = setting.DATABASE_CONFIG.DatabaseName,
+                   Password = setting.DATABASE_CONFIG.Password,
+                   UserName = setting.DATABASE_CONFIG.UserName,
+                   CommandTimeOut = setting.DATABASE_CONFIG.CommandTimeOut,
+                   ConnectionTimeOut = setting.DATABASE_CONFIG.ConnectionTimeOut,
+                   Port = setting.DATABASE_CONFIG.Port
+               }))
                .AddIDecodeDataThread(new DecodeMessageDataThread())
-               .AddIInsertDataThread(SingletonInsertDataThread.Instance)
-               .AddIPublishMessageThread(SingletonPublishThread.Instance)
+               .AddIInsertDataThread(new DatabaseProcessingThread())
+               .AddIPublishMessageThread(new PublishMessageThread(new PublishMessageTopic()
+               {
+                   MessageResponseTimeTopic = setting.DCU_CONFIG.PublishMessageTimeTopic,
+                   MessageSetupDcuTopic = setting.DCU_CONFIG.PublishMessageSetupDcuTopic
+               }))
                .Build();
 
-                client.ShowMessage(ShowMessage);               
+                client.ShowMessage(ShowMessage);
 
                 while (true)
                 {
@@ -58,7 +65,8 @@ namespace IotSystem
                     switch (press)
                     {
                         case "START":
-                            client.Start();
+                            var task = Task.Run(() => client.Start());
+                            task.Wait();
                             break;
                         case "STOP":
                             client.Stop(true);

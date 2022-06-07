@@ -12,7 +12,7 @@ namespace IotSystem.Core
 {
     public interface IClient
     {
-        void ShowMessage(DelegateShowMessage showMessage);      
+        void ShowMessage(DelegateShowMessage showMessage);
         void Start();
         void Stop(bool isUserStop);
         void Exit();

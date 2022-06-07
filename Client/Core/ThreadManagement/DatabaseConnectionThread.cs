@@ -10,55 +10,31 @@ using static IotSystem.ClientEvent;
 
 namespace IotSystem.Core.ThreadManagement
 {
-    public class SingletonDatabaseConnection: IDatabaseConnectionThread
+    public class DatabaseConnectionThread: IDatabaseConnectionThread
     {
         public event DelegateShowMessage EventShowMessage;
         public event DelegateSqlConnection EventSqlConnectionStatus;
         private const int TIME_CHECK_CONNECTION = 60000;//1 min
-        private static IDatabaseConnectionThread _instance;        
-        private static readonly object objLock = new object();   
-
-        public static IDatabaseConnectionThread Instance
+        private DatabaseConfig DatabaseConfig { get; set; }      
+       
+        public DatabaseConnectionThread(DatabaseConfig databaseConfig)
         {
-            get
-            {
-                if (_instance == null)
-                {
-                    lock (objLock)
-                    {
-                        if (_instance == null)
-                        {
-                            _instance = new SingletonDatabaseConnection();
-                        }
-                    }
-                }
-
-                return _instance;
-            }
-        }
-
-        static SingletonDatabaseConnection()
-        {
-
-        }
-      
-        private SingletonDatabaseConnection()
-        {
-
+            DatabaseConfig = databaseConfig;
         }
 
         public bool IsConnected { get; set; }
 
-        public bool CheckDatabaseConnect(string serverName, string databaseName, string userName, string password, int port, int commandTimeOut, int connectionTimeOut)
+        public bool CheckDatabaseConnect()
         {
             SqlHelpers.CreateConnectionString(new ConnectionInfo()
             {
-                DatabaseName = databaseName,
-                ServerName = serverName,
-                Password = password,
-                UserName = userName,
-                TimeOutCommand = commandTimeOut,
-                TimeOutConnection = connectionTimeOut
+                DatabaseName = DatabaseConfig.DatabaseName,
+                ServerName = DatabaseConfig.Server,
+                Password = DatabaseConfig.Password,
+                UserName = DatabaseConfig.UserName,
+                TimeOutCommand = DatabaseConfig.CommandTimeOut,
+                TimeOutConnection = DatabaseConfig.ConnectionTimeOut,
+                Port = DatabaseConfig.Port
             });
             return SqlHelpers.CheckConnectionString();            
         }

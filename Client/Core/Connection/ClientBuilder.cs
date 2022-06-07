@@ -16,43 +16,6 @@ namespace IotSystem.Core.Connection
         {
             clientOptions = new ClientOptions();
         }
-
-        //Database
-        public ClientBuilder AddDatabaseServer(string serverName)
-        {
-            clientOptions.DbServerName = serverName;
-            return this;
-        }
-        public ClientBuilder AddDatabaseName(string databaseName)
-        {
-            clientOptions.DatabaseName = databaseName;
-            return this;
-        }
-        public ClientBuilder AddDbUserName(string userName)
-        {
-            clientOptions.DbUserName = userName;
-            return this;
-        }
-        public ClientBuilder AddDbPassword(string password)
-        {
-            clientOptions.DbPassword = password;
-            return this;
-        }
-        public ClientBuilder AddDbPort(int port)
-        {
-            clientOptions.DbPort = port;
-            return this;
-        }
-        public ClientBuilder AddDbConnectionTimeOut(int timeOut)
-        {
-            clientOptions.DbConnectionTimeOut = timeOut;
-            return this;
-        }
-        public ClientBuilder AddDbCommandTimeOut(int timeOut)
-        {
-            clientOptions.DbCommandTimeOut = timeOut;
-            return this;
-        }
         public ClientBuilder AddClientId(string clientId)
         {
             clientOptions.ClientId = clientId;
@@ -71,11 +34,6 @@ namespace IotSystem.Core.Connection
         public ClientBuilder AddWillTopic(string subcriberTopic)
         {
             clientOptions.SubscriberTopic = subcriberTopic;
-            return this;
-        }
-        public ClientBuilder AddWillPublisherTopic(string willPubishTopic)
-        {
-            clientOptions.PublisherTopic = willPubishTopic;
             return this;
         }
         public ClientBuilder AddWillQosLevel(int willQosLevel)
@@ -103,6 +61,11 @@ namespace IotSystem.Core.Connection
             clientOptions.TypeTime = typeTime;
             return this;
         }
+        public ClientBuilder AddTypeAlarm(string typeAlarm)
+        {
+            clientOptions.TypeAlarm = typeAlarm;
+            return this;
+        }
         public ClientBuilder AddTimeCheckConnect(int timeCheckConnect)
         {
             clientOptions.TimeCheckConnect = timeCheckConnect;
@@ -123,7 +86,7 @@ namespace IotSystem.Core.Connection
             clientOptions.iDatabaseConnectionThread = iDatabaseConnectionThread;
             return this;
         }
-        public ClientBuilder AddIInsertDataThread(IInsertDataThread iInsertDataThread)
+        public ClientBuilder AddIInsertDataThread(IDatabaseProcessingThread iInsertDataThread)
         {
             clientOptions.iInsertDataThread = iInsertDataThread;
             return this;

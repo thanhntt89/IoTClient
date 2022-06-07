@@ -1,4 +1,6 @@
-﻿/**
+﻿
+using IotSystem.Core;
+/**
 *Project name: IotClient 
 * Created by: Nguyen Tat Thanh
 * File Name: ProcessingDataFactory.cs
@@ -13,5 +15,6 @@ namespace IotSystem.MessageProcessing
         {
 
         }
+      
     }
 }

@@ -53,9 +53,12 @@
     <Compile Include="Core\Connection\ClientOptions.cs" />
     <Compile Include="Core\Connection\ClientSetting.cs" />
     <Compile Include="Core\Constant.cs" />
+    <Compile Include="MessageProcessing\MessageContant.cs" />
+    <Compile Include="MessageProcessing\MessageStructure\AlertMessageStructure.cs" />
     <Compile Include="MessageProcessing\BusinessBase.cs" />
     <Compile Include="MessageProcessing\DcuMessage\DcuMessageProcessing.cs" />
     <Compile Include="MessageProcessing\DcuMessage\IDcuMessageProcessing.cs" />
+    <Compile Include="MessageProcessing\MessageStructure\MessageRealTime.cs" />
     <Compile Include="MessageProcessing\MeterMessage\IMeterMessageProcessing.cs" />
     <Compile Include="MessageProcessing\SingletonDcuTable.cs">
       <SubType>Component</SubType>
@@ -64,17 +67,17 @@
     <Compile Include="Core\ThreadManagement\IDecodeDataThread.cs" />
     <Compile Include="Core\ThreadManagement\IInsertDataThread.cs" />
     <Compile Include="Core\ThreadManagement\IPublishMessageThread.cs" />
-    <Compile Include="Core\ThreadManagement\SingletonDatabaseConnection.cs" />
+    <Compile Include="Core\ThreadManagement\DatabaseConnectionThread.cs" />
     <Compile Include="MessageProcessing\DecodeMessageDataThread.cs" />
     <Compile Include="MessageProcessing\Queries\DcuQueries.cs" />
-    <Compile Include="MessageProcessing\SingletonPublishThread.cs" />
+    <Compile Include="MessageProcessing\PublishMessageThread.cs" />
     <Compile Include="Core\Queues\SingletonMessageDataQueue.cs" />
     <Compile Include="MessageProcessing\MeterMessage\MeterMessageProcessing.cs" />
     <Compile Include="MessageProcessing\ProcessingDataFactory.cs" />
     <Compile Include="Core\Queues\SingletonMessageTimeQueue.cs" />
     <Compile Include="Core\SqlHelpers.cs" />
     <Compile Include="Core\Connection\IClient.cs" />
-    <Compile Include="Core\MessageData.cs" />
+    <Compile Include="Core\MessageBase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MessageProcessing\SingletonInsertDataThread.cs" />

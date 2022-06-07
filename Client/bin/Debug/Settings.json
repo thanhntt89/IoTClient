@@ -10,14 +10,16 @@
   },
   "DCU_CONFIG": {
     "ClientId": "Jimmii88",
-    "Port": 1883,
+    "Port": 1888,
     "Broker": "127.0.0.1",
     "QoS": 1,
     "IsClearSection": false,
-    "SubscriberTopic": "PHH/Customer/Sub_Local/RunTime/*;AMI/*/sTime",
-    "PublisherTopic": "DCU/sTime",
-    "TypeData": "Customer",
+    "SubscriberTopic": "PHH/Customer/Sub_Local/RunTime/#;PHH/Customer/Sub_Local/sTime/#;PHH/Customer/Sub_Local/Alarm/#",
+    "PublishMessageTimeTopic": "AMI/{0}/sTime",
+    "PublishMessageSetupDcuTopic": "AMI/{0}/Setup",
+    "TypeData": "RunTime",
     "TypeTime": "sTime",
+    "TypeAlarm": "Alarm",
     "TimeCheckConnect": 1
   }
 }

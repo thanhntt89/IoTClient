@@ -7,7 +7,7 @@
 **/
 namespace IotSystem.Core
 {
-    public class MessageData
+    public class MessageBase
     {
         // message topic
         public string Topic;
