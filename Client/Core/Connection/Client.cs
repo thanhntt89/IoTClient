@@ -29,6 +29,7 @@ namespace IotSystem.Core.Connection
         private string TypeData { get; set; }
         private string TypeTime { get; set; }
         private string TypeAlarm { get; set; }
+        private string TypeSetup { get; set; }
         private bool IsClearSection { get; set; }
         private string UserName { get; set; }
         private string Password { get; set; }
@@ -49,6 +50,7 @@ namespace IotSystem.Core.Connection
             TypeData = clientOptions.TypeData;
             TypeTime = clientOptions.TypeTime;
             TypeAlarm = clientOptions.TypeAlarm;
+            TypeSetup = clientOptions.TypeSetup;
             IsClearSection = clientOptions.IsClearSection;
             UserName = clientOptions.UserName;
             Password = clientOptions.Password;
@@ -196,7 +198,7 @@ namespace IotSystem.Core.Connection
                 SingletonMessageDataQueue<MessageBase>.Instance.Enqueue(message);
             }
             //Message must publish message
-            else if (message.Topic.Contains(TypeTime))
+            else if (message.Topic.Contains(TypeTime) || message.Topic.Contains(TypeSetup))
             {
                 SingletonMessageTimeQueue<MessageBase>.Instance.Enqueue(message);
             }

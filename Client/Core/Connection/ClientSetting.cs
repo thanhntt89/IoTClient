@@ -37,6 +37,7 @@ namespace IotSystem
         public string TypeData { get; set; }
         public string TypeTime { get; set; }
         public string TypeAlarm { get; set; }
+        public string TypeSetup { get; set; }
 
         private int timeCheckConnect;
         public int TimeCheckConnect

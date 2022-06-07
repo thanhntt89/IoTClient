@@ -65,7 +65,7 @@
     </Compile>
     <Compile Include="Core\ThreadManagement\IDatabaseConnectionThread.cs" />
     <Compile Include="Core\ThreadManagement\IDecodeDataThread.cs" />
-    <Compile Include="Core\ThreadManagement\IInsertDataThread.cs" />
+    <Compile Include="Core\ThreadManagement\IDatabaseProcessingThread.cs" />
     <Compile Include="Core\ThreadManagement\IPublishMessageThread.cs" />
     <Compile Include="Core\ThreadManagement\DatabaseConnectionThread.cs" />
     <Compile Include="MessageProcessing\DecodeMessageDataThread.cs" />
@@ -80,7 +80,7 @@
     <Compile Include="Core\MessageBase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MessageProcessing\SingletonInsertDataThread.cs" />
+    <Compile Include="MessageProcessing\DatabaseProcessingThread.cs" />
     <Compile Include="Core\ThreadCollection.cs" />
     <Compile Include="Core\Utils\LogUtil.cs" />
     <Compile Include="Core\Utils\FileUtil.cs" />

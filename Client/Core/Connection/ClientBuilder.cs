@@ -66,6 +66,11 @@ namespace IotSystem.Core.Connection
             clientOptions.TypeAlarm = typeAlarm;
             return this;
         }
+        public ClientBuilder AddTypeSetup(string typeSetup)
+        {
+            clientOptions.TypeSetup = typeSetup;
+            return this;
+        }
         public ClientBuilder AddTimeCheckConnect(int timeCheckConnect)
         {
             clientOptions.TimeCheckConnect = timeCheckConnect;
@@ -86,7 +91,7 @@ namespace IotSystem.Core.Connection
             clientOptions.iDatabaseConnectionThread = iDatabaseConnectionThread;
             return this;
         }
-        public ClientBuilder AddIInsertDataThread(IDatabaseProcessingThread iInsertDataThread)
+        public ClientBuilder AddIDatabaseProcessingThread(IDatabaseProcessingThread iInsertDataThread)
         {
             clientOptions.iInsertDataThread = iInsertDataThread;
             return this;

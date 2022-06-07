@@ -10,6 +10,8 @@ namespace IotSystem.MessageProcessing
     {
         public string MessageResponseTimeTopic { get; set; }
         public string MessageSetupDcuTopic { get; set; }
+        public string MessageTypeTime { get; set; }
+        public string MessageTypeSetup { get; set; }
     }
 
     public class PublishMessageThread : IPublishMessageThread
@@ -34,7 +36,8 @@ namespace IotSystem.MessageProcessing
                 {
                     if (SingletonMessageTimeQueue<MessageBase>.Instance.TryDequeue(out message) && message != null)
                     {
-                        MessageProcessing(message);
+                        if (message.Topic.Contains(MessageTopic.MessageTypeTime))
+                            PublishMessageTime(message);
                     }
                     Thread.Sleep(10);
                     continue;
@@ -46,10 +49,10 @@ namespace IotSystem.MessageProcessing
             EventShowMessage?.Invoke("PublishMessageThread: Stopped!!!");
         }
 
-        private void MessageProcessing(MessageBase message)
+        private void PublishMessageTime(MessageBase message)
         {
             string dcuId = message.Topic.Split('/')[4];
-            EventPublishMessage?.Invoke(string.Format(MessageContant.TOPIC_PUBLISH_REAL_TIME, dcuId), Constant.CURRENT_TIME);
+            EventPublishMessage?.Invoke(string.Format(MessageTopic.MessageResponseTimeTopic, dcuId), Constant.CURRENT_TIME);
         }
 
         public void ShowMessage(DelegateShowMessage showMessage)

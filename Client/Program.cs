@@ -29,6 +29,7 @@ namespace IotSystem
                .AddTypeData(setting.DCU_CONFIG.TypeData)
                .AddTypeTime(setting.DCU_CONFIG.TypeTime)
                .AddTypeAlarm(setting.DCU_CONFIG.TypeAlarm)
+               .AddTypeSetup(setting.DCU_CONFIG.TypeSetup)
                .AddTimeCheckConnect(setting.DCU_CONFIG.TimeCheckConnect)
                .AddIDatabaseConnectionThread(new DatabaseConnectionThread(new DatabaseConfig
                {
@@ -41,11 +42,13 @@ namespace IotSystem
                    Port = setting.DATABASE_CONFIG.Port
                }))
                .AddIDecodeDataThread(new DecodeMessageDataThread())
-               .AddIInsertDataThread(new DatabaseProcessingThread())
+               .AddIDatabaseProcessingThread(new DatabaseProcessingThread())
                .AddIPublishMessageThread(new PublishMessageThread(new PublishMessageTopic()
                {
                    MessageResponseTimeTopic = setting.DCU_CONFIG.PublishMessageTimeTopic,
-                   MessageSetupDcuTopic = setting.DCU_CONFIG.PublishMessageSetupDcuTopic
+                   MessageSetupDcuTopic = setting.DCU_CONFIG.PublishMessageSetupDcuTopic,
+                   MessageTypeTime = setting.DCU_CONFIG.TypeTime,
+                   MessageTypeSetup = setting.DCU_CONFIG.TypeSetup
                }))
                .Build();
 

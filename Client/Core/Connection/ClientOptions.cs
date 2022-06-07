@@ -20,6 +20,7 @@ namespace IotSystem
         public string TypeData { get; set; }
         public string TypeTime { get; set; }
         public string TypeAlarm { get; set; }
+        public string TypeSetup { get; set; }
         public bool IsClearSection { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
