@@ -17,6 +17,7 @@ namespace IotSystem.MessageProcessing
     public class SingletonInsertDataThread: IInsertDataThread
     {
         public event DelegateShowMessage EventShowMessage;
+        private ProcessingDataFactory dataFactory = new ProcessingDataFactory();
 
         private static IInsertDataThread instance;
 
@@ -55,19 +56,19 @@ namespace IotSystem.MessageProcessing
 
             while (true)
             {
-                if (cancellation.IsCancellationRequested && SingletonDataTable.Instance.Rows.Count == 0)
+                if (cancellation.IsCancellationRequested && SingletonDcuTable.Instance.Rows.Count == 0)
                 {
                     EventShowMessage?.Invoke($"SingletonDecodeData-InsertDataThread:Stopped!!!");
                     break;
                 }
 
                 //Check data to insert
-                if (SingletonDataTable.Instance.Rows.Count > 0)
+                if (SingletonDcuTable.Instance.Rows.Count > 0)
                 {
-                    lock (SingletonDataTable.Instance)
+                    lock (SingletonDcuTable.Instance)
                     {
-                        dataTable = SingletonDataTable.Instance.Copy();
-                        SingletonDataTable.Instance.Clear();
+                        dataTable = SingletonDcuTable.Instance.Copy();
+                        SingletonDcuTable.Instance.Clear();
                     }
 
                     ProcessingInsertData(dataTable);

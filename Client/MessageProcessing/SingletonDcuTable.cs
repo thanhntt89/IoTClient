@@ -7,22 +7,22 @@
 **/
 using System.Data;
 
-namespace IotSystem.Core
+namespace IotSystem.MessageProcessing
 {
-    public class SingletonDataTable : DataTable
+    public class SingletonDcuTable : DataTable
     {
-        private static SingletonDataTable instance;
+        private static SingletonDcuTable instance;
         private static readonly object objLock = new object();
-        static SingletonDataTable()
+        static SingletonDcuTable()
         {
 
         }
-        private SingletonDataTable()
+        private SingletonDcuTable()
         {
 
         }
-
-        public static SingletonDataTable Instance
+        
+        public static SingletonDcuTable Instance
         {
             get
             {
@@ -31,11 +31,16 @@ namespace IotSystem.Core
                     lock (objLock)
                     {
                         if (instance == null)
-                            instance = new SingletonDataTable();
+                        {
+                            instance = new SingletonDcuTable();
+                            instance.Columns.Add("DcuCode");
+                        }
                     }
                 }
                 return instance;
             }
         }
+    
+
     }
 }

@@ -481,9 +481,18 @@ namespace IotSystem.Core
             }
         }
 
-        public static void TransactionCreate(string sqlConnecionString)
+        public static void TransactionCreating(string sqlConnecionString)
         {
             CreateSqlConnection(sqlConnecionString);
+            if (_sqConnection.State == ConnectionState.Closed)
+                _sqConnection.Open();
+
+            _sqlTransaction = _sqConnection.BeginTransaction();
+        }
+
+        public static void TransactionCreating()
+        {
+            CreateSqlConnection(ConnectionString);
             if (_sqConnection.State == ConnectionState.Closed)
                 _sqConnection.Open();
 

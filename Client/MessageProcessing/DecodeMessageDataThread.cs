@@ -101,9 +101,10 @@ namespace IotSystem.MessageProcessing
                 //Code here
 
                 //Lock table to insert
-                lock (SingletonDataTable.Instance)
+                lock (SingletonDcuTable.Instance)
                 {
-                    SingletonDataTable.Instance.Rows.Add();                    
+                    SingletonDcuTable.Instance.Rows.Add(message.Topic);
+                    
                 }
 
                 return true;

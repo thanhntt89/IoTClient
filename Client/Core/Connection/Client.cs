@@ -423,7 +423,7 @@ namespace IotSystem.Core.Connection
 
                 count++;
 
-                MessageData message = new MessageData() { Topic = $"Topic/Test{count}" };
+                MessageData message = new MessageData() { Topic = $"Topic/DCU{count}" };
 
                 SingletonMessageDataQueue<MessageData>.Instance.Enqueue(message);
                 Thread.Sleep(10);

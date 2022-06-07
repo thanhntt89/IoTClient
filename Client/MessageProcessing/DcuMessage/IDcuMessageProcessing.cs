@@ -1,8 +1,10 @@
-﻿namespace IotSystem.MessageProcessing.DcuMessage
+﻿using System.Data;
+
+namespace IotSystem.MessageProcessing.DcuMessage
 {
     public interface IDcuMessageProcessing
     {
-        void InsertDcu();
+        void InsertDcu(DataTable dcuTable);
         void UpdateDcuMeter();
     }
 }

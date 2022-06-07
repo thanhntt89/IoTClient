@@ -53,10 +53,11 @@
     <Compile Include="Core\Connection\ClientOptions.cs" />
     <Compile Include="Core\Connection\ClientSetting.cs" />
     <Compile Include="Core\Constant.cs" />
+    <Compile Include="MessageProcessing\BusinessBase.cs" />
     <Compile Include="MessageProcessing\DcuMessage\DcuMessageProcessing.cs" />
     <Compile Include="MessageProcessing\DcuMessage\IDcuMessageProcessing.cs" />
     <Compile Include="MessageProcessing\MeterMessage\IMeterMessageProcessing.cs" />
-    <Compile Include="Core\SingletonDataTable.cs">
+    <Compile Include="MessageProcessing\SingletonDcuTable.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Core\ThreadManagement\IDatabaseConnectionThread.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="Core\ThreadManagement\IPublishMessageThread.cs" />
     <Compile Include="Core\ThreadManagement\SingletonDatabaseConnection.cs" />
     <Compile Include="MessageProcessing\DecodeMessageDataThread.cs" />
+    <Compile Include="MessageProcessing\Queries\DcuQueries.cs" />
     <Compile Include="MessageProcessing\SingletonPublishThread.cs" />
     <Compile Include="Core\Queues\SingletonMessageDataQueue.cs" />
     <Compile Include="MessageProcessing\MeterMessage\MeterMessageProcessing.cs" />
@@ -93,8 +95,6 @@
       <Name>M2Mqtt.Net</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MessageProcessing\Queries\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
