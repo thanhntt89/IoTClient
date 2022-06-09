@@ -14,7 +14,9 @@ namespace IotSystem
     class Program
     {
         static void Main(string[] args)
-        {           
+        {
+            MessageBase msgTime = DcuPublishMessage.CreatePublishMessageSetup("Setup/{0}/dcuid", "124");
+
             try
             {
                 ClientSetting setting = FileUtil.Deserialize<ClientSetting>(FileUtil.GetTextFromFile(Constant.SettingPath));

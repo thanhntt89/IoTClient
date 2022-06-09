@@ -21,6 +21,12 @@ namespace IotSystem.MessageProcessing.MessageStructure
         Alarm_Temp2 = 0xA4,
         Alarm_Battery = 0xA6,
         Alarm_Hummidity = 0xA7,
-        Alarm_Light = 0xAA
+        Alarm_Light = 0xAA,
+        Temp_High = 0xE1,
+        Temp_Low = 0xE2,
+        Hum_High = 0xE3,
+        Hum_Low = 0xE4,
+        Time_Update = 0xEB,
+        Time_Sample = 0xEC
     }
 }

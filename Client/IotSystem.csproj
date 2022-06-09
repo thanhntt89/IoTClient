@@ -58,6 +58,7 @@
     <Compile Include="Core\Utils\StructureUtil.cs" />
     <Compile Include="MessageProcessing\BusinessBase.cs" />
     <Compile Include="MessageProcessing\DcuMessage\DcuMessageProcessing.cs" />
+    <Compile Include="MessageProcessing\DcuMessage\DcuMessageSetupEntity.cs" />
     <Compile Include="MessageProcessing\DcuMessage\IDcuMessageProcessing.cs" />
     <Compile Include="MessageProcessing\MessageStructure\DcuPublishMessage.cs" />
     <Compile Include="MessageProcessing\MessageStructure\EnumObis.cs" />

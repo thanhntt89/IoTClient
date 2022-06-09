@@ -46,12 +46,13 @@ namespace IotSystem.MessageProcessing.MessageStructure
             public byte[] DataLength { get; set; }
             public byte[] Data { get; set; }
 
-            public int TotalBytes => Obis.Length + DataLength.Length + Data.Length;
+            public int TotalBytes => Obis == null ? 0 : Obis.Length + DataLength.Length + Data.Length;
 
             public byte[] MessageBytes
             {
                 get
                 {
+                    if (Obis == null) return null;
                     int offSet = 0;
                     byte[] data = new byte[TotalBytes];
                     Buffer.BlockCopy(Obis, 0, data, offSet, Obis.Length);
