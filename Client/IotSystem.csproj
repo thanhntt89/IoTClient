@@ -59,7 +59,7 @@
     <Compile Include="MessageProcessing\BusinessBase.cs" />
     <Compile Include="MessageProcessing\DcuMessage\DcuMessageProcessing.cs" />
     <Compile Include="MessageProcessing\DcuMessage\IDcuMessageProcessing.cs" />
-    <Compile Include="MessageProcessing\MessageStructure\DcuMessageStruct.cs" />
+    <Compile Include="MessageProcessing\MessageStructure\DcuPublishMessage.cs" />
     <Compile Include="MessageProcessing\MessageStructure\EnumObis.cs" />
     <Compile Include="MessageProcessing\MessageStructure\FieldBase.cs" />
     <Compile Include="MessageProcessing\MessageStructure\MeterMessage.cs" />

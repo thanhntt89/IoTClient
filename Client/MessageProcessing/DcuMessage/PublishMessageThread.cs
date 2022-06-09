@@ -1,5 +1,6 @@
 ﻿using IotSystem.Core;
 using IotSystem.Core.ThreadManagement;
+using IotSystem.MessageProcessing.MessageStructure;
 using IotSystem.Queues;
 using System.Threading;
 using static IotSystem.ClientEvent;
@@ -54,13 +55,15 @@ namespace IotSystem.MessageProcessing.DcuMessage
         private void PublishMessageSetupDcu(MessageBase message)
         {
             string dcuId = message.Topic.Split('/')[4];
-            EventPublishMessage?.Invoke(string.Format(MessageTopic.MessageSetupDcuTopic, dcuId), Constant.CURRENT_TIME);
+            MessageBase msgTime = DcuPublishMessage.CreatePublishMessageSetup(MessageTopic.MessageResponseTimeTopic, dcuId);
+            EventPublishMessage?.Invoke(msgTime.Topic, msgTime.Message);
         }
 
         private void PublishMessageTime(MessageBase message)
         {
             string dcuId = message.Topic.Split('/')[4];
-            EventPublishMessage?.Invoke(string.Format(MessageTopic.MessageResponseTimeTopic, dcuId), Constant.CURRENT_TIME);
+            MessageBase msgTime = DcuPublishMessage.CreatePublishMessageTime(MessageTopic.MessageResponseTimeTopic, dcuId);
+            EventPublishMessage?.Invoke(msgTime.Topic, msgTime.Message);
         }
 
         public void ShowMessage(DelegateShowMessage showMessage)

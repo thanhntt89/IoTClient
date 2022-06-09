@@ -14,10 +14,7 @@ namespace IotSystem
     class Program
     {
         static void Main(string[] args)
-        {
-            MessageTime mstime = new MessageTime();
-           var bytes = mstime.CreateMessagePublish();
-
+        {           
             try
             {
                 ClientSetting setting = FileUtil.Deserialize<ClientSetting>(FileUtil.GetTextFromFile(Constant.SettingPath));

@@ -206,11 +206,11 @@ namespace IotSystem.Core.Connection
             LogUtil.Intance.WriteLog(LogType.Info, $"Client-Client_MqttMsgPublishReceived-Topic:{message.Topic}");
         }
 
-        private void PublishTimeMessage(string topic, string contents)
+        private void PublishTimeMessage(string topic, byte[] contents)
         {
             if (client.IsConnected)
             {
-                PublishMessage(topic, Encoding.ASCII.GetBytes(contents));
+                PublishMessage(topic, contents);
                 ShowMessageEvent?.Invoke($"PuplishTopic: {topic} Data: {contents}");
                 LogUtil.Intance.WriteLog(LogType.Info, $"Client-PublishTimeMessage: {topic} to DCU: {contents}");
             }
