@@ -23,22 +23,33 @@ namespace IotSystem.MessageProcessing.MessageStructure
             DcuTimeStruct dcuMessage = new DcuTimeStruct();
             dcuMessage.Time = new FieldStruct()
             {
-                Obis = (byte)EnumObis.Time,
+                Obis = new byte[1] { (byte)EnumObis.Time },
                 Data = dataDateTime,
-                Length = (byte)dataDateTime.Length
+                DataLength = new byte[1] { (byte)dataDateTime.Length }
             };
-            byte[] dataTime = FieldBase.GetBytes(dcuMessage.Time);
-            dcuMessage.Crc = ByteUtil.CalCheckSum(dataTime);
-                        
-
-            return StructureUtil.Serialize<DcuTimeStruct>(dcuMessage);
+            return dcuMessage.Data;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct DcuTimeStruct
         {
             public FieldStruct Time { get; set; }
-            public byte Crc { get; set; }
+            private byte Crc => ByteUtil.CalCheckSum(Time.MessageBytes);
+
+            public byte[] Data
+            {
+                get
+                {
+                    int offSet = 0;
+                    int buffLength = Time.TotalBytes + 1;
+                    byte[] data = new byte[buffLength];                    
+                    Buffer.BlockCopy(Time.MessageBytes, 0, data, offSet, Time.TotalBytes);
+                    offSet += Time.TotalBytes;
+                    //Crc
+                    Buffer.BlockCopy(new byte[1] { Crc }, 0, data, offSet, 1);
+                    return data;
+                }
+            }
         }
     }
 }

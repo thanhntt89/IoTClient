@@ -42,9 +42,29 @@ namespace IotSystem.MessageProcessing.MessageStructure
         [StructLayout(LayoutKind.Sequential)]
         public struct FieldStruct
         {
-            public byte Obis { get; set; }
-            public byte Length { get; set; }
+            public byte[] Obis { get; set; }
+            public byte[] DataLength { get; set; }
             public byte[] Data { get; set; }
+
+            public int TotalBytes => Obis.Length + DataLength.Length + Data.Length;
+
+            public byte[] MessageBytes
+            {
+                get
+                {
+                    int offSet = 0;
+                    byte[] data = new byte[TotalBytes];
+                    Buffer.BlockCopy(Obis, 0, data, offSet, Obis.Length);
+                    offSet += Obis.Length;
+                    //Length
+                    Buffer.BlockCopy(DataLength, 0, data, offSet, DataLength.Length);
+                    offSet += DataLength.Length;
+                    //Data
+                    Buffer.BlockCopy(Data, 0, data, offSet, Data.Length);
+                    offSet += Data.Length;
+                    return data;
+                }
+            }
         }
     }
 
