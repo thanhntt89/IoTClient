@@ -26,7 +26,7 @@ namespace IotSystem.Core.Connection
         private string SubscriberTopic { get; set; }
         private string PublisherTopic { get; set; }
         private byte QoSLevel { get; set; }
-        private string TypeData { get; set; }
+        private string TypeRunTime { get; set; }
         private string TypeTime { get; set; }
         private string TypeAlarm { get; set; }
         private string TypeSetup { get; set; }
@@ -47,7 +47,7 @@ namespace IotSystem.Core.Connection
             Port = clientOptions.Port;
             SubscriberTopic = clientOptions.SubscriberTopic;
             QoSLevel = clientOptions.QoSLevel;
-            TypeData = clientOptions.TypeData;
+            TypeRunTime = clientOptions.TypeRunTime;
             TypeTime = clientOptions.TypeTime;
             TypeAlarm = clientOptions.TypeAlarm;
             TypeSetup = clientOptions.TypeSetup;
@@ -193,7 +193,7 @@ namespace IotSystem.Core.Connection
             MessageBase message = new MessageBase() { Topic = e.Topic, Message = e.Message };
 
             //DataType: Customer set follow to thread processing data
-            if (message.Topic.Contains(TypeData) || message.Topic.Contains(TypeAlarm))
+            if (message.Topic.Contains(TypeRunTime) || message.Topic.Contains(TypeAlarm))
             {
                 SingletonMessageDataQueue<MessageBase>.Instance.Enqueue(message);
             }

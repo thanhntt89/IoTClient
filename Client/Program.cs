@@ -22,7 +22,7 @@ namespace IotSystem
                 ClientSetting setting = FileUtil.Deserialize<ClientSetting>(FileUtil.GetTextFromFile(Constant.SettingPath));
                 ShowMessage("Load Client Setting Success!!!");
 
-                IClient client = new ClientBuilder()               
+                IClient client = new ClientBuilder()
                .AddBroker(setting.DCU_CONFIG.Broker)
                .AddPort(setting.DCU_CONFIG.Port)
                .AddClientId(setting.DCU_CONFIG.ClientId)
@@ -31,10 +31,10 @@ namespace IotSystem
                .AddIsClearSection(setting.DCU_CONFIG.IsClearSection)
                .AddUserName(setting.DCU_CONFIG.UserName)
                .AddPassword(setting.DCU_CONFIG.Password)
-               .AddTypeData(setting.DCU_CONFIG.TypeData)
-               .AddTypeTime(setting.DCU_CONFIG.TypeTime)
-               .AddTypeAlarm(setting.DCU_CONFIG.TypeAlarm)
-               .AddTypeSetup(setting.DCU_CONFIG.TypeSetup)
+               .AddTypeData(setting.MESSAGE_TYPE.TypeRunTime)
+               .AddTypeTime(setting.MESSAGE_TYPE.TypeTime)
+               .AddTypeAlarm(setting.MESSAGE_TYPE.TypeAlarm)
+               .AddTypeSetup(setting.MESSAGE_TYPE.TypeSetup)
                .AddTimeCheckConnect(setting.DCU_CONFIG.TimeCheckConnect)
                .AddIDatabaseConnectionThread(new DatabaseConnectionThread(new DatabaseConfig
                {
@@ -46,14 +46,18 @@ namespace IotSystem
                    ConnectionTimeOut = setting.DATABASE_CONFIG.ConnectionTimeOut,
                    Port = setting.DATABASE_CONFIG.Port
                }))
-               .AddIDecodeDataThread(new DecodeMessageDataThread())
+               .AddIDecodeDataThread(new DecodeMessageDataThread(new MessageType()
+               {
+                   TypeRunTime = setting.MESSAGE_TYPE.TypeRunTime,
+                   TypeAlarm = setting.MESSAGE_TYPE.TypeAlarm
+               }))
                .AddIDatabaseProcessingThread(new DatabaseProcessingThread())
                .AddIPublishMessageThread(new PublishMessageThread(new PublishMessageTopic()
                {
                    MessageResponseTimeTopic = setting.DCU_CONFIG.PublishMessageTimeTopic,
                    MessageSetupDcuTopic = setting.DCU_CONFIG.PublishMessageSetupDcuTopic,
-                   MessageTypeTime = setting.DCU_CONFIG.TypeTime,
-                   MessageTypeSetup = setting.DCU_CONFIG.TypeSetup
+                   MessageTypeTime = setting.MESSAGE_TYPE.TypeTime,
+                   MessageTypeSetup = setting.MESSAGE_TYPE.TypeSetup
                }))
                .Build();
 

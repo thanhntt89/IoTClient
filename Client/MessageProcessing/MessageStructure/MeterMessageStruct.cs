@@ -33,7 +33,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
         public FieldStruct Rssi { get; set; }
         public FieldStruct LowBattery { get; set; }
         public FieldStruct Hummidity { get; set; }
-        public FieldStruct AlarmTemp1 { get; set; }
+        public FieldStruct Alarm_Temp1 { get; set; }
         public FieldStruct Alarm_Temp2 { get; set; }
         public FieldStruct Alarm_Battery { get; set; }
         public FieldStruct Alarm_Hummidity { get; set; }

@@ -33,12 +33,7 @@ namespace IotSystem
         public bool IsAutoReconnect { get; set; }
         public string SubscriberTopic { get; set; }
         public string PublishMessageTimeTopic { get; set; }
-        public string PublishMessageSetupDcuTopic { get; set; }
-        public string TypeData { get; set; }
-        public string TypeTime { get; set; }
-        public string TypeAlarm { get; set; }
-        public string TypeSetup { get; set; }
-
+        public string PublishMessageSetupDcuTopic { get; set; }       
         private int timeCheckConnect;
         public int TimeCheckConnect
         {
@@ -50,11 +45,21 @@ namespace IotSystem
         }
     }
 
+    public class MessageType
+    {
+        public string TypeRunTime { get; set; }
+        public string TypeTime { get; set; }
+        public string TypeAlarm { get; set; }
+        public string TypeSetup { get; set; }
+    }
+
     public class ClientSetting
     {
         [JsonProperty("DATABASE_CONFIG")]
         public DatabaseConfig DATABASE_CONFIG { get; set; }
         [JsonProperty("DCU_CONFIG")]
         public DcuConfig DCU_CONFIG { get; set; }
+        [JsonProperty("MESSAGE_TYPE")]
+        public MessageType MESSAGE_TYPE { get; set; }
     }
 }

@@ -17,7 +17,7 @@ namespace IotSystem
         public int Port { get; set; }
         public string SubscriberTopic { get; set; }       
         public byte QoSLevel { get; set; }
-        public string TypeData { get; set; }
+        public string TypeRunTime { get; set; }
         public string TypeTime { get; set; }
         public string TypeAlarm { get; set; }
         public string TypeSetup { get; set; }

@@ -53,7 +53,7 @@ namespace IotSystem.Core.Connection
         }
         public ClientBuilder AddTypeData(string typeData)
         {
-            clientOptions.TypeData = typeData;
+            clientOptions.TypeRunTime = typeData;
             return this;
         }
         public ClientBuilder AddTypeTime(string typeTime)
