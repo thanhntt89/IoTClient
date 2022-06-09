@@ -18,16 +18,30 @@ namespace IotSystem.Core.Utils
         /// <typeparam name="T"></typeparam>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static byte[] Serialize<T>(T s)
+        public static byte[] Serialize<T>(T str)
      where T : struct
         {
-            var size = Marshal.SizeOf(typeof(T));
-            var array = new byte[size];
-            var ptr = Marshal.AllocHGlobal(size);
-            Marshal.StructureToPtr(s, ptr, true);
-            Marshal.Copy(ptr, array, 0, size);
-            Marshal.FreeHGlobal(ptr);
-            return array;
+            int size = Marshal.SizeOf(str);
+
+            byte[] arr = new byte[size];
+
+            GCHandle h = default(GCHandle);
+
+            try
+            {
+                h = GCHandle.Alloc(arr, GCHandleType.Pinned);
+
+                Marshal.StructureToPtr<T>(str, h.AddrOfPinnedObject(), false);
+            }
+            finally
+            {
+                if (h.IsAllocated)
+                {
+                    h.Free();
+                }
+            }
+
+            return arr;
         }
 
         /// <summary>
@@ -36,15 +50,28 @@ namespace IotSystem.Core.Utils
         /// <typeparam name="T"></typeparam>
         /// <param name="array"></param>
         /// <returns></returns>
-        public static T Deserialize<T>(byte[] array)
+        public static T Deserialize<T>(byte[] arr)
             where T : struct
         {
-            var size = Marshal.SizeOf(typeof(T));
-            var ptr = Marshal.AllocHGlobal(size);
-            Marshal.Copy(array, 0, ptr, size);
-            var s = (T)Marshal.PtrToStructure(ptr, typeof(T));
-            Marshal.FreeHGlobal(ptr);
-            return s;
+            T str = default(T);
+
+            GCHandle h = default(GCHandle);
+
+            try
+            {
+                h = GCHandle.Alloc(arr, GCHandleType.Pinned);
+
+                str = Marshal.PtrToStructure<T>(h.AddrOfPinnedObject());
+            }
+            finally
+            {
+                if (h.IsAllocated)
+                {
+                    h.Free();
+                }
+            }
+
+            return str;
         }
 
         private StructureUtil()

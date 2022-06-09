@@ -16,7 +16,27 @@ namespace IotSystem.MessageProcessing.MessageStructure
     {
         public static byte[] GetBytes(FieldStruct field)
         {
-            return StructureUtil.Serialize<FieldStruct>(field);
+            int size = Marshal.SizeOf(field);
+
+            byte[] arr = new byte[size];
+
+            GCHandle h = default(GCHandle);
+
+            try
+            {
+                h = GCHandle.Alloc(arr, GCHandleType.Pinned);
+
+                Marshal.StructureToPtr<FieldStruct>(field, h.AddrOfPinnedObject(), false);
+            }
+            finally
+            {
+                if (h.IsAllocated)
+                {
+                    h.Free();
+                }
+            }
+
+            return arr;
         }
 
         [StructLayout(LayoutKind.Sequential)]
