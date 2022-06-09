@@ -2,6 +2,9 @@
 using IotSystem.Core.Connection;
 using IotSystem.Core.ThreadManagement;
 using IotSystem.MessageProcessing;
+using IotSystem.MessageProcessing.DcuMessage;
+using IotSystem.MessageProcessing.MessageStructure;
+using IotSystem.MessageProcessing.MeterMessage;
 using IotSystem.Utils;
 using System;
 using System.Threading.Tasks;
@@ -12,6 +15,9 @@ namespace IotSystem
     {
         static void Main(string[] args)
         {
+            MessageTime mstime = new MessageTime();
+           var bytes = mstime.CreateMessagePublish();
+
             try
             {
                 ClientSetting setting = FileUtil.Deserialize<ClientSetting>(FileUtil.GetTextFromFile(Constant.SettingPath));
