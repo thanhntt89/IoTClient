@@ -52,7 +52,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
             {
                 get
                 {
-                    if (Obis == null) return null;
+                    if (Obis == null || DataLength == null || Data == null) return null;
                     int offSet = 0;
                     byte[] data = new byte[TotalBytes];
                     Buffer.BlockCopy(Obis, 0, data, offSet, Obis.Length);
