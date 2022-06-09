@@ -1,5 +1,6 @@
 ﻿
 
+using System.Runtime.InteropServices;
 using static IotSystem.MessageProcessing.MessageStructure.FieldBase;
 /**
 *Project name: IotSystem 
@@ -10,6 +11,7 @@ using static IotSystem.MessageProcessing.MessageStructure.FieldBase;
 **/
 namespace IotSystem.MessageProcessing.MessageStructure
 {
+    [StructLayout(LayoutKind.Sequential)]
     public struct RuntimeStruct
     {
         public FieldStruct Time { get; set; }
@@ -21,6 +23,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
         public FieldStruct Hummidity { get; set; }
     }
 
+    [StructLayout(LayoutKind.Sequential)]
     public struct AlarmStruct
     {
         public FieldStruct Time { get; set; }

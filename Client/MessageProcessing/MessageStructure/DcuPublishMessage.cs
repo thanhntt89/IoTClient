@@ -44,31 +44,32 @@ namespace IotSystem.MessageProcessing.MessageStructure
             return new MessageBase() { Message = dcuMessage.Data, Topic = string.Format(topic, dcuId) };
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        public struct DcuTimeStruct
-        {
-            public FieldStruct Time { get; set; }
-            private byte Crc => ByteUtil.CalCheckSum(Time.MessageBytes);
-
-            public byte[] Data
-            {
-                get
-                {
-                    int offSet = 0;
-                    int buffLength = Time.TotalBytes + 1;
-                    byte[] data = new byte[buffLength];
-                    Buffer.BlockCopy(Time.MessageBytes, 0, data, offSet, Time.TotalBytes);
-                    offSet += Time.TotalBytes;
-                    //Crc
-                    Buffer.BlockCopy(new byte[1] { Crc }, 0, data, offSet, 1);
-                    return data;
-                }
-            }
-        }
-
         private DcuPublishMessage()
         {
 
+        }
+    }
+
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DcuTimeStruct
+    {
+        public FieldStruct Time { get; set; }
+        private byte Crc => ByteUtil.CalCheckSum(Time.MessageBytes);
+
+        public byte[] Data
+        {
+            get
+            {
+                int offSet = 0;
+                int buffLength = Time.TotalBytes + 1;
+                byte[] data = new byte[buffLength];
+                Buffer.BlockCopy(Time.MessageBytes, 0, data, offSet, Time.TotalBytes);
+                offSet += Time.TotalBytes;
+                //Crc
+                Buffer.BlockCopy(new byte[1] { Crc }, 0, data, offSet, 1);
+                return data;
+            }
         }
     }
 }
