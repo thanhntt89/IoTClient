@@ -20,7 +20,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
     {
         public static MessageBase CreatePublishMessageSetup(string topic, string dcuId)
         {
-            byte[] dataDateTime = ConvertUtil.HexToByteArray(ConvertUtil.StringToHex(DateTime.Now.ToString("yyMMddHHmmss")));
+            byte[] dataDateTime = ConvertUtil.HexToByteArray(ConvertUtil.StringToHex(Constant.CURRENT_TIME));
             DcuTimeStruct dcuMessage = new DcuTimeStruct();
             dcuMessage.Time = new FieldStruct()
             {
