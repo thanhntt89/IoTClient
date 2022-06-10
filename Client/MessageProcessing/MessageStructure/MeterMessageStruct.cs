@@ -109,15 +109,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
         public FieldStruct RawRssi { get; set; }
         public FieldStruct RawLowBattery { get; set; }
         public FieldStruct RawHummidity { get; set; }
-
-        //Total fields in Runtime message
-        public int FiledCount
-        {
-            get
-            {
-                return 6;
-            }
-        }
+               
 
         public byte[] Data
         {
@@ -224,16 +216,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
         public FieldStruct RawAlarmBattery { get; set; }
         public FieldStruct RawAlarmHummidity { get; set; }
         public FieldStruct RawAlarmLigth { get; set; }
-
-        //Total fields in Alarm message
-        public int FiledCount
-        {
-            get
-            {
-                return 11;
-            }
-        }
-
+        
         public byte[] Data
         {
             get
