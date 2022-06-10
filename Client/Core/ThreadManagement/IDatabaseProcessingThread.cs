@@ -13,6 +13,6 @@ namespace IotSystem.Core.ThreadManagement
     public interface IDatabaseProcessingThread
     {
         void ShowMessage(DelegateShowMessage showMessage);       
-        void InsertData(CancellationToken cancellation);
+        void ExecuteData(CancellationToken cancellation);
     }
 }

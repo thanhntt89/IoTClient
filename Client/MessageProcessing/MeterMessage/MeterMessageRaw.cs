@@ -1,109 +1,30 @@
 ﻿using IotSystem.Core;
-using IotSystem.Core.Queues;
-using IotSystem.Core.ThreadManagement;
 using IotSystem.Core.Utils;
 using IotSystem.MessageProcessing.MessageStructure;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using static IotSystem.ClientEvent;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace IotSystem.MessageProcessing.MeterMessage
 {
-    public class DecodeMessageDataThread : IDecodeDataThread
+    public class MeterMessageRaw
     {
-        public event DelegateShowMessage EventShowMessage;
-        private MessageType messageType;
+        public RuntimeCollection Runtimes { get; set; }
+        public AlarmCollection Alarms { get; set; }
 
-        public DecodeMessageDataThread(MessageType type)
+        private MessageBase message { get; set; }
+        private MessageType messageType { get; set; }
+        public MeterMessageRaw(MessageBase messageBase, MessageType type)
         {
+            message = messageBase;
+            Runtimes = new RuntimeCollection();
+            Alarms = new AlarmCollection();
             messageType = type;
         }
 
-        /// <summary>
-        /// Set time to process message
-        /// </summary>
-        private int TIME_PROCESSING_MESSAGE = 100;
-
-        private int TimeProcessMessage(int countdata)
-        {
-            //if (countdata / 1000 >= 1000)
-            //{
-            //    //TIME_PROCESSING_MESSAGE = 1;
-            //}else if(countdata/ 1000 >= 100)
-            //{
-            //   // TIME_PROCESSING_MESSAGE = 10;
-            //}
-            //else if (countdata / 1000 >= 10)
-            //{
-            //   // TIME_PROCESSING_MESSAGE = 100;
-            //}
-
-            return TIME_PROCESSING_MESSAGE;
-        }
-
-        public void ThreadDecode(CancellationToken cancellation)
-        {
-            MessageBase message = new MessageBase();
-            int countData = 0;
-            Thread currentThread = Thread.CurrentThread;
-            EventShowMessage?.Invoke($"ThreadDecode-{currentThread.Name}:Started!!!");
-
-            while (true)
-            {
-                countData = SingletonMessageDataQueue<MessageBase>.Instance.Count;
-                if (cancellation.IsCancellationRequested && countData == 0)
-                {
-                    EventShowMessage?.Invoke($"ThreadDecode-{currentThread.Name}:Stopped!!!");
-                    break;
-                }
-
-                //Get data from messagequeue
-                if (SingletonMessageDataQueue<MessageBase>.Instance.TryDequeue(out message) && message != null)
-                {
-                    if (ProcessingMessage(message))
-                    {
-                        Thread.Sleep(TimeProcessMessage(countData));
-                        continue;
-                    }
-                }
-                //Sleep thread 10sec if queue has no data
-                Thread.Sleep(10000);
-            }
-        }
-
-        public void ThreadDecodeByTraffic(CancellationToken cancellation)
-        {
-            MessageBase message = new MessageBase();
-            Thread currentThread = Thread.CurrentThread;
-
-            EventShowMessage?.Invoke($"ThreadDecodeByTraffic-{currentThread.Name}:Started!!!");
-            int countData = 0;
-
-            while (true)
-            {
-                countData = SingletonMessageDataQueue<MessageBase>.Instance.Count;
-                if (cancellation.IsCancellationRequested || countData == 0)
-                {
-                    EventShowMessage?.Invoke($"ThreadDecodeByTraffic-{currentThread.Name}:Stopped!!!");
-                    break;
-                }
-
-                //Get data from messagequeue
-                if (SingletonMessageDataQueue<MessageBase>.Instance.TryDequeue(out message) && message != null)
-                {
-                    if (ProcessingMessage(message))
-                    {
-                        Thread.Sleep(TimeProcessMessage(countData));
-                        continue;
-                    }
-                }
-                //Sleep thread 10sec if queue has no data
-                Thread.Sleep(10000);
-            }
-        }
-
-        public bool ProcessingMessage(MessageBase message)
+        public void GetMessageRaw()
         {
             try
             {
@@ -114,12 +35,8 @@ namespace IotSystem.MessageProcessing.MeterMessage
                 Buffer.BlockCopy(message.Message, 0, dataMessage, 0, message.Message.Length - 1);
                 //Check sum data
                 if (crc != ByteUtil.CalCheckSum(dataMessage))
-                    return false;
-
-                //Message Type
-                RuntimeCollection runtimes = new RuntimeCollection();
-                AlarmCollection alarms = new AlarmCollection();
-
+                    return;
+               
                 RuntimeStruct runtime = new RuntimeStruct();
                 AlarmStruct alarm = new AlarmStruct();
 
@@ -149,7 +66,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                         case EnumObis.Time:
                             if (message.Topic.Contains(messageType.TypeRunTime))
                             {
-                                runtimes.Time = new FieldBase.FieldStruct()
+                                Runtimes.RawTime = new FieldBase.FieldStruct()
                                 {
                                     Obis = new byte[1] { (byte)obis },
                                     DataLength = new byte[1] { (byte)dataLength },
@@ -158,7 +75,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             }
                             else if (message.Topic.Contains(messageType.TypeAlarm))
                             {
-                                alarms.Time = new FieldBase.FieldStruct()
+                                Alarms.RawTime = new FieldBase.FieldStruct()
                                 {
                                     Obis = new byte[1] { (byte)obis },
                                     DataLength = new byte[1] { (byte)dataLength },
@@ -355,36 +272,22 @@ namespace IotSystem.MessageProcessing.MeterMessage
                         if (message.Topic.Contains(messageType.TypeRunTime))
                         {
                             fieldCount = 0;
-                            runtimes.Add(runtime);
+                            Runtimes.Add(runtime);
                             runtime = new RuntimeStruct();
                         }
                         else if (message.Topic.Contains(messageType.TypeAlarm))
                         {
                             fieldCount = 0;
-                            alarms.Add(alarm);
+                            Alarms.Add(alarm);
                             alarm = new AlarmStruct();
                         }
                     }
-                }
-
-                //Lock table to insert
-                lock (SingletonDcuTable.Instance)
-                {
-                    SingletonDcuTable.Instance.Rows.Add(message.Topic);
-                }
-
-                return true;
+                }               
             }
             catch (Exception ex)
-            {
-                EventShowMessage?.Invoke($"DecodeRunning-Fails:{ex.Message}");
-                return false;
+            {              
+                LogUtil.Intance.WriteLog(LogType.Error, string.Format("DecodeMessageDataThread-ProcessingMessage-Error: {0}", ex.Message));                
             }
-        }
-
-        public void ShowMessage(DelegateShowMessage showMessage)
-        {
-            EventShowMessage += showMessage;
         }
     }
 }

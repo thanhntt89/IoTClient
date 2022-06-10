@@ -16,13 +16,13 @@ namespace IotSystem
     {
         static void Main(string[] args)
         {
-            var msg = MeterMessageTest.CreateRuntimeMessage();
-            DecodeMessageDataThread decodeMessageData = new DecodeMessageDataThread(new MessageType()
-            {
-                TypeRunTime = "RunTime",
-                TypeAlarm="Alarm"
-            });
-            decodeMessageData.ProcessingMessage(msg);
+            //var msg = MeterMessageTest.CreateRuntimeMessage();
+            //DecodeMeterMessageThread decodeMessageData = new DecodeMeterMessageThread(new MessageType()
+            //{
+            //    TypeRunTime = "RunTime",
+            //    TypeAlarm="Alarm"
+            //});
+           // decodeMessageData.ProcessingMessage(msg);
             // MessageBase msgTime = DcuPublishMessage.CreatePublishMessageTime("Setup/{0}/dcuid", "124");
 
             try
@@ -54,13 +54,13 @@ namespace IotSystem
                    ConnectionTimeOut = setting.DATABASE_CONFIG.ConnectionTimeOut,
                    Port = setting.DATABASE_CONFIG.Port
                }))
-               .AddIDecodeDataThread(new DecodeMessageDataThread(new MessageType()
+               .AddIDecodeDataThread(new DecodeMeterMessageThread(new MessageType()
                {
                    TypeRunTime = setting.MESSAGE_TYPE.TypeRunTime,
                    TypeAlarm = setting.MESSAGE_TYPE.TypeAlarm
                }))
                .AddIDatabaseProcessingThread(new DatabaseProcessingThread())
-               .AddIPublishMessageThread(new PublishMessageThread(new PublishMessageTopic()
+               .AddIPublishMessageThread(new PublishDcuMessageThread(new PublishMessageTopic()
                {
                    MessageResponseTimeTopic = setting.DCU_CONFIG.PublishMessageTimeTopic,
                    MessageSetupDcuTopic = setting.DCU_CONFIG.PublishMessageSetupDcuTopic,

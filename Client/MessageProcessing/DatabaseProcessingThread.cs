@@ -6,6 +6,7 @@
 * Copyright (c) by MVN Viet Nam Inc. All rights reserved
 **/
 using IotSystem.Core.ThreadManagement;
+using IotSystem.MessageProcessing.MeterMessage;
 using System;
 using System.Data;
 using System.Threading;
@@ -15,39 +16,74 @@ namespace IotSystem.MessageProcessing
 {
     public class DatabaseProcessingThread: IDatabaseProcessingThread
     {
-        public event DelegateShowMessage EventShowMessage;
-        private ProcessingDataFactory dataFactory = new ProcessingDataFactory();
+        public event DelegateShowMessage EventShowMessage;    
 
-        public void InsertData(CancellationToken cancellation)
+        public void ExecuteData(CancellationToken cancellation)
         {
             EventShowMessage?.Invoke($"SingletonDecodeData-InsertDataThread:Started!!!");
-            DataTable dataTable = new DataTable();
+            DataTable dataTableRuntime = new DataTable();
+            DataTable dataTableAlarm = new DataTable();
 
             while (true)
             {
-                if (cancellation.IsCancellationRequested && SingletonDcuTable.Instance.Rows.Count == 0)
+                if (cancellation.IsCancellationRequested && SingletonRuntimeTable.Instance.Rows.Count == 0 && SingletonAlarmTable.Instance.Rows.Count == 0
+                    )
                 {
                     EventShowMessage?.Invoke($"SingletonDecodeData-InsertDataThread:Stopped!!!");
                     break;
                 }
 
                 //Check data to insert
-                if (SingletonDcuTable.Instance.Rows.Count > 0)
+                if (SingletonRuntimeTable.Instance.Rows.Count > 0)
                 {
-                    lock (SingletonDcuTable.Instance)
+                    lock (SingletonRuntimeTable.Instance)
                     {
-                        dataTable = SingletonDcuTable.Instance.Copy();
-                        SingletonDcuTable.Instance.Clear();
+                        dataTableRuntime = SingletonRuntimeTable.Instance.Copy();
+                        SingletonRuntimeTable.Instance.Clear();
                     }
 
-                    ProcessingInsertData(dataTable);
+                    ProcessingRuntime(dataTableRuntime);
+                }
+                if (SingletonAlarmTable.Instance.Rows.Count > 0)
+                {
+                    lock (SingletonAlarmTable.Instance)
+                    {
+                        dataTableAlarm = SingletonAlarmTable.Instance.Copy();
+                        SingletonAlarmTable.Instance.Clear();
+                    }
+
+                    ProcessingAlarm(dataTableAlarm);
                 }
                 //Wait 10s for check data 
                 Thread.Sleep(10000);
             }
         }
 
-        private bool ProcessingInsertData(DataTable dataTable)
+        private bool ProcessingRuntime(DataTable dataTable)
+        {
+            try
+            {
+                //Insert to database
+                //Code here
+
+
+                EventShowMessage?.Invoke($"InsertData-Test-RowsCount: {dataTable.Rows.Count} {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
+                //Clear data in table
+                lock (dataTable)
+                {
+                    dataTable.Rows.Clear();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                EventShowMessage?.Invoke($"ProcessingInsertData-Fails:{ex.Message}");
+                return false;
+            }
+        }
+
+        private bool ProcessingAlarm(DataTable dataTable)
         {
             try
             {

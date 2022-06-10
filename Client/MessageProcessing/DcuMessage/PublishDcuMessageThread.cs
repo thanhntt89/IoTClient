@@ -15,14 +15,14 @@ namespace IotSystem.MessageProcessing.DcuMessage
         public string MessageTypeSetup { get; set; }
     }
 
-    public class PublishMessageThread : IPublishMessageThread
+    public class PublishDcuMessageThread : IPublishMessageThread
     {
         public event DelegatePublishMessage EventPublishMessage;
         public event DelegateShowMessage EventShowMessage;
 
         private PublishMessageTopic MessageTopic { get; set; }
 
-        public PublishMessageThread(PublishMessageTopic messageTopic)
+        public PublishDcuMessageThread(PublishMessageTopic messageTopic)
         {
             MessageTopic = messageTopic;
         }

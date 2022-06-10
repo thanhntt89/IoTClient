@@ -38,6 +38,13 @@ namespace IotSystem.Core.Utils
             return _CheckSumByte;
         }
 
+        public static byte[] GetBytes(byte[] data, uint offSet, uint size)
+        {
+            byte[] buff = new byte[size];
+            Array.Copy(data, offSet, buff, 0, size);
+            return buff;
+        }
+
         private ByteUtil()
         {
 

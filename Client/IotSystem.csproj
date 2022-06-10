@@ -67,6 +67,12 @@
     <Compile Include="MessageProcessing\MessageStructure\MeterMessageStruct.cs" />
     <Compile Include="MessageProcessing\MessageStructure\MeterMessageTest.cs" />
     <Compile Include="MessageProcessing\MeterMessage\IMeterMessageProcessing.cs" />
+    <Compile Include="MessageProcessing\MeterMessage\SingletonAlarmTable.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MessageProcessing\MeterMessage\SingletonRuntimeTable.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="MessageProcessing\SingletonDcuTable.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -75,11 +81,11 @@
     <Compile Include="Core\ThreadManagement\IDatabaseProcessingThread.cs" />
     <Compile Include="Core\ThreadManagement\IPublishMessageThread.cs" />
     <Compile Include="Core\ThreadManagement\DatabaseConnectionThread.cs" />
-    <Compile Include="MessageProcessing\MeterMessage\DecodeMessageDataThread.cs" />
+    <Compile Include="MessageProcessing\MeterMessage\DecodeMeterMessageThread.cs" />
     <Compile Include="MessageProcessing\Queries\DcuQueries.cs" />
-    <Compile Include="MessageProcessing\DcuMessage\PublishMessageThread.cs" />
+    <Compile Include="MessageProcessing\DcuMessage\PublishDcuMessageThread.cs" />
     <Compile Include="Core\Queues\SingletonMessageDataQueue.cs" />
-    <Compile Include="MessageProcessing\MeterMessage\MeterMessageProcessing.cs" />
+    <Compile Include="MessageProcessing\MeterMessage\MeterMessageRaw.cs" />
     <Compile Include="MessageProcessing\ProcessingDataFactory.cs" />
     <Compile Include="Core\Queues\SingletonMessageTimeQueue.cs" />
     <Compile Include="Core\SqlHelpers.cs" />

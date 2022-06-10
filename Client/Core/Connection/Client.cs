@@ -8,6 +8,7 @@
 using IotSystem.Core.Queues;
 using IotSystem.Core.ThreadManagement;
 using IotSystem.Core.Utils;
+using IotSystem.MessageProcessing.MessageStructure;
 using IotSystem.Queues;
 using System;
 using System.Text;
@@ -365,7 +366,7 @@ namespace IotSystem.Core.Connection
             threadCollection.AddThread(iDatabaseConnectionThread.ThreadCheckConnection, tokenSource.Token);
             threadCollection.AddThread(iDecodeDataThread.ThreadDecode, tokenSource.Token, "DecodeMain");
             threadCollection.AddThread(iPublishMessageThread.ThreadDecode, tokenSource.Token);
-            threadCollection.AddThread(iInsertDataThread.InsertData, tokenSource.Token);
+            threadCollection.AddThread(iInsertDataThread.ExecuteData, tokenSource.Token);
             threadCollection.AddThread(ThreadMessageTest, tokenSource.Token);
         }
 
@@ -416,10 +417,8 @@ namespace IotSystem.Core.Connection
                     ShowMessageEvent?.Invoke($"ThreadTestMessage:Stopped!!!");
                     break;
                 }
-
-                count++;
-
-                MessageBase message = new MessageBase() { Topic = $"Topic/DCU{count}" };
+                count++;                
+                MessageBase message = MeterMessageTest.CreateRuntimeMessage($"PHH/Customer/Sub_Local/RunTime/DCU{count}"); 
 
                 SingletonMessageDataQueue<MessageBase>.Instance.Enqueue(message);
                 Thread.Sleep(10);

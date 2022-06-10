@@ -12,7 +12,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
 {
     public class MeterMessageTest
     {
-        public static MessageBase CreateRuntimeMessage()
+        public static MessageBase CreateRuntimeMessage(string topic)
         {
             MessageBase message = new MessageBase();
             byte[] dataDateTime = new byte[6];
@@ -24,7 +24,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
             dataDateTime[5] = (byte)DateTime.Now.Second;
 
             RuntimeCollection runtimes = new RuntimeCollection();
-            runtimes.Time = new FieldBase.FieldStruct()
+            runtimes.RawTime = new FieldBase.FieldStruct()
             {
                 Obis = new byte[1] { (byte)EnumObis.Time },
                 Data = dataDateTime,
@@ -105,16 +105,16 @@ namespace IotSystem.MessageProcessing.MessageStructure
                     DataLength = new byte[1] { 2 }
                 }
                 ,
-                //RawLowBattery = new FieldBase.FieldStruct()
-                //{
-                //    Obis = new byte[1] { (byte)EnumObis.LowBattery },
-                //    Data = new byte[2] { 11, 12 },
-                //    DataLength = new byte[1] { 2 }
-                //},
+                RawLowBattery = new FieldBase.FieldStruct()
+                {
+                    Obis = new byte[1] { (byte)EnumObis.LowBattery },
+                    Data = new byte[2] { 11, 12 },
+                    DataLength = new byte[1] { 2 }
+                }
             });
 
             message.Message = runtimes.Data;
-            message.Topic = "PHH/Customer/Sub_Local/RunTime/DCU001";
+            message.Topic = topic;
             return message;
         }
 

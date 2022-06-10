@@ -1,7 +1,6 @@
 ﻿using IotSystem.Core.Utils;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using static IotSystem.MessageProcessing.MessageStructure.FieldBase;
 /**
 *Project name: IotSystem 
@@ -14,14 +13,32 @@ namespace IotSystem.MessageProcessing.MessageStructure
 {
     public class RuntimeCollection : List<RuntimeStruct>
     {
-        public FieldStruct Time { get; set; }
+        public FieldStruct RawTime { get; set; }
+
+        public string Time
+        {
+            get
+            {
+                if (RawTime.FieldBytes == null)
+                    return string.Empty;
+
+                int year = 2000 + RawTime.Data[0];
+                int month = RawTime.Data[1];
+                int day = RawTime.Data[2];
+                int hour = RawTime.Data[3];
+                int min = RawTime.Data[4];
+                int sec = RawTime.Data[5];
+                DateTime dt = new DateTime(year, month, day, hour, min, sec);
+                return dt.ToString("yyyy/MM/dd HH:mm:ss");
+            }
+        }
 
         private byte Crc { get; set; }
         private int DataLength
         {
             get
             {
-                int dataLength = Time.TotalBytes;
+                int dataLength = RawTime.TotalBytes;
                 foreach (var field in this)
                 {
                     dataLength += field.Data.Length;
@@ -37,8 +54,8 @@ namespace IotSystem.MessageProcessing.MessageStructure
                 byte[] data = new byte[DataLength + 1];
                 int offSet = 0;
                 //Add Time              
-                Buffer.BlockCopy(Time.FieldBytes, 0, data, offSet, Time.TotalBytes);
-                offSet += Time.TotalBytes;
+                Buffer.BlockCopy(RawTime.FieldBytes, 0, data, offSet, RawTime.TotalBytes);
+                offSet += RawTime.TotalBytes;
 
                 //Add DeviceData
                 foreach (var field in this)
@@ -59,13 +76,31 @@ namespace IotSystem.MessageProcessing.MessageStructure
 
     public class AlarmCollection : List<AlarmStruct>
     {
-        public FieldStruct Time { get; set; }
+        public FieldStruct RawTime { get; set; }
+
+        public string Time
+        {
+            get
+            {
+                if (RawTime.FieldBytes == null)
+                    return string.Empty;
+
+                int year = 2000 + RawTime.Data[0];
+                int month = RawTime.Data[1];
+                int day = RawTime.Data[2];
+                int hour = RawTime.Data[3];
+                int min = RawTime.Data[4];
+                int sec = RawTime.Data[5];
+                DateTime dt = new DateTime(year, month, day, hour, min, sec);
+                return dt.ToString("yyyy/MM/dd HH:mm:ss");
+            }
+        }
         private byte Crc { get; set; }
         private int DataLength
         {
             get
             {
-                int dataLength = Time.TotalBytes;
+                int dataLength = RawTime.TotalBytes;
                 foreach (var field in this)
                 {
                     dataLength += field.Data.Length;
@@ -81,8 +116,8 @@ namespace IotSystem.MessageProcessing.MessageStructure
                 byte[] data = new byte[DataLength + 1];
                 int offSet = 0;
                 //Add Time              
-                Buffer.BlockCopy(Time.Data, 0, data, offSet, Time.TotalBytes);
-                offSet += Time.TotalBytes;
+                Buffer.BlockCopy(RawTime.Data, 0, data, offSet, RawTime.TotalBytes);
+                offSet += RawTime.TotalBytes;
 
                 //Add DeviceData
                 foreach (var field in this)
@@ -109,7 +144,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
         public FieldStruct RawRssi { get; set; }
         public FieldStruct RawLowBattery { get; set; }
         public FieldStruct RawHummidity { get; set; }
-               
+
 
         public byte[] Data
         {
@@ -142,7 +177,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
                     Buffer.BlockCopy(RawRssi.FieldBytes, 0, data, offSet, RawRssi.TotalBytes);
                     offSet += RawRssi.TotalBytes;
                 }
-                if (RawLowBattery.FieldBytes !=null)
+                if (RawLowBattery.FieldBytes != null)
                 {
                     //Add LowBattery
                     Buffer.BlockCopy(RawLowBattery.FieldBytes, 0, data, offSet, RawLowBattery.TotalBytes);
@@ -166,44 +201,54 @@ namespace IotSystem.MessageProcessing.MessageStructure
             }
         }
 
-        public float Temp1
+        public float? Temp1
         {
             get
             {
+                if (RawTemp1.Data == null)
+                    return null;
                 return ByteUtil.ToInt(RawTemp1.Data);
             }
         }
-        public float Temp2
+        public float? Temp2
         {
             get
             {
+                if (RawTemp2.Data == null)
+                    return null;
                 return ByteUtil.ToInt(RawTemp2.Data);
             }
         }
-        public float Rssi
+        public float? Rssi
         {
             get
             {
+                if (RawRssi.Data == null)
+                    return null;
                 return ByteUtil.ToInt(RawRssi.Data);
             }
         }
-        public float LowBattery
+        public float? LowBattery
         {
             get
             {
+                if (RawLowBattery.Data == null)
+                    return null;
                 return ByteUtil.ToInt(RawLowBattery.Data);
             }
         }
-        public float Hummidity
+        public float? Hummidity
         {
             get
-            {                
+            {
+                if (RawHummidity.Data == null)
+                    return null;
                 return ByteUtil.ToInt(RawHummidity.Data);
             }
         }
     }
 
-    public struct AlarmStruct 
+    public struct AlarmStruct
     {
         public FieldStruct RawDeviceNo { get; set; }
         public FieldStruct RawTemp1 { get; set; }
@@ -216,7 +261,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
         public FieldStruct RawAlarmBattery { get; set; }
         public FieldStruct RawAlarmHummidity { get; set; }
         public FieldStruct RawAlarmLigth { get; set; }
-        
+
         public byte[] Data
         {
             get
@@ -268,73 +313,93 @@ namespace IotSystem.MessageProcessing.MessageStructure
                 return ByteUtil.ToInt(RawDeviceNo.Data);
             }
         }
-        public float Temp1
+        public float? Temp1
         {
             get
             {
+                if (RawTemp1.Data == null)
+                    return null;
                 return ByteUtil.ToInt(RawTemp1.Data);
             }
         }
-        public float Temp2
+        public float? Temp2
         {
             get
             {
+                if (RawTemp2.Data == null)
+                    return null;
                 return ByteUtil.ToInt(RawTemp2.Data);
             }
         }
-        public float Rssi
+        public float? Rssi
         {
             get
             {
-                return ByteUtil.ToInt(RawRssi.Data);
+                if (RawRssi.Data == null)
+                    return null;
+                return ByteUtil.ToFloat(RawRssi.Data);
             }
         }
-        public float LowBattery
+        public float? LowBattery
         {
             get
             {
+                if (RawLowBattery.Data == null)
+                    return null;
                 return ByteUtil.ToInt(RawLowBattery.Data);
             }
         }
-        public float Hummidity
+        public float? Hummidity
         {
             get
             {
+                if (RawHummidity.Data == null)
+                    return null;
                 return ByteUtil.ToInt(RawHummidity.Data);
             }
         }
-        public int AlarmTemp1
+        public int? AlarmTemp1
         {
             get
             {
+                if (RawAlarmTemp1.Data == null)
+                    return null;
                 return ByteUtil.ToInt(RawAlarmTemp1.Data);
             }
         }
-        public int AlarmTemp2
+        public int? AlarmTemp2
         {
             get
             {
+                if (RawAlarmTemp2.Data == null)
+                    return null;
                 return ByteUtil.ToInt(RawAlarmTemp2.Data);
             }
         }
-        public int AlarmBattery
+        public int? AlarmBattery
         {
             get
             {
+                if (RawAlarmBattery.Data == null)
+                    return null;
                 return ByteUtil.ToInt(RawAlarmBattery.Data);
             }
         }
-        public int AlarmHummidity
+        public int? AlarmHummidity
         {
             get
             {
+                if (RawAlarmHummidity.Data == null)
+                    return null;
                 return ByteUtil.ToInt(RawAlarmHummidity.Data);
             }
         }
-        public int AlarmLigth
+        public int? AlarmLigth
         {
             get
             {
+                if (RawAlarmLigth.Data == null)
+                    return null;
                 return ByteUtil.ToInt(RawAlarmLigth.Data);
             }
         }
