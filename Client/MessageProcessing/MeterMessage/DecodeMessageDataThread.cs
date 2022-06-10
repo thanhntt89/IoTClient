@@ -4,6 +4,7 @@ using IotSystem.Core.ThreadManagement;
 using IotSystem.Core.Utils;
 using IotSystem.MessageProcessing.MessageStructure;
 using System;
+using System.Linq;
 using System.Threading;
 using static IotSystem.ClientEvent;
 
@@ -102,70 +103,80 @@ namespace IotSystem.MessageProcessing.MeterMessage
             }
         }
 
-        private bool ProcessingMessage(MessageBase message)
+        public bool ProcessingMessage(MessageBase message)
         {
             try
             {
                 //Process data
                 //Valid message
-                byte crc = message.Message[message.Message.Length];
+                byte crc = message.Message[message.Message.Length - 1];
                 byte[] dataMessage = new byte[message.Message.Length - 1];
-
+                Buffer.BlockCopy(message.Message, 0, dataMessage, 0, message.Message.Length - 1);
+                //Check sum data
                 if (crc != ByteUtil.CalCheckSum(dataMessage))
                     return false;
 
                 //Message Type
+                RuntimeCollection runtimes = new RuntimeCollection();
+                AlarmCollection alarms = new AlarmCollection();
 
                 RuntimeStruct runtime = new RuntimeStruct();
                 AlarmStruct alarm = new AlarmStruct();
-                uint dataLength = 0;
-                uint offSet = 0;
+
+                int dataLength = 0;
+                int offSet = 0;
+                //Count data foreach device
+                int fieldCount = 0;
 
                 while (dataMessage.Length != offSet)
                 {
                     EnumObis obis = (EnumObis)dataMessage[offSet];
                     offSet++;
+                    //Get data length value
                     dataLength = dataMessage[offSet];
+                    //Position data
+                    offSet++;
+                    byte[] data = new byte[dataLength];
+                    Buffer.BlockCopy(dataMessage, offSet, data, 0, dataLength);
+                    //Next position
                     offSet += dataLength;
-
-                    byte[] data = ByteUtil.GetBytes(dataMessage, offSet);
 
                     switch (obis)
                     {
                         case EnumObis.Time:
                             if (message.Topic.Contains(messageType.TypeRunTime))
                             {
-                                runtime.Time = new FieldBase.FieldStruct()
+                                runtimes.Time = new FieldBase.FieldStruct()
                                 {
                                     Obis = new byte[1] { (byte)obis },
                                     DataLength = new byte[1] { (byte)dataLength },
                                     Data = data
                                 };
                             }
-                            if (message.Topic.Contains(messageType.TypeAlarm))
+                            else if (message.Topic.Contains(messageType.TypeAlarm))
                             {
-                                alarm.Time = new FieldBase.FieldStruct()
+                                alarms.Time = new FieldBase.FieldStruct()
                                 {
                                     Obis = new byte[1] { (byte)obis },
                                     DataLength = new byte[1] { (byte)dataLength },
                                     Data = data
                                 };
                             }
-
                             break;
                         case EnumObis.DeviceNo:
+                            fieldCount++;
                             if (message.Topic.Contains(messageType.TypeRunTime))
                             {
-                                runtime.DeviceNo = new FieldBase.FieldStruct()
+                                runtime.FieldDeviceNo = new FieldBase.FieldStruct()
                                 {
                                     Obis = new byte[1] { (byte)obis },
                                     DataLength = new byte[1] { (byte)dataLength },
                                     Data = data
                                 };
                             }
-                            if (message.Topic.Contains(messageType.TypeAlarm))
+                            else if (message.Topic.Contains(messageType.TypeAlarm))
                             {
-                                alarm.DeviceNo = new FieldBase.FieldStruct()
+                                alarm.FieldDeviceNo = new FieldBase.FieldStruct()
                                 {
                                     Obis = new byte[1] { (byte)obis },
                                     DataLength = new byte[1] { (byte)dataLength },
@@ -174,18 +185,19 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             }
                             break;
                         case EnumObis.Temp1:
+                            fieldCount++;
                             if (message.Topic.Contains(messageType.TypeRunTime))
                             {
-                                runtime.Temp1 = new FieldBase.FieldStruct()
+                                runtime.FieldTemp1 = new FieldBase.FieldStruct()
                                 {
                                     Obis = new byte[1] { (byte)obis },
                                     DataLength = new byte[1] { (byte)dataLength },
                                     Data = data
                                 };
                             }
-                            if (message.Topic.Contains(messageType.TypeAlarm))
+                            else if (message.Topic.Contains(messageType.TypeAlarm))
                             {
-                                alarm.Temp1 = new FieldBase.FieldStruct()
+                                alarm.FieldTemp1 = new FieldBase.FieldStruct()
                                 {
                                     Obis = new byte[1] { (byte)obis },
                                     DataLength = new byte[1] { (byte)dataLength },
@@ -194,18 +206,19 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             }
                             break;
                         case EnumObis.Temp2:
+                            fieldCount++;
                             if (message.Topic.Contains(messageType.TypeRunTime))
                             {
-                                runtime.Temp2 = new FieldBase.FieldStruct()
+                                runtime.FieldTemp2 = new FieldBase.FieldStruct()
                                 {
                                     Obis = new byte[1] { (byte)obis },
                                     DataLength = new byte[1] { (byte)dataLength },
                                     Data = data
                                 };
                             }
-                            if (message.Topic.Contains(messageType.TypeAlarm))
+                            else if (message.Topic.Contains(messageType.TypeAlarm))
                             {
-                                alarm.Temp2 = new FieldBase.FieldStruct()
+                                alarm.FieldTemp2 = new FieldBase.FieldStruct()
                                 {
                                     Obis = new byte[1] { (byte)obis },
                                     DataLength = new byte[1] { (byte)dataLength },
@@ -214,9 +227,10 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             }
                             break;
                         case EnumObis.Rssi:
+                            fieldCount++;
                             if (message.Topic.Contains(messageType.TypeRunTime))
                             {
-                                runtime.Rssi = new FieldBase.FieldStruct()
+                                runtime.FieldRssi = new FieldBase.FieldStruct()
                                 {
                                     Obis = new byte[1] { (byte)obis },
                                     DataLength = new byte[1] { (byte)dataLength },
@@ -225,7 +239,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             }
                             if (message.Topic.Contains(messageType.TypeAlarm))
                             {
-                                alarm.Rssi = new FieldBase.FieldStruct()
+                                alarm.FieldRssi = new FieldBase.FieldStruct()
                                 {
                                     Obis = new byte[1] { (byte)obis },
                                     DataLength = new byte[1] { (byte)dataLength },
@@ -234,18 +248,19 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             }
                             break;
                         case EnumObis.LowBattery:
+                            fieldCount++;
                             if (message.Topic.Contains(messageType.TypeRunTime))
                             {
-                                runtime.LowBattery = new FieldBase.FieldStruct()
+                                runtime.FieldLowBattery = new FieldBase.FieldStruct()
                                 {
                                     Obis = new byte[1] { (byte)obis },
                                     DataLength = new byte[1] { (byte)dataLength },
                                     Data = data
                                 };
                             }
-                            if (message.Topic.Contains(messageType.TypeAlarm))
+                            else if (message.Topic.Contains(messageType.TypeAlarm))
                             {
-                                alarm.LowBattery = new FieldBase.FieldStruct()
+                                alarm.FieldLowBattery = new FieldBase.FieldStruct()
                                 {
                                     Obis = new byte[1] { (byte)obis },
                                     DataLength = new byte[1] { (byte)dataLength },
@@ -254,18 +269,19 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             }
                             break;
                         case EnumObis.Hummidity:
+                            fieldCount++;
                             if (message.Topic.Contains(messageType.TypeRunTime))
                             {
-                                runtime.Hummidity = new FieldBase.FieldStruct()
+                                runtime.FieldHummidity = new FieldBase.FieldStruct()
                                 {
                                     Obis = new byte[1] { (byte)obis },
                                     DataLength = new byte[1] { (byte)dataLength },
                                     Data = data
                                 };
                             }
-                            if (message.Topic.Contains(messageType.TypeAlarm))
+                            else if (message.Topic.Contains(messageType.TypeAlarm))
                             {
-                                alarm.Hummidity = new FieldBase.FieldStruct()
+                                alarm.FieldHummidity = new FieldBase.FieldStruct()
                                 {
                                     Obis = new byte[1] { (byte)obis },
                                     DataLength = new byte[1] { (byte)dataLength },
@@ -274,23 +290,28 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             }
                             break;
                         case EnumObis.Alarm_Temp1:
-                            alarm.Alarm_Temp1 = new FieldBase.FieldStruct()
-                            {
-                                Obis = new byte[1] { (byte)obis },
-                                DataLength = new byte[1] { (byte)dataLength },
-                                Data = data
-                            };
+                            fieldCount++;
+                            if (message.Topic.Contains(messageType.TypeAlarm))
+                                alarm.FieldAlarmTemp1 = new FieldBase.FieldStruct()
+                                {
+                                    Obis = new byte[1] { (byte)obis },
+                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Data = data
+                                };
                             break;
                         case EnumObis.Alarm_Temp2:
-                            alarm.Alarm_Temp2 = new FieldBase.FieldStruct()
-                            {
-                                Obis = new byte[1] { (byte)obis },
-                                DataLength = new byte[1] { (byte)dataLength },
-                                Data = data
-                            };
+                            fieldCount++;
+                            if (message.Topic.Contains(messageType.TypeAlarm))
+                                alarm.FiledAlarmTemp2 = new FieldBase.FieldStruct()
+                                {
+                                    Obis = new byte[1] { (byte)obis },
+                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Data = data
+                                };
                             break;
                         case EnumObis.Alarm_Battery:
-                            alarm.Alarm_Battery = new FieldBase.FieldStruct()
+                            fieldCount++;
+                            alarm.FieldAlarmBattery = new FieldBase.FieldStruct()
                             {
                                 Obis = new byte[1] { (byte)obis },
                                 DataLength = new byte[1] { (byte)dataLength },
@@ -298,23 +319,38 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             };
                             break;
                         case EnumObis.Alarm_Hummidity:
-                            alarm.Alarm_Hummidity = new FieldBase.FieldStruct()
-                            {
-                                Obis = new byte[1] { (byte)obis },
-                                DataLength = new byte[1] { (byte)dataLength },
-                                Data = data
-                            };
+                            fieldCount++;
+                            if (message.Topic.Contains(messageType.TypeAlarm))
+                                alarm.FieldAlarmHummidity = new FieldBase.FieldStruct()
+                                {
+                                    Obis = new byte[1] { (byte)obis },
+                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Data = data
+                                };
                             break;
                         case EnumObis.Alarm_Light:
-                            alarm.Alarm_Light = new FieldBase.FieldStruct()
-                            {
-                                Obis = new byte[1] { (byte)obis },
-                                DataLength = new byte[1] { (byte)dataLength },
-                                Data = data
-                            };
-                            break;                        
+                            fieldCount++;
+                            if (message.Topic.Contains(messageType.TypeAlarm))
+                                alarm.FieldAlarmLight = new FieldBase.FieldStruct()
+                                {
+                                    Obis = new byte[1] { (byte)obis },
+                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Data = data
+                                };
+                            break;
                         default:
                             break;
+                    }
+
+                    if (message.Topic.Contains(messageType.TypeRunTime) && fieldCount >= runtime.FiledCount)
+                    {
+                        fieldCount = 0;
+                        runtimes.Add(runtime);
+                    }
+                    else if (message.Topic.Contains(messageType.TypeAlarm) && fieldCount >= alarm.FiledCount)
+                    {
+                        fieldCount = 0;
+                        alarms.Add(alarm);
                     }
                 }
 

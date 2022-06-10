@@ -10,13 +10,27 @@ using System;
 namespace IotSystem.MessageProcessing.MessageStructure
 {
     public class MeterMessage
-    {
-        public DateTime Time { get; set; }
-        public string DeviceNo { get; set; }
-        public int Temp1 { get; set; }
-        public int Temp2 { get; set; }
-        public float Rssi { get; set; }
-        public float LowBettery { get; set; }
-        public float Hummidity { get; set; }
+    {   
+
+
+        public class RuntimeMessage
+        {
+            public DateTime Time { get; set; }
+            public int DeviceNo { get; set; }
+            public float Temp1 { get; set; }
+            public float Temp2 { get; set; }
+            public float Rssi { get; set; }
+            public float LowBettery { get; set; }
+            public float Hummidity { get; set; }
+        }
+
+        public class AlarmClass: RuntimeMessage
+        {
+            public float AlarmTemp1 { get; set; }
+            public float AlarmTemp2 { get; set; }
+            public float AlarmBattery { get; set; }
+            public float AlarmHummidity { get; set; }
+            public float AlarmLight { get; set; }            
+        }       
     }
 }

@@ -1,6 +1,7 @@
 ﻿using IotSystem.Core;
 using IotSystem.Core.Connection;
 using IotSystem.Core.ThreadManagement;
+using IotSystem.Core.Utils;
 using IotSystem.MessageProcessing;
 using IotSystem.MessageProcessing.DcuMessage;
 using IotSystem.MessageProcessing.MessageStructure;
@@ -15,7 +16,14 @@ namespace IotSystem
     {
         static void Main(string[] args)
         {
-            MessageBase msgTime = DcuPublishMessage.CreatePublishMessageSetup("Setup/{0}/dcuid", "124");
+            var msg = MeterMessageTest.CreateRuntimeMessage();
+            DecodeMessageDataThread decodeMessageData = new DecodeMessageDataThread(new MessageType()
+            {
+                TypeRunTime = "RunTime",
+                TypeAlarm="Alarm"
+            });
+            decodeMessageData.ProcessingMessage(msg);
+            // MessageBase msgTime = DcuPublishMessage.CreatePublishMessageTime("Setup/{0}/dcuid", "124");
 
             try
             {

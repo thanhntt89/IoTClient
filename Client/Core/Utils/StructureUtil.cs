@@ -1,5 +1,5 @@
 ﻿
-
+using System.Linq;
 using System.Runtime.InteropServices;
 /**
 *Project name: IotSystem 
@@ -11,7 +11,8 @@ using System.Runtime.InteropServices;
 namespace IotSystem.Core.Utils
 {
     public class StructureUtil
-    {
+    {        
+
         /// <summary>
         /// Convert struct to byte
         /// </summary>

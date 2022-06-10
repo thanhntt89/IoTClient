@@ -65,6 +65,7 @@
     <Compile Include="MessageProcessing\MessageStructure\FieldBase.cs" />
     <Compile Include="MessageProcessing\MessageStructure\MeterMessage.cs" />
     <Compile Include="MessageProcessing\MessageStructure\MeterMessageStruct.cs" />
+    <Compile Include="MessageProcessing\MessageStructure\MeterMessageTest.cs" />
     <Compile Include="MessageProcessing\MeterMessage\IMeterMessageProcessing.cs" />
     <Compile Include="MessageProcessing\SingletonDcuTable.cs">
       <SubType>Component</SubType>

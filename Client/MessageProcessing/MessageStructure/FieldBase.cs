@@ -38,9 +38,8 @@ namespace IotSystem.MessageProcessing.MessageStructure
 
             return arr;
         }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct FieldStruct
+                
+        public class FieldStruct
         {
             public byte[] Obis { get; set; }
             public byte[] DataLength { get; set; }
@@ -48,7 +47,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
 
             public int TotalBytes => Obis == null ? 0 : Obis.Length + DataLength.Length + Data.Length;
 
-            public byte[] MessageBytes
+            public byte[] FieldBytes
             {
                 get
                 {

@@ -3,7 +3,6 @@
 using IotSystem.Core;
 using IotSystem.Core.Utils;
 using System;
-using System.Runtime.InteropServices;
 using static IotSystem.MessageProcessing.MessageStructure.FieldBase;
 /**
 *Project name: IotSystem 
@@ -23,7 +22,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
             dcuSetup.HumHigh = new FieldStruct()
             {
                 Obis = new byte[1] { (byte)EnumObis.Hum_High },
-                Data = new byte[6] {1,2,3,4,5,6},
+                Data = new byte[6] { 1, 2, 3, 4, 5, 6 },
                 DataLength = new byte[1] { 6 }
             };
             return new MessageBase() { Message = dcuSetup.Data, Topic = string.Format(topic, dcuId) };
@@ -31,9 +30,15 @@ namespace IotSystem.MessageProcessing.MessageStructure
 
         public static MessageBase CreatePublishMessageTime(string topic, string dcuId)
         {
-            byte[] dataDateTime = ConvertUtil.HexToByteArray(ConvertUtil.StringToHex(DateTime.Now.ToString("yyMMddHHmmss")));
+            byte[] dataDateTime = new byte[6];
+            dataDateTime[0] = (byte)int.Parse(DateTime.Now.ToString("yy"));
+            dataDateTime[1] = (byte)DateTime.Now.Month;
+            dataDateTime[2] = (byte)DateTime.Now.Day;
+            dataDateTime[3] = (byte)int.Parse(DateTime.Now.ToString("HH"));
+            dataDateTime[4] = (byte)DateTime.Now.Minute;
+            dataDateTime[5] = (byte)DateTime.Now.Second;
+
             DcuTimeStruct dcuMessage = new DcuTimeStruct();
-            
             dcuMessage.Time = new FieldStruct()
             {
                 Obis = new byte[1] { (byte)EnumObis.Time },
@@ -49,7 +54,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
         }
     }
 
-    public struct DcuSetupStruct
+    public class DcuSetupStruct
     {
         public FieldStruct TempHigh { get; set; }
         public FieldStruct TempLow { get; set; }
@@ -66,34 +71,34 @@ namespace IotSystem.MessageProcessing.MessageStructure
                 int offSet = 0;
                 int buffLength = TempHigh.TotalBytes + TempLow.TotalBytes + HumHigh.TotalBytes + HumLow.TotalBytes + TimeUpdate.TotalBytes + TimeSample.TotalBytes + 1;
                 byte[] data = new byte[buffLength];
-                if (TempHigh.MessageBytes != null)
+                if (TempHigh.FieldBytes != null)
                 {
-                    Buffer.BlockCopy(TempHigh.MessageBytes, 0, data, offSet, TempHigh.TotalBytes);
+                    Buffer.BlockCopy(TempHigh.FieldBytes, 0, data, offSet, TempHigh.TotalBytes);
                     offSet += TempHigh.TotalBytes;
                 }
-                if (TempLow.MessageBytes != null)
+                if (TempLow.FieldBytes != null)
                 {
-                    Buffer.BlockCopy(TempLow.MessageBytes, 0, data, offSet, TempLow.TotalBytes);
+                    Buffer.BlockCopy(TempLow.FieldBytes, 0, data, offSet, TempLow.TotalBytes);
                     offSet += TempLow.TotalBytes;
                 }
-                if (HumHigh.MessageBytes != null)
+                if (HumHigh.FieldBytes != null)
                 {
-                    Buffer.BlockCopy(HumHigh.MessageBytes, 0, data, offSet, HumHigh.TotalBytes);
+                    Buffer.BlockCopy(HumHigh.FieldBytes, 0, data, offSet, HumHigh.TotalBytes);
                     offSet += HumHigh.TotalBytes;
                 }
-                if (HumLow.MessageBytes != null)
+                if (HumLow.FieldBytes != null)
                 {
-                    Buffer.BlockCopy(HumLow.MessageBytes, 0, data, offSet, HumLow.TotalBytes);
+                    Buffer.BlockCopy(HumLow.FieldBytes, 0, data, offSet, HumLow.TotalBytes);
                     offSet += HumLow.TotalBytes;
                 }
-                if (TimeUpdate.MessageBytes != null)
+                if (TimeUpdate.FieldBytes != null)
                 {
-                    Buffer.BlockCopy(TimeUpdate.MessageBytes, 0, data, offSet, TimeUpdate.TotalBytes);
+                    Buffer.BlockCopy(TimeUpdate.FieldBytes, 0, data, offSet, TimeUpdate.TotalBytes);
                     offSet += TimeUpdate.TotalBytes;
                 }
-                if (TimeSample.MessageBytes != null)
+                if (TimeSample.FieldBytes != null)
                 {
-                    Buffer.BlockCopy(TimeSample.MessageBytes, 0, data, offSet, TimeSample.TotalBytes);
+                    Buffer.BlockCopy(TimeSample.FieldBytes, 0, data, offSet, TimeSample.TotalBytes);
                     offSet += TimeSample.TotalBytes;
                 }
                 Crc = ByteUtil.CalCheckSum(data);
@@ -104,9 +109,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
         }
     }
 
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct DcuTimeStruct
+    public class DcuTimeStruct
     {
         public FieldStruct Time { get; set; }
         private byte Crc { get; set; }
@@ -118,7 +121,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
                 int offSet = 0;
                 int buffLength = Time.TotalBytes + 1;
                 byte[] data = new byte[buffLength];
-                Buffer.BlockCopy(Time.MessageBytes, 0, data, offSet, Time.TotalBytes);
+                Buffer.BlockCopy(Time.FieldBytes, 0, data, offSet, Time.TotalBytes);
                 offSet += Time.TotalBytes;
                 Crc = ByteUtil.CalCheckSum(data);
                 //Crc
