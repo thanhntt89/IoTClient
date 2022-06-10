@@ -1,6 +1,5 @@
 ﻿using IotSystem.Core;
 using IotSystem.Core.ThreadManagement;
-using IotSystem.MessageProcessing.MessageStructure;
 using IotSystem.Queues;
 using System.Threading;
 using static IotSystem.ClientEvent;
