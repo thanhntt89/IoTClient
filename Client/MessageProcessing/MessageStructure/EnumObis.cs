@@ -10,6 +10,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
 {
     public enum EnumObis
     {
+        UNKNOW=0xFF,
         Time = 0x01,
         DeviceNo = 0x02,
         Temp1 = 0x03,

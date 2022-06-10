@@ -13,33 +13,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace IotSystem.MessageProcessing.MessageStructure
 {
     public class FieldBase
-    {
-        public static byte[] GetBytes(FieldStruct field)
-        {
-            int size = Marshal.SizeOf(field);
-
-            byte[] arr = new byte[size];
-
-            GCHandle h = default(GCHandle);
-
-            try
-            {
-                h = GCHandle.Alloc(arr, GCHandleType.Pinned);
-
-                Marshal.StructureToPtr<FieldStruct>(field, h.AddrOfPinnedObject(), false);
-            }
-            finally
-            {
-                if (h.IsAllocated)
-                {
-                    h.Free();
-                }
-            }
-
-            return arr;
-        }
-                
-        public class FieldStruct
+    {        
+        public struct FieldStruct
         {
             public byte[] Obis { get; set; }
             public byte[] DataLength { get; set; }
@@ -68,4 +43,5 @@ namespace IotSystem.MessageProcessing.MessageStructure
         }
     }
 
+  
 }

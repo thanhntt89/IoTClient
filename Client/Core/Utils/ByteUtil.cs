@@ -12,13 +12,23 @@ namespace IotSystem.Core.Utils
 {
     public class ByteUtil
     {
-        public static byte[] GetBytes(byte[] data, uint offSet)
+        public static byte[] ToBytes(int intValue)
         {
-            uint size = (uint)data.Length - offSet;
-            byte[] buff = new byte[size];
-            Array.Copy(data, offSet, buff, 0, size);
-            return buff;
+            byte[] intBytes = BitConverter.GetBytes(intValue);
+            Array.Reverse(intBytes);
+           return intBytes;
         }
+
+        public static float ToFloat(byte[] data)
+        {
+            return BitConverter.ToSingle(data, 0);
+        }
+
+        public static int ToInt(byte[] data)
+        {
+            return BitConverter.ToUInt16(data, 0);
+        }
+
 
         public static byte CalCheckSum(byte[] _PacketData)
         {

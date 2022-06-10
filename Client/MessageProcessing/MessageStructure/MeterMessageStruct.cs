@@ -26,7 +26,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
                 {
                     dataLength += field.Data.Length;
                 }
-                
+
                 return dataLength;
             }
         }
@@ -34,7 +34,7 @@ namespace IotSystem.MessageProcessing.MessageStructure
         {
             get
             {
-                byte[] data = new byte[DataLength  + 1];
+                byte[] data = new byte[DataLength + 1];
                 int offSet = 0;
                 //Add Time              
                 Buffer.BlockCopy(Time.FieldBytes, 0, data, offSet, Time.TotalBytes);
@@ -101,17 +101,17 @@ namespace IotSystem.MessageProcessing.MessageStructure
         }
     }
 
-    public class RuntimeStruct
+    public struct RuntimeStruct
     {
-        public FieldStruct FieldDeviceNo { get; set; }
-        public FieldStruct FieldTemp1 { get; set; }
-        public FieldStruct FieldTemp2 { get; set; }
-        public FieldStruct FieldRssi { get; set; }
-        public FieldStruct FieldLowBattery { get; set; }
-        public FieldStruct FieldHummidity { get; set; }                
+        public FieldStruct RawDeviceNo { get; set; }
+        public FieldStruct RawTemp1 { get; set; }
+        public FieldStruct RawTemp2 { get; set; }
+        public FieldStruct RawRssi { get; set; }
+        public FieldStruct RawLowBattery { get; set; }
+        public FieldStruct RawHummidity { get; set; }
 
         //Total fields in Runtime message
-        public virtual int FiledCount
+        public int FiledCount
         {
             get
             {
@@ -119,47 +119,114 @@ namespace IotSystem.MessageProcessing.MessageStructure
             }
         }
 
-        public virtual byte[] Data
+        public byte[] Data
         {
             get
             {
                 int offSet = 0;
-                int buffLength = FieldDeviceNo.TotalBytes + FieldTemp1.TotalBytes + FieldTemp2.TotalBytes + FieldRssi.TotalBytes + FieldLowBattery.TotalBytes + FieldHummidity.TotalBytes;
+                int buffLength = RawDeviceNo.TotalBytes + RawTemp1.TotalBytes + RawTemp2.TotalBytes + RawRssi.TotalBytes + RawLowBattery.TotalBytes + RawHummidity.TotalBytes;
                 byte[] data = new byte[buffLength];
                 //AddDevice
-                Buffer.BlockCopy(FieldDeviceNo.FieldBytes, 0, data, offSet, FieldDeviceNo.TotalBytes);
-                offSet += FieldDeviceNo.TotalBytes;
+                if (RawDeviceNo.FieldBytes != null)
+                {
+                    Buffer.BlockCopy(RawDeviceNo.FieldBytes, 0, data, offSet, RawDeviceNo.TotalBytes);
+                    offSet += RawDeviceNo.TotalBytes;
+                }
                 //Add Temp1
-                Buffer.BlockCopy(FieldTemp1.FieldBytes, 0, data, offSet, FieldTemp1.TotalBytes);
-                offSet += FieldTemp1.TotalBytes;
+                if (RawTemp1.FieldBytes != null)
+                {
+                    Buffer.BlockCopy(RawTemp1.FieldBytes, 0, data, offSet, RawTemp1.TotalBytes);
+                    offSet += RawTemp1.TotalBytes;
+                }
                 //Add Temp2
-                Buffer.BlockCopy(FieldTemp2.FieldBytes, 0, data, offSet, FieldTemp2.TotalBytes);
-                offSet += FieldTemp2.TotalBytes;
-                //Add Rssi
-                Buffer.BlockCopy(FieldRssi.FieldBytes, 0, data, offSet, FieldRssi.TotalBytes);
-                offSet += FieldRssi.TotalBytes;
-                //Add LowBattery
-                Buffer.BlockCopy(FieldLowBattery.FieldBytes, 0, data, offSet, FieldLowBattery.TotalBytes);
-                offSet += FieldLowBattery.TotalBytes;
-                //Add Hummidity
-                Buffer.BlockCopy(FieldHummidity.FieldBytes, 0, data, offSet, FieldHummidity.TotalBytes);
-                offSet += FieldHummidity.TotalBytes;
-
+                if (RawTemp2.FieldBytes != null)
+                {
+                    Buffer.BlockCopy(RawTemp2.FieldBytes, 0, data, offSet, RawTemp2.TotalBytes);
+                    offSet += RawTemp2.TotalBytes;
+                }
+                if (RawRssi.FieldBytes != null)
+                {
+                    //Add Rssi
+                    Buffer.BlockCopy(RawRssi.FieldBytes, 0, data, offSet, RawRssi.TotalBytes);
+                    offSet += RawRssi.TotalBytes;
+                }
+                if (RawLowBattery.FieldBytes !=null)
+                {
+                    //Add LowBattery
+                    Buffer.BlockCopy(RawLowBattery.FieldBytes, 0, data, offSet, RawLowBattery.TotalBytes);
+                    offSet += RawLowBattery.TotalBytes;
+                }
+                if (RawHummidity.FieldBytes != null)
+                {
+                    //Add Hummidity
+                    Buffer.BlockCopy(RawHummidity.FieldBytes, 0, data, offSet, RawHummidity.TotalBytes);
+                    offSet += RawHummidity.TotalBytes;
+                }
                 return data;
+            }
+        }
+
+        public int DeviceCode
+        {
+            get
+            {
+                return ByteUtil.ToInt(RawDeviceNo.Data);
+            }
+        }
+
+        public float Temp1
+        {
+            get
+            {
+                return ByteUtil.ToInt(RawTemp1.Data);
+            }
+        }
+        public float Temp2
+        {
+            get
+            {
+                return ByteUtil.ToInt(RawTemp2.Data);
+            }
+        }
+        public float Rssi
+        {
+            get
+            {
+                return ByteUtil.ToInt(RawRssi.Data);
+            }
+        }
+        public float LowBattery
+        {
+            get
+            {
+                return ByteUtil.ToInt(RawLowBattery.Data);
+            }
+        }
+        public float Hummidity
+        {
+            get
+            {                
+                return ByteUtil.ToInt(RawHummidity.Data);
             }
         }
     }
 
-    public class AlarmStruct: RuntimeStruct
+    public struct AlarmStruct 
     {
-        public FieldStruct FieldAlarmTemp1 { get; set; }
-        public FieldStruct FiledAlarmTemp2 { get; set; }
-        public FieldStruct FieldAlarmBattery { get; set; }
-        public FieldStruct FieldAlarmHummidity { get; set; }
-        public FieldStruct FieldAlarmLight { get; set; }
+        public FieldStruct RawDeviceNo { get; set; }
+        public FieldStruct RawTemp1 { get; set; }
+        public FieldStruct RawTemp2 { get; set; }
+        public FieldStruct RawRssi { get; set; }
+        public FieldStruct RawLowBattery { get; set; }
+        public FieldStruct RawHummidity { get; set; }
+        public FieldStruct RawAlarmTemp1 { get; set; }
+        public FieldStruct RawAlarmTemp2 { get; set; }
+        public FieldStruct RawAlarmBattery { get; set; }
+        public FieldStruct RawAlarmHummidity { get; set; }
+        public FieldStruct RawAlarmLigth { get; set; }
 
         //Total fields in Alarm message
-        public override int FiledCount
+        public int FiledCount
         {
             get
             {
@@ -167,47 +234,125 @@ namespace IotSystem.MessageProcessing.MessageStructure
             }
         }
 
-        public override byte[] Data
+        public byte[] Data
         {
             get
             {
                 int offSet = 0;
-                int buffLength = FieldDeviceNo.TotalBytes + FieldTemp1.TotalBytes + FieldTemp2.TotalBytes + FieldRssi.TotalBytes + FieldLowBattery.TotalBytes + FieldHummidity.TotalBytes + FieldAlarmTemp1.TotalBytes + FiledAlarmTemp2.TotalBytes + FieldAlarmBattery.TotalBytes + FieldAlarmHummidity.TotalBytes + FieldAlarmLight.TotalBytes;
+                int buffLength = RawDeviceNo.TotalBytes + RawTemp1.TotalBytes + RawTemp2.TotalBytes + RawRssi.TotalBytes + RawLowBattery.TotalBytes + RawHummidity.TotalBytes + RawAlarmTemp1.TotalBytes + RawAlarmTemp2.TotalBytes + RawAlarmBattery.TotalBytes + RawAlarmHummidity.TotalBytes + RawAlarmLigth.TotalBytes;
                 byte[] data = new byte[buffLength];
                 //AddDevice
-                Buffer.BlockCopy(FieldDeviceNo.FieldBytes, 0, data, offSet, FieldDeviceNo.TotalBytes);
-                offSet += FieldDeviceNo.TotalBytes;
+                Buffer.BlockCopy(RawDeviceNo.FieldBytes, 0, data, offSet, RawDeviceNo.TotalBytes);
+                offSet += RawDeviceNo.TotalBytes;
                 //Add Temp1
-                Buffer.BlockCopy(FieldTemp1.FieldBytes, 0, data, offSet, FieldTemp1.TotalBytes);
-                offSet += FieldTemp1.TotalBytes;
+                Buffer.BlockCopy(RawTemp1.FieldBytes, 0, data, offSet, RawTemp1.TotalBytes);
+                offSet += RawTemp1.TotalBytes;
                 //Add Temp2
-                Buffer.BlockCopy(FieldTemp2.FieldBytes, 0, data, offSet, FieldTemp2.TotalBytes);
-                offSet += FieldTemp2.TotalBytes;
+                Buffer.BlockCopy(RawTemp2.FieldBytes, 0, data, offSet, RawTemp2.TotalBytes);
+                offSet += RawTemp2.TotalBytes;
                 //Add Rssi
-                Buffer.BlockCopy(FieldRssi.FieldBytes, 0, data, offSet, FieldRssi.TotalBytes);
-                offSet += FieldRssi.TotalBytes;
+                Buffer.BlockCopy(RawRssi.FieldBytes, 0, data, offSet, RawRssi.TotalBytes);
+                offSet += RawRssi.TotalBytes;
                 //Add LowBattery
-                Buffer.BlockCopy(FieldLowBattery.FieldBytes, 0, data, offSet, FieldLowBattery.TotalBytes);
-                offSet += FieldLowBattery.TotalBytes;
+                Buffer.BlockCopy(RawLowBattery.FieldBytes, 0, data, offSet, RawLowBattery.TotalBytes);
+                offSet += RawLowBattery.TotalBytes;
                 //Add Hummidity
-                Buffer.BlockCopy(FieldHummidity.FieldBytes, 0, data, offSet, FieldHummidity.TotalBytes);
-                offSet += FieldHummidity.TotalBytes;
+                Buffer.BlockCopy(RawHummidity.FieldBytes, 0, data, offSet, RawHummidity.TotalBytes);
+                offSet += RawHummidity.TotalBytes;
                 //Add Alarm_Temp1
-                Buffer.BlockCopy(FieldAlarmTemp1.FieldBytes, 0, data, offSet, FieldAlarmTemp1.TotalBytes);
-                offSet += FieldAlarmTemp1.TotalBytes;
+                Buffer.BlockCopy(RawAlarmTemp1.FieldBytes, 0, data, offSet, RawAlarmTemp1.TotalBytes);
+                offSet += RawAlarmTemp1.TotalBytes;
                 //Add Alarm_Temp2
-                Buffer.BlockCopy(FiledAlarmTemp2.FieldBytes, 0, data, offSet, FiledAlarmTemp2.TotalBytes);
-                offSet += FiledAlarmTemp2.TotalBytes;
+                Buffer.BlockCopy(RawAlarmTemp2.FieldBytes, 0, data, offSet, RawAlarmTemp2.TotalBytes);
+                offSet += RawAlarmTemp2.TotalBytes;
                 //Add Alarm_Battery
-                Buffer.BlockCopy(FieldAlarmBattery.FieldBytes, 0, data, offSet, FieldAlarmBattery.TotalBytes);
-                offSet += FieldAlarmBattery.TotalBytes;
+                Buffer.BlockCopy(RawAlarmBattery.FieldBytes, 0, data, offSet, RawAlarmBattery.TotalBytes);
+                offSet += RawAlarmBattery.TotalBytes;
                 //Add Alarm_Hummidity
-                Buffer.BlockCopy(FieldAlarmHummidity.FieldBytes, 0, data, offSet, FieldAlarmHummidity.TotalBytes);
-                offSet += FieldAlarmHummidity.TotalBytes;
+                Buffer.BlockCopy(RawAlarmHummidity.FieldBytes, 0, data, offSet, RawAlarmHummidity.TotalBytes);
+                offSet += RawAlarmHummidity.TotalBytes;
                 //Add Alarm_Light
-                Buffer.BlockCopy(FieldAlarmLight.FieldBytes, 0, data, offSet, FieldAlarmLight.TotalBytes);
-                offSet += FieldAlarmLight.TotalBytes;
+                Buffer.BlockCopy(RawAlarmLigth.FieldBytes, 0, data, offSet, RawAlarmLigth.TotalBytes);
+                offSet += RawAlarmLigth.TotalBytes;
                 return data;
+            }
+        }
+
+        public int DeviceCode
+        {
+            get
+            {
+                return ByteUtil.ToInt(RawDeviceNo.Data);
+            }
+        }
+        public float Temp1
+        {
+            get
+            {
+                return ByteUtil.ToInt(RawTemp1.Data);
+            }
+        }
+        public float Temp2
+        {
+            get
+            {
+                return ByteUtil.ToInt(RawTemp2.Data);
+            }
+        }
+        public float Rssi
+        {
+            get
+            {
+                return ByteUtil.ToInt(RawRssi.Data);
+            }
+        }
+        public float LowBattery
+        {
+            get
+            {
+                return ByteUtil.ToInt(RawLowBattery.Data);
+            }
+        }
+        public float Hummidity
+        {
+            get
+            {
+                return ByteUtil.ToInt(RawHummidity.Data);
+            }
+        }
+        public int AlarmTemp1
+        {
+            get
+            {
+                return ByteUtil.ToInt(RawAlarmTemp1.Data);
+            }
+        }
+        public int AlarmTemp2
+        {
+            get
+            {
+                return ByteUtil.ToInt(RawAlarmTemp2.Data);
+            }
+        }
+        public int AlarmBattery
+        {
+            get
+            {
+                return ByteUtil.ToInt(RawAlarmBattery.Data);
+            }
+        }
+        public int AlarmHummidity
+        {
+            get
+            {
+                return ByteUtil.ToInt(RawAlarmHummidity.Data);
+            }
+        }
+        public int AlarmLigth
+        {
+            get
+            {
+                return ByteUtil.ToInt(RawAlarmLigth.Data);
             }
         }
     }

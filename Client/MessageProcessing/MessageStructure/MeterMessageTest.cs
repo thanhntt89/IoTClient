@@ -34,37 +34,37 @@ namespace IotSystem.MessageProcessing.MessageStructure
             //Device 11
             runtimes.Add(new RuntimeStruct()
             {
-                FieldDeviceNo = new FieldBase.FieldStruct()
+                RawDeviceNo = new FieldBase.FieldStruct()
                 {
                     Obis = new byte[1] { (byte)EnumObis.DeviceNo },
                     Data = new byte[2] { 1, 1 },
                     DataLength = new byte[1] { 2 }
                 },
-                FieldTemp1 = new FieldBase.FieldStruct()
+                RawTemp1 = new FieldBase.FieldStruct()
                 {
                     Obis = new byte[1] { (byte)EnumObis.Temp1 },
                     Data = new byte[2] { 3, 4 },
                     DataLength = new byte[1] { 2 }
                 },
-                FieldTemp2 = new FieldBase.FieldStruct()
+                RawTemp2 = new FieldBase.FieldStruct()
                 {
                     Obis = new byte[1] { (byte)EnumObis.Temp2 },
                     Data = new byte[2] { 5, 6 },
                     DataLength = new byte[1] { 2 }
                 },
-                FieldRssi = new FieldBase.FieldStruct()
+                RawRssi = new FieldBase.FieldStruct()
                 {
                     Obis = new byte[1] { (byte)EnumObis.Rssi },
                     Data = new byte[2] { 7, 8 },
                     DataLength = new byte[1] { 2 }
                 },
-                FieldHummidity = new FieldBase.FieldStruct()
+                RawHummidity = new FieldBase.FieldStruct()
                 {
                     Obis = new byte[1] { (byte)EnumObis.Hummidity },
                     Data = new byte[2] { 9, 10 },
                     DataLength = new byte[1] { 2 }
                 },
-                FieldLowBattery = new FieldBase.FieldStruct()
+                RawLowBattery = new FieldBase.FieldStruct()
                 {
                     Obis = new byte[1] { (byte)EnumObis.LowBattery },
                     Data = new byte[2] { 11, 12 },
@@ -74,42 +74,43 @@ namespace IotSystem.MessageProcessing.MessageStructure
             //Device 21
             runtimes.Add(new RuntimeStruct()
             {
-                FieldDeviceNo = new FieldBase.FieldStruct()
+                RawDeviceNo = new FieldBase.FieldStruct()
                 {
                     Obis = new byte[1] { (byte)EnumObis.DeviceNo },
                     Data = new byte[2] { 2, 1 },
                     DataLength = new byte[1] { 2 }
                 },
-                FieldTemp1 = new FieldBase.FieldStruct()
+                RawTemp1 = new FieldBase.FieldStruct()
                 {
                     Obis = new byte[1] { (byte)EnumObis.Temp1 },
                     Data = new byte[2] { 3, 4 },
                     DataLength = new byte[1] { 2 }
                 },
-                FieldTemp2 = new FieldBase.FieldStruct()
+                RawTemp2 = new FieldBase.FieldStruct()
                 {
                     Obis = new byte[1] { (byte)EnumObis.Temp2 },
                     Data = new byte[2] { 5, 6 },
                     DataLength = new byte[1] { 2 }
                 },
-                FieldRssi = new FieldBase.FieldStruct()
+                RawRssi = new FieldBase.FieldStruct()
                 {
                     Obis = new byte[1] { (byte)EnumObis.Rssi },
                     Data = new byte[2] { 7, 8 },
                     DataLength = new byte[1] { 2 }
                 },
-                FieldHummidity = new FieldBase.FieldStruct()
+                RawHummidity = new FieldBase.FieldStruct()
                 {
                     Obis = new byte[1] { (byte)EnumObis.Hummidity },
                     Data = new byte[2] { 9, 10 },
                     DataLength = new byte[1] { 2 }
-                },
-                FieldLowBattery = new FieldBase.FieldStruct()
-                {
-                    Obis = new byte[1] { (byte)EnumObis.LowBattery },
-                    Data = new byte[2] { 11, 12 },
-                    DataLength = new byte[1] { 2 }
-                },
+                }
+                ,
+                //RawLowBattery = new FieldBase.FieldStruct()
+                //{
+                //    Obis = new byte[1] { (byte)EnumObis.LowBattery },
+                //    Data = new byte[2] { 11, 12 },
+                //    DataLength = new byte[1] { 2 }
+                //},
             });
 
             message.Message = runtimes.Data;
