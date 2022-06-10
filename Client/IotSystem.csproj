@@ -60,12 +60,11 @@
     <Compile Include="MessageProcessing\DcuMessage\DcuMessageProcessing.cs" />
     <Compile Include="MessageProcessing\DcuMessage\DcuMessageSetupEntity.cs" />
     <Compile Include="MessageProcessing\DcuMessage\IDcuMessageProcessing.cs" />
-    <Compile Include="MessageProcessing\MessageStructure\DcuPublishMessage.cs" />
+    <Compile Include="MessageProcessing\DcuMessage\DcuPublishMessage.cs" />
     <Compile Include="MessageProcessing\MessageStructure\EnumObis.cs" />
     <Compile Include="MessageProcessing\MessageStructure\FieldBase.cs" />
-    <Compile Include="MessageProcessing\MessageStructure\MeterMessage.cs" />
-    <Compile Include="MessageProcessing\MessageStructure\MeterMessageStruct.cs" />
-    <Compile Include="MessageProcessing\MessageStructure\MeterMessageTest.cs" />
+    <Compile Include="MessageProcessing\MeterMessage\MeterMessageStruct.cs" />
+    <Compile Include="MessageProcessing\MeterMessage\MeterMessageTest.cs" />
     <Compile Include="MessageProcessing\MeterMessage\IMeterMessageProcessing.cs" />
     <Compile Include="MessageProcessing\MeterMessage\SingletonAlarmTable.cs">
       <SubType>Component</SubType>

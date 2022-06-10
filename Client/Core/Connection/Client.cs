@@ -8,10 +8,9 @@
 using IotSystem.Core.Queues;
 using IotSystem.Core.ThreadManagement;
 using IotSystem.Core.Utils;
-using IotSystem.MessageProcessing.MessageStructure;
+using IotSystem.MessageProcessing.MeterMessage;
 using IotSystem.Queues;
 using System;
-using System.Text;
 using System.Threading;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
