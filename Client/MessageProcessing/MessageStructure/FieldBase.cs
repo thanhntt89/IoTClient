@@ -1,8 +1,4 @@
-﻿using IotSystem.Core.Utils;
-using System;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿using System;
 /**
 *Project name: IotSystem 
 * Created by: Nguyen Tat Thanh
