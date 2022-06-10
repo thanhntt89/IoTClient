@@ -72,7 +72,7 @@
     <Compile Include="MessageProcessing\MeterMessage\SingletonRuntimeTable.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="MessageProcessing\SingletonDcuTable.cs">
+    <Compile Include="MessageProcessing\DcuMessage\SingletonDcuTable.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Core\ThreadManagement\IDatabaseConnectionThread.cs" />
@@ -83,10 +83,10 @@
     <Compile Include="MessageProcessing\MeterMessage\DecodeMeterMessageThread.cs" />
     <Compile Include="MessageProcessing\Queries\DcuQueries.cs" />
     <Compile Include="MessageProcessing\DcuMessage\PublishDcuMessageThread.cs" />
-    <Compile Include="Core\Queues\SingletonMessageDataQueue.cs" />
+    <Compile Include="Core\Queues\SingletonMeterMessageQueue.cs" />
     <Compile Include="MessageProcessing\MeterMessage\MeterMessageRaw.cs" />
     <Compile Include="MessageProcessing\ProcessingDataFactory.cs" />
-    <Compile Include="Core\Queues\SingletonMessageTimeQueue.cs" />
+    <Compile Include="Core\Queues\SingletonDcuMessageQueue.cs" />
     <Compile Include="Core\SqlHelpers.cs" />
     <Compile Include="Core\Connection\IClient.cs" />
     <Compile Include="Core\MessageBase.cs" />
