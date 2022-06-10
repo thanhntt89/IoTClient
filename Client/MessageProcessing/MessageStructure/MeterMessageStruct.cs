@@ -404,4 +404,11 @@ namespace IotSystem.MessageProcessing.MessageStructure
             }
         }
     }
+
+    public struct GlexOperationStruct
+    {
+        public FieldStruct RawTime { get; set; }
+        public FieldStruct Value1 { get; set; }
+        public FieldStruct Value2 { get; set; }
+    }
 }
