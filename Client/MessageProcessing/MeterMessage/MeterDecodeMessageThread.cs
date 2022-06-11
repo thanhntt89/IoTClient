@@ -21,21 +21,24 @@ namespace IotSystem.MessageProcessing.MeterMessage
         /// <summary>
         /// Set time to process message
         /// </summary>
-        private int TIME_PROCESSING_MESSAGE = 100;
+        private int TIME_PROCESSING_MESSAGE = 200;
 
         private int TimeProcessMessage(int countdata)
         {
-            //if (countdata / 1000 >= 1000)
-            //{
-            //    //TIME_PROCESSING_MESSAGE = 1;
-            //}else if(countdata/ 1000 >= 100)
-            //{
-            //   // TIME_PROCESSING_MESSAGE = 10;
-            //}
-            //else if (countdata / 1000 >= 10)
-            //{
-            //   // TIME_PROCESSING_MESSAGE = 100;
-            //}
+            TIME_PROCESSING_MESSAGE = 100;
+
+            if (countdata > 5000 && countdata < 10000)
+            {
+                TIME_PROCESSING_MESSAGE = 50;
+            }
+            else if (countdata <= 100000 && countdata > 50000)
+            {
+                TIME_PROCESSING_MESSAGE = 10;
+            }
+            else if (countdata >= 200000)
+            {
+                TIME_PROCESSING_MESSAGE = 5;
+            }
 
             return TIME_PROCESSING_MESSAGE;
         }
@@ -129,7 +132,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             };
                             SingletonRuntimeTable.Instance.Rows.Add(row);
 
-                            Thread.Sleep(10);
+                            //Thread.Sleep(10);
                         }                        
                     }
                 }else if (message.Topic.Contains(messageType.TypeAlarm))
@@ -158,7 +161,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                               };
                             SingletonAlarmTable.Instance.Rows.Add(row);
 
-                            Thread.Sleep(10);
+                            //Thread.Sleep(10);
                         }
                     }
                 }

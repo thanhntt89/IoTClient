@@ -22,6 +22,8 @@ namespace IotSystem.MessageProcessing.MeterMessage
 
         public void GetMessageRaw()
         {
+            GetRawAll();
+            return;
             if (message.Topic.Contains(messageType.TypeRunTime))
             {
                 GetRawRuntime();
