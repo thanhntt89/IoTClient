@@ -63,7 +63,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
 
                     switch (obis)
                     {
-                        case EnumObis.Time:
+                        case EnumObis.TIME:
                             if (message.Topic.Contains(messageType.TypeRunTime))
                             {
                                 Runtimes.RawTime = new FieldBase.FieldStruct()
@@ -81,7 +81,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                                 };
                             }
                             break;
-                        case EnumObis.DeviceNo:
+                        case EnumObis.DEVICE_NO:
                             fieldCount++;
                             if (message.Topic.Contains(messageType.TypeRunTime))
                             {
@@ -100,7 +100,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                                 };
                             }
                             break;
-                        case EnumObis.Temp1:
+                        case EnumObis.TEMP1:
                             fieldCount++;
                             if (message.Topic.Contains(messageType.TypeRunTime))
                             {
@@ -119,7 +119,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                                 };
                             }
                             break;
-                        case EnumObis.Temp2:
+                        case EnumObis.TEMP2:
                             fieldCount++;
                             if (message.Topic.Contains(messageType.TypeRunTime))
                             {
@@ -138,7 +138,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                                 };
                             }
                             break;
-                        case EnumObis.Rssi:
+                        case EnumObis.RSSI:
                             fieldCount++;
                             if (message.Topic.Contains(messageType.TypeRunTime))
                             {
@@ -157,7 +157,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                                 };
                             }
                             break;
-                        case EnumObis.LowBattery:
+                        case EnumObis.LOW_BATTERY:
                             fieldCount++;
                             if (message.Topic.Contains(messageType.TypeRunTime))
                             {
@@ -176,7 +176,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                                 };
                             }
                             break;
-                        case EnumObis.Hummidity:
+                        case EnumObis.HUMMIDITY:
                             fieldCount++;
                             if (message.Topic.Contains(messageType.TypeRunTime))
                             {
@@ -195,7 +195,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                                 };
                             }
                             break;
-                        case EnumObis.Alarm_Temp1:
+                        case EnumObis.ALARM_TEMP1:
                             fieldCount++;
                             if (message.Topic.Contains(messageType.TypeAlarm))
                                 alarm.RawAlarmTemp1 = new FieldBase.FieldStruct()
@@ -204,7 +204,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                                     Data = data
                                 };
                             break;
-                        case EnumObis.Alarm_Temp2:
+                        case EnumObis.ALARM_TEMP2:
                             fieldCount++;
                             if (message.Topic.Contains(messageType.TypeAlarm))
                                 alarm.RawAlarmTemp2 = new FieldBase.FieldStruct()
@@ -213,7 +213,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                                     Data = data
                                 };
                             break;
-                        case EnumObis.Alarm_Battery:
+                        case EnumObis.ALARM_BATTERY:
                             fieldCount++;
                             alarm.RawAlarmBattery = new FieldBase.FieldStruct()
                             {
@@ -221,7 +221,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                                 Data = data
                             };
                             break;
-                        case EnumObis.Alarm_Hummidity:
+                        case EnumObis.ALARM_HIMIDITY:
                             fieldCount++;
                             if (message.Topic.Contains(messageType.TypeAlarm))
                                 alarm.RawAlarmHummidity = new FieldBase.FieldStruct()
@@ -230,7 +230,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                                     Data = data
                                 };
                             break;
-                        case EnumObis.Alarm_Light:
+                        case EnumObis.ALARM_LIGTH:
                             fieldCount++;
                             if (message.Topic.Contains(messageType.TypeAlarm))
                                 alarm.RawAlarmLigth = new FieldBase.FieldStruct()
@@ -248,7 +248,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                         nextObis = (EnumObis)dataMessage[offSet];
 
                     //Add to list when offSet = dataLength || Next Obis = DeviceNo and preObis == Time
-                    if (offSet == dataMessage.Length || nextObis == EnumObis.DeviceNo && obis != EnumObis.Time)
+                    if (offSet == dataMessage.Length || nextObis == EnumObis.DEVICE_NO && obis != EnumObis.TIME)
                     {
                         if (message.Topic.Contains(messageType.TypeRunTime))
                         {

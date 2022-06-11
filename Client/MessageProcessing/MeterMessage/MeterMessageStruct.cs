@@ -219,13 +219,13 @@ namespace IotSystem.MessageProcessing.MeterMessage
                 return ByteUtil.ToInt(RawTemp2.Data);
             }
         }
-        public float? Rssi
+        public double? Rssi
         {
             get
             {
                 if (RawRssi.Data == null)
                     return null;
-                return ByteUtil.ToInt(RawRssi.Data);
+                return ByteUtil.ConvertByteArrayToInt32(RawRssi.Data);
             }
         }
         public float? LowBattery
@@ -364,13 +364,13 @@ namespace IotSystem.MessageProcessing.MeterMessage
                 return ByteUtil.ToInt(RawTemp2.Data);
             }
         }
-        public float? Rssi
+        public double? Rssi
         {
             get
             {
                 if (RawRssi.Data == null)
                     return null;
-                return ByteUtil.ToFloat(RawRssi.Data);
+                return ByteUtil.ConvertByteArrayToInt32(RawRssi.Data);
             }
         }
         public float? LowBattery

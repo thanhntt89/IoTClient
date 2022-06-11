@@ -15,6 +15,9 @@ namespace IotSystem.MessageProcessing.MessageStructure
             public byte? Obis { get; set; }
             public byte[] Data { get; set; }
 
+            /// <summary>
+            /// Total bytes = Obis(1byte)+ DataLength(1byte)+ Data(Nbytes)
+            /// </summary>
             public int TotalBytes => (Obis == null || Data == null) ? 0 : Data.Length + 2;
 
             public byte[] FieldBytes

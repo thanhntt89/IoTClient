@@ -14,9 +14,12 @@ namespace IotSystem.Core.Utils
     {
         public static byte[] ToBytes(int intValue)
         {
-            byte[] intBytes = BitConverter.GetBytes(intValue);
-            Array.Reverse(intBytes);
-           return intBytes;
+            return BitConverter.GetBytes(intValue);
+        }
+
+        public static double ConvertByteArrayToInt32(byte[] b)
+        {
+            return BitConverter.ToInt32(b, 0);
         }
 
         public static float ToFloat(byte[] data)
@@ -25,8 +28,10 @@ namespace IotSystem.Core.Utils
         }
 
         public static int ToInt(byte[] data)
-        {
-            return BitConverter.ToUInt16(data, 0);
+        {            
+            if (data.Length == 4)
+                return BitConverter.ToInt32(data, 0);
+            return BitConverter.ToInt16(data, 0);
         }
 
 
