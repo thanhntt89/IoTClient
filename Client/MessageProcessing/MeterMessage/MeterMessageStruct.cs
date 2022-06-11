@@ -34,23 +34,27 @@ namespace IotSystem.MessageProcessing.MeterMessage
         }
 
         private byte Crc { get; set; }
+       
         private int DataLength
         {
             get
             {
                 int dataLength = RawTime.TotalBytes;
+                //This = List<RuntimeStruct>
                 foreach (var field in this)
                 {
-                    dataLength += field.Data.Length;
+                    dataLength += field.TotalBytes;
                 }
 
                 return dataLength;
             }
         }
+
         public byte[] Data
         {
             get
             {
+                //Total Bytes = Sum(Field) + Crc(1byte)
                 byte[] data = new byte[DataLength + 1];
                 int offSet = 0;
                 //Add Time              
@@ -60,8 +64,8 @@ namespace IotSystem.MessageProcessing.MeterMessage
                 //Add DeviceData
                 foreach (var field in this)
                 {
-                    Buffer.BlockCopy(field.Data, 0, data, offSet, field.Data.Length);
-                    offSet += field.Data.Length;
+                    Buffer.BlockCopy(field.Data, 0, data, offSet, field.TotalBytes);
+                    offSet += field.TotalBytes;
                 }
 
                 //Add Crc
@@ -96,6 +100,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
             }
         }
         private byte Crc { get; set; }
+       
         private int DataLength
         {
             get
@@ -103,16 +108,18 @@ namespace IotSystem.MessageProcessing.MeterMessage
                 int dataLength = RawTime.TotalBytes;
                 foreach (var field in this)
                 {
-                    dataLength += field.Data.Length;
+                    dataLength += field.TotalBytes;
                 }
 
                 return dataLength;
             }
         }
+
         public byte[] Data
         {
             get
             {
+                //DataLength = Sum(Fields) + Crc(1byte)
                 byte[] data = new byte[DataLength + 1];
                 int offSet = 0;
                 //Add Time              
@@ -122,8 +129,8 @@ namespace IotSystem.MessageProcessing.MeterMessage
                 //Add DeviceData
                 foreach (var field in this)
                 {
-                    Buffer.BlockCopy(field.Data, 0, data, offSet, field.Data.Length);
-                    offSet += field.Data.Length;
+                    Buffer.BlockCopy(field.Data, 0, data, offSet, field.TotalBytes);
+                    offSet += field.TotalBytes;
                 }
 
                 //Add Crc
@@ -145,14 +152,20 @@ namespace IotSystem.MessageProcessing.MeterMessage
         public FieldStruct RawLowBattery { get; set; }
         public FieldStruct RawHummidity { get; set; }
 
+        /// <summary>
+        /// Total bytes = Sum(Fields Bytes)
+        /// </summary>
+        public int TotalBytes => (RawDeviceNo.TotalBytes + RawTemp1.TotalBytes + RawTemp2.TotalBytes + RawRssi.TotalBytes + RawLowBattery.TotalBytes + RawHummidity.TotalBytes);
 
         public byte[] Data
         {
             get
-            {
+            {                   
+                if (TotalBytes == 0) 
+                    return null;
+
                 int offSet = 0;
-                int buffLength = RawDeviceNo.TotalBytes + RawTemp1.TotalBytes + RawTemp2.TotalBytes + RawRssi.TotalBytes + RawLowBattery.TotalBytes + RawHummidity.TotalBytes;
-                byte[] data = new byte[buffLength];
+                byte[] data = new byte[TotalBytes];
                 //AddDevice
                 if (RawDeviceNo.TotalBytes != 0)
                 {
@@ -262,13 +275,16 @@ namespace IotSystem.MessageProcessing.MeterMessage
         public FieldStruct RawAlarmHummidity { get; set; }
         public FieldStruct RawAlarmLigth { get; set; }
 
+        public int TotalBytes => (RawDeviceNo.TotalBytes + RawTemp1.TotalBytes + RawTemp2.TotalBytes + RawRssi.TotalBytes + RawLowBattery.TotalBytes + RawHummidity.TotalBytes + RawAlarmTemp1.TotalBytes + RawAlarmTemp2.TotalBytes + RawAlarmBattery.TotalBytes + RawAlarmHummidity.TotalBytes + RawAlarmLigth.TotalBytes);
+
         public byte[] Data
         {
             get
             {
-                int offSet = 0;
-                int buffLength = RawDeviceNo.TotalBytes + RawTemp1.TotalBytes + RawTemp2.TotalBytes + RawRssi.TotalBytes + RawLowBattery.TotalBytes + RawHummidity.TotalBytes + RawAlarmTemp1.TotalBytes + RawAlarmTemp2.TotalBytes + RawAlarmBattery.TotalBytes + RawAlarmHummidity.TotalBytes + RawAlarmLigth.TotalBytes;
-                byte[] data = new byte[buffLength];
+                if (TotalBytes == 0) 
+                    return null;
+                int offSet = 0;                
+                byte[] data = new byte[TotalBytes];
                 //AddDevice
                 if (RawDeviceNo.TotalBytes > 0)
                 {                    

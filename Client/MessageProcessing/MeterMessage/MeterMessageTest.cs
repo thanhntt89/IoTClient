@@ -108,7 +108,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
             return message;
         }
 
-        public MessageBase CreateAlarmMessage()
+        public MessageBase CreateAlarmMessage(string topic)
         {
             MessageBase message = new MessageBase();
             AlarmCollection alarms = new AlarmCollection();
@@ -244,6 +244,9 @@ namespace IotSystem.MessageProcessing.MeterMessage
                     Data = new byte[2] { 11, 12 }
                 }
             });
+
+            message.Message = alarms.Data;
+            message.Topic = topic;
 
             return message;
         }
