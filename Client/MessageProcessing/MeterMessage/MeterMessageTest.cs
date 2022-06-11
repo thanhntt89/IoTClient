@@ -29,7 +29,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
             RuntimeCollection runtimes = new RuntimeCollection();
             runtimes.RawTime = new FieldStruct()
             {
-                Obis = (byte)EnumObis.TIME,
+                Obis = (byte)EnumObis.Time,
                 Data = dataDateTime
             };
 
@@ -38,32 +38,32 @@ namespace IotSystem.MessageProcessing.MeterMessage
             {
                 RawDeviceNo = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.DEVICE_NO,
+                    Obis = (byte)EnumObis.DeviceNo,
                     Data = ByteUtil.ToBytes(12345)
                 },
                 RawTemp1 = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.TEMP1,
+                    Obis = (byte)EnumObis.Temp1,
                     Data = new byte[2] { 3, 4 }
                 },
                 RawTemp2 = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.TEMP2,
+                    Obis = (byte)EnumObis.Temp2,
                     Data = new byte[2] { 5, 6 },
                 },
                 RawRssi = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.RSSI,
+                    Obis = (byte)EnumObis.Rssi,
                     Data = ByteUtil.ToBytes(2345)
                 },
                 RawHummidity = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.HUMMIDITY,
+                    Obis = (byte)EnumObis.Hummidity,
                     Data = new byte[2] { 9, 10 }
                 },
                 RawLowBattery = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.LOW_BATTERY,
+                    Obis = (byte)EnumObis.LowBattery,
                     Data = new byte[2] { 11, 12 }
                 },
             });
@@ -72,33 +72,33 @@ namespace IotSystem.MessageProcessing.MeterMessage
             {
                 RawDeviceNo = new FieldBase.FieldStruct()
                 {
-                    Obis = (byte)EnumObis.DEVICE_NO,
+                    Obis = (byte)EnumObis.DeviceNo,
                     Data = ByteUtil.ToBytes(667788)
                 },
                 RawTemp1 = new FieldBase.FieldStruct()
                 {
-                    Obis = (byte)EnumObis.TEMP1,
+                    Obis = (byte)EnumObis.Temp1,
                     Data = new byte[2] { 3, 4 }
                 },
                 RawTemp2 = new FieldBase.FieldStruct()
                 {
-                    Obis = (byte)EnumObis.TEMP2,
+                    Obis = (byte)EnumObis.Temp2,
                     Data = new byte[2] { 5, 6 }
                 },
                 RawRssi = new FieldBase.FieldStruct()
                 {
-                    Obis = (byte)EnumObis.RSSI,
+                    Obis = (byte)EnumObis.Rssi,
                     Data = ByteUtil.ToBytes(6789)
                 },
                 RawHummidity = new FieldBase.FieldStruct()
                 {
-                    Obis = (byte)EnumObis.HUMMIDITY,
+                    Obis = (byte)EnumObis.Hummidity,
                     Data = new byte[2] { 9, 10 }
                 }
                 ,
                 RawLowBattery = new FieldBase.FieldStruct()
                 {
-                    Obis = (byte)EnumObis.LOW_BATTERY,
+                    Obis = (byte)EnumObis.LowBattery,
                     Data = new byte[2] { 11, 12 }
                 }
             });
@@ -123,7 +123,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
 
             alarms.RawTime = new FieldStruct()
             {
-                Obis = (byte)EnumObis.TIME,
+                Obis = (byte)EnumObis.Time,
                 Data = dataDateTime
             };
 
@@ -131,57 +131,57 @@ namespace IotSystem.MessageProcessing.MeterMessage
             {
                 RawDeviceNo = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.DEVICE_NO,
+                    Obis = (byte)EnumObis.DeviceNo,
                     Data = ByteUtil.ToBytes(12345)
                 },
                 RawTemp1 = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.TEMP1,
+                    Obis = (byte)EnumObis.Temp1,
                     Data = new byte[2] { 3, 4 }
                 },
                 RawTemp2 = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.TEMP2,
+                    Obis = (byte)EnumObis.Temp2,
                     Data = new byte[2] { 5, 6 },
                 },
                 RawRssi = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.RSSI,
+                    Obis = (byte)EnumObis.Rssi,
                     Data = ByteUtil.ToBytes(2345)
                 },
                 RawHummidity = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.HUMMIDITY,
+                    Obis = (byte)EnumObis.Hummidity,
                     Data = new byte[2] { 9, 10 }
                 },
                 RawLowBattery = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.LOW_BATTERY,
+                    Obis = (byte)EnumObis.LowBattery,
                     Data = new byte[2] { 11, 12 }
                 },
                 RawAlarmTemp1 = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.ALARM_TEMP1,
+                    Obis = (byte)EnumObis.AlarmTemp1,
                     Data = new byte[2] { 11, 12 }
                 },
                 RawAlarmTemp2 = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.ALARM_TEMP2,
+                    Obis = (byte)EnumObis.AlarmTemp2,
                     Data = new byte[2] { 11, 12 }
                 },
                 RawAlarmBattery = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.ALARM_BATTERY,
+                    Obis = (byte)EnumObis.AlarmBattery,
                     Data = new byte[2] { 11, 12 }
                 },
                 RawAlarmHummidity = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.ALARM_HIMIDITY,
+                    Obis = (byte)EnumObis.AlarmHummidity,
                     Data = new byte[2] { 11, 12 }
                 },
                 RawAlarmLigth = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.ALARM_LIGTH,
+                    Obis = (byte)EnumObis.AlarmLight,
                     Data = new byte[2] { 11, 12 }
                 }
             });
@@ -190,57 +190,57 @@ namespace IotSystem.MessageProcessing.MeterMessage
             {
                 RawDeviceNo = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.DEVICE_NO,
+                    Obis = (byte)EnumObis.DeviceNo,
                     Data = ByteUtil.ToBytes(986522)
                 },
                 RawTemp1 = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.TEMP1,
+                    Obis = (byte)EnumObis.Temp1,
                     Data = new byte[2] { 3, 4 }
                 },
                 RawTemp2 = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.TEMP2,
+                    Obis = (byte)EnumObis.Temp2,
                     Data = new byte[2] { 5, 6 },
                 },
                 RawRssi = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.RSSI,
+                    Obis = (byte)EnumObis.Rssi,
                     Data = ByteUtil.ToBytes(2345)
                 },
                 RawHummidity = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.HUMMIDITY,
+                    Obis = (byte)EnumObis.Hummidity,
                     Data = new byte[2] { 9, 10 }
                 },
                 RawLowBattery = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.LOW_BATTERY,
+                    Obis = (byte)EnumObis.LowBattery,
                     Data = new byte[2] { 11, 12 }
                 },
                 RawAlarmTemp1 = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.ALARM_TEMP1,
+                    Obis = (byte)EnumObis.AlarmTemp1,
                     Data = new byte[2] { 11, 12 }
                 },
                 RawAlarmTemp2 = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.ALARM_TEMP2,
+                    Obis = (byte)EnumObis.AlarmTemp2,
                     Data = new byte[2] { 11, 12 }
                 },
                 RawAlarmBattery = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.ALARM_BATTERY,
+                    Obis = (byte)EnumObis.AlarmBattery,
                     Data = new byte[2] { 11, 12 }
                 },
                 RawAlarmHummidity = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.ALARM_HIMIDITY,
+                    Obis = (byte)EnumObis.AlarmHummidity,
                     Data = new byte[2] { 11, 12 }
                 },
                 RawAlarmLigth = new FieldStruct()
                 {
-                    Obis = (byte)EnumObis.ALARM_LIGTH,
+                    Obis = (byte)EnumObis.AlarmLight,
                     Data = new byte[2] { 11, 12 }
                 }
             });

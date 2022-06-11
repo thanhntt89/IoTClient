@@ -22,7 +22,7 @@ namespace IotSystem.MessageProcessing.DcuMessage
             //Settings Hum High
             dcuSetup.HumHigh = new FieldStruct()
             {
-                Obis =  (byte)EnumObis.HUM_HIGH,
+                Obis =  (byte)EnumObis.HighHummidity,
                 Data = new byte[6] { 1, 2, 3, 4, 5, 6 }               
             };
             return new MessageBase() { Message = dcuSetup.Data, Topic = string.Format(topic, dcuId) };
@@ -41,7 +41,7 @@ namespace IotSystem.MessageProcessing.DcuMessage
             DcuTimeStruct dcuMessage = new DcuTimeStruct();
             dcuMessage.RawTime = new FieldStruct()
             {
-                Obis = (byte)EnumObis.TIME ,
+                Obis = (byte)EnumObis.Time ,
                 Data = dataDateTime
             };
             return new MessageBase() { Message = dcuMessage.Data, Topic = string.Format(topicTemplate, dcuId) };
