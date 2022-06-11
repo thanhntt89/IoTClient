@@ -19,7 +19,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
         {
             get
             {
-                if (RawTime.FieldBytes == null)
+                if (RawTime.TotalBytes == 0)
                     return string.Empty;
 
                 int year = 2000 + RawTime.Data[0];
