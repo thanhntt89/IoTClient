@@ -36,7 +36,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                 //Check sum data
                 if (crc != ByteUtil.CalCheckSum(dataMessage))
                     return;
-               
+
                 RuntimeStruct runtime = new RuntimeStruct();
                 AlarmStruct alarm = new AlarmStruct();
 
@@ -68,8 +68,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             {
                                 Runtimes.RawTime = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             }
@@ -77,8 +76,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             {
                                 Alarms.RawTime = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             }
@@ -89,8 +87,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             {
                                 runtime.RawDeviceNo = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             }
@@ -98,8 +95,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             {
                                 alarm.RawDeviceNo = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             }
@@ -110,8 +106,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             {
                                 runtime.RawTemp1 = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             }
@@ -119,8 +114,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             {
                                 alarm.RawTemp1 = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             }
@@ -131,8 +125,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             {
                                 runtime.RawTemp2 = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             }
@@ -140,8 +133,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             {
                                 alarm.RawTemp2 = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             }
@@ -152,8 +144,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             {
                                 runtime.RawRssi = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             }
@@ -161,8 +152,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             {
                                 alarm.RawRssi = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             }
@@ -173,8 +163,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             {
                                 runtime.RawLowBattery = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             }
@@ -182,8 +171,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             {
                                 alarm.RawLowBattery = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             }
@@ -194,8 +182,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             {
                                 runtime.RawHummidity = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             }
@@ -203,8 +190,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             {
                                 alarm.RawHummidity = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             }
@@ -214,8 +200,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             if (message.Topic.Contains(messageType.TypeAlarm))
                                 alarm.RawAlarmTemp1 = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             break;
@@ -224,8 +209,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             if (message.Topic.Contains(messageType.TypeAlarm))
                                 alarm.RawAlarmTemp2 = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             break;
@@ -233,8 +217,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             fieldCount++;
                             alarm.RawAlarmBattery = new FieldBase.FieldStruct()
                             {
-                                Obis = new byte[1] { (byte)obis },
-                                DataLength = new byte[1] { (byte)dataLength },
+                                Obis = (byte)obis,
                                 Data = data
                             };
                             break;
@@ -243,8 +226,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             if (message.Topic.Contains(messageType.TypeAlarm))
                                 alarm.RawAlarmHummidity = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             break;
@@ -253,8 +235,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             if (message.Topic.Contains(messageType.TypeAlarm))
                                 alarm.RawAlarmLigth = new FieldBase.FieldStruct()
                                 {
-                                    Obis = new byte[1] { (byte)obis },
-                                    DataLength = new byte[1] { (byte)dataLength },
+                                    Obis = (byte)obis,
                                     Data = data
                                 };
                             break;
@@ -282,11 +263,11 @@ namespace IotSystem.MessageProcessing.MeterMessage
                             alarm = new AlarmStruct();
                         }
                     }
-                }               
+                }
             }
             catch (Exception ex)
-            {              
-                LogUtil.Intance.WriteLog(LogType.Error, string.Format("DecodeMessageDataThread-ProcessingMessage-Error: {0}", ex.Message));                
+            {
+                LogUtil.Intance.WriteLog(LogType.Error, string.Format("DecodeMessageDataThread-ProcessingMessage-Error: {0}", ex.Message));
             }
         }
     }

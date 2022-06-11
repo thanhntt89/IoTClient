@@ -9,35 +9,34 @@
 namespace IotSystem.MessageProcessing.MessageStructure
 {
     public class FieldBase
-    {        
+    {
         public struct FieldStruct
-        {
-            public byte[] Obis { get; set; }
-            public byte[] DataLength { get; set; }
+        {            
+            public byte? Obis { get; set; }
             public byte[] Data { get; set; }
-
-            public int TotalBytes => Obis == null ? 0 : Obis.Length + DataLength.Length + Data.Length;
+            
+            public int TotalBytes => FieldBytes == null ? 0 : FieldBytes.Length;
 
             public byte[] FieldBytes
             {
                 get
                 {
-                    if (Obis == null || DataLength == null || Data == null) return null;
+                    if (Obis == null || Data == null) return null;
                     int offSet = 0;
                     byte[] data = new byte[TotalBytes];
-                    Buffer.BlockCopy(Obis, 0, data, offSet, Obis.Length);
-                    offSet += Obis.Length;
+                    //Obis
+                    Buffer.BlockCopy(new byte[1] { (byte)Obis }, 0, data, offSet, 1);
+                    offSet += 1;
                     //Length
-                    Buffer.BlockCopy(DataLength, 0, data, offSet, DataLength.Length);
-                    offSet += DataLength.Length;
+                    Buffer.BlockCopy(new byte[1] { (byte)Data.Length }, 0, data, offSet, 1);
+                    offSet += 1;
                     //Data
                     Buffer.BlockCopy(Data, 0, data, offSet, Data.Length);
-                    offSet += Data.Length;
                     return data;
                 }
             }
         }
     }
 
-  
+
 }

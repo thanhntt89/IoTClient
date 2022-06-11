@@ -8,12 +8,12 @@ using static IotSystem.ClientEvent;
 
 namespace IotSystem.MessageProcessing.MeterMessage
 {
-    public class DecodeMeterMessageThread : IDecodeDataThread
+    public class MeterDecodeMessageThread : IDecodeDataThread
     {
         public event DelegateShowMessage EventShowMessage;
         private MessageType messageType;
 
-        public DecodeMeterMessageThread(MessageType type)
+        public MeterDecodeMessageThread(MessageType type)
         {
             messageType = type;
         }

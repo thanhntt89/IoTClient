@@ -80,9 +80,9 @@
     <Compile Include="Core\ThreadManagement\IDatabaseProcessingThread.cs" />
     <Compile Include="Core\ThreadManagement\IPublishMessageThread.cs" />
     <Compile Include="Core\ThreadManagement\DatabaseConnectionThread.cs" />
-    <Compile Include="MessageProcessing\MeterMessage\DecodeMeterMessageThread.cs" />
+    <Compile Include="MessageProcessing\MeterMessage\MeterDecodeMessageThread.cs" />
     <Compile Include="MessageProcessing\Queries\DcuQueries.cs" />
-    <Compile Include="MessageProcessing\DcuMessage\PublishDcuMessageThread.cs" />
+    <Compile Include="MessageProcessing\DcuMessage\DcuPublishMessageThread.cs" />
     <Compile Include="Core\Queues\SingletonMeterMessageQueue.cs" />
     <Compile Include="MessageProcessing\MeterMessage\MeterMessageRaw.cs" />
     <Compile Include="MessageProcessing\ProcessingDataFactory.cs" />

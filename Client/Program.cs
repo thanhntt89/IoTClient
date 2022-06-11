@@ -52,13 +52,13 @@ namespace IotSystem
                    ConnectionTimeOut = setting.DATABASE_CONFIG.ConnectionTimeOut,
                    Port = setting.DATABASE_CONFIG.Port
                }))
-               .AddIDecodeDataThread(new DecodeMeterMessageThread(new MessageType()
+               .AddIDecodeDataThread(new MeterDecodeMessageThread(new MessageType()
                {
                    TypeRunTime = setting.MESSAGE_TYPE.TypeRunTime,
                    TypeAlarm = setting.MESSAGE_TYPE.TypeAlarm
                }))
                .AddIDatabaseProcessingThread(new DatabaseProcessingThread())
-               .AddIPublishMessageThread(new PublishDcuMessageThread(new PublishMessageTopic()
+               .AddIPublishMessageThread(new DcuPublishMessageThread(new PublishMessageTopic()
                {
                    MessageResponseTimeTopic = setting.DCU_CONFIG.PublishMessageTimeTopic,
                    MessageSetupDcuTopic = setting.DCU_CONFIG.PublishMessageSetupDcuTopic,

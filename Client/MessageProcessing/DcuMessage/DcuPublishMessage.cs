@@ -22,14 +22,13 @@ namespace IotSystem.MessageProcessing.DcuMessage
             //Settings Hum High
             dcuSetup.HumHigh = new FieldStruct()
             {
-                Obis = new byte[1] { (byte)EnumObis.Hum_High },
-                Data = new byte[6] { 1, 2, 3, 4, 5, 6 },
-                DataLength = new byte[1] { 6 }
+                Obis =  (byte)EnumObis.Hum_High,
+                Data = new byte[6] { 1, 2, 3, 4, 5, 6 }               
             };
             return new MessageBase() { Message = dcuSetup.Data, Topic = string.Format(topic, dcuId) };
         }
 
-        public static MessageBase CreatePublishMessageTime(string topic, string dcuId)
+        public static MessageBase CreatePublishMessageTime(string topicTemplate, string dcuId)
         {
             byte[] dataDateTime = new byte[6];
             dataDateTime[0] = (byte)int.Parse(DateTime.Now.ToString("yy"));
@@ -40,13 +39,12 @@ namespace IotSystem.MessageProcessing.DcuMessage
             dataDateTime[5] = (byte)DateTime.Now.Second;
 
             DcuTimeStruct dcuMessage = new DcuTimeStruct();
-            dcuMessage.Time = new FieldStruct()
+            dcuMessage.RawTime = new FieldStruct()
             {
-                Obis = new byte[1] { (byte)EnumObis.Time },
-                Data = dataDateTime,
-                DataLength = new byte[1] { (byte)dataDateTime.Length }
+                Obis = (byte)EnumObis.Time ,
+                Data = dataDateTime
             };
-            return new MessageBase() { Message = dcuMessage.Data, Topic = string.Format(topic, dcuId) };
+            return new MessageBase() { Message = dcuMessage.Data, Topic = string.Format(topicTemplate, dcuId) };
         }
 
         private DcuPublishMessage()
@@ -112,7 +110,7 @@ namespace IotSystem.MessageProcessing.DcuMessage
 
     public class DcuTimeStruct
     {
-        public FieldStruct Time { get; set; }
+        public FieldStruct RawTime { get; set; }
         private byte Crc { get; set; }
 
         public byte[] Data
@@ -120,10 +118,10 @@ namespace IotSystem.MessageProcessing.DcuMessage
             get
             {
                 int offSet = 0;
-                int buffLength = Time.TotalBytes + 1;
+                int buffLength = RawTime.TotalBytes + 1;
                 byte[] data = new byte[buffLength];
-                Buffer.BlockCopy(Time.FieldBytes, 0, data, offSet, Time.TotalBytes);
-                offSet += Time.TotalBytes;
+                Buffer.BlockCopy(RawTime.FieldBytes, 0, data, offSet, RawTime.TotalBytes);
+                offSet += RawTime.TotalBytes;
                 Crc = ByteUtil.CalCheckSum(data);
                 //Crc
                 Buffer.BlockCopy(new byte[1] { Crc }, 0, data, offSet, 1);
