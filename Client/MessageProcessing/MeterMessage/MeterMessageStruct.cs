@@ -154,36 +154,36 @@ namespace IotSystem.MessageProcessing.MeterMessage
                 int buffLength = RawDeviceNo.TotalBytes + RawTemp1.TotalBytes + RawTemp2.TotalBytes + RawRssi.TotalBytes + RawLowBattery.TotalBytes + RawHummidity.TotalBytes;
                 byte[] data = new byte[buffLength];
                 //AddDevice
-                if (RawDeviceNo.FieldBytes != null)
+                if (RawDeviceNo.TotalBytes != 0)
                 {
                     Buffer.BlockCopy(RawDeviceNo.FieldBytes, 0, data, offSet, RawDeviceNo.TotalBytes);
                     offSet += RawDeviceNo.TotalBytes;
                 }
                 //Add Temp1
-                if (RawTemp1.FieldBytes != null)
+                if (RawTemp1.TotalBytes > 0)
                 {
                     Buffer.BlockCopy(RawTemp1.FieldBytes, 0, data, offSet, RawTemp1.TotalBytes);
                     offSet += RawTemp1.TotalBytes;
                 }
                 //Add Temp2
-                if (RawTemp2.FieldBytes != null)
+                if (RawTemp2.TotalBytes > 0)
                 {
                     Buffer.BlockCopy(RawTemp2.FieldBytes, 0, data, offSet, RawTemp2.TotalBytes);
                     offSet += RawTemp2.TotalBytes;
                 }
-                if (RawRssi.FieldBytes != null)
+                if (RawRssi.TotalBytes > 0)
                 {
                     //Add Rssi
                     Buffer.BlockCopy(RawRssi.FieldBytes, 0, data, offSet, RawRssi.TotalBytes);
                     offSet += RawRssi.TotalBytes;
                 }
-                if (RawLowBattery.FieldBytes != null)
+                if (RawLowBattery.TotalBytes > 0)
                 {
                     //Add LowBattery
                     Buffer.BlockCopy(RawLowBattery.FieldBytes, 0, data, offSet, RawLowBattery.TotalBytes);
                     offSet += RawLowBattery.TotalBytes;
                 }
-                if (RawHummidity.FieldBytes != null)
+                if (RawHummidity.TotalBytes > 0)
                 {
                     //Add Hummidity
                     Buffer.BlockCopy(RawHummidity.FieldBytes, 0, data, offSet, RawHummidity.TotalBytes);
@@ -270,38 +270,71 @@ namespace IotSystem.MessageProcessing.MeterMessage
                 int buffLength = RawDeviceNo.TotalBytes + RawTemp1.TotalBytes + RawTemp2.TotalBytes + RawRssi.TotalBytes + RawLowBattery.TotalBytes + RawHummidity.TotalBytes + RawAlarmTemp1.TotalBytes + RawAlarmTemp2.TotalBytes + RawAlarmBattery.TotalBytes + RawAlarmHummidity.TotalBytes + RawAlarmLigth.TotalBytes;
                 byte[] data = new byte[buffLength];
                 //AddDevice
-                Buffer.BlockCopy(RawDeviceNo.FieldBytes, 0, data, offSet, RawDeviceNo.TotalBytes);
-                offSet += RawDeviceNo.TotalBytes;
+                if (RawDeviceNo.TotalBytes > 0)
+                {                    
+                    Buffer.BlockCopy(RawDeviceNo.FieldBytes, 0, data, offSet, RawDeviceNo.TotalBytes);
+                    offSet += RawDeviceNo.TotalBytes;
+                }
                 //Add Temp1
-                Buffer.BlockCopy(RawTemp1.FieldBytes, 0, data, offSet, RawTemp1.TotalBytes);
-                offSet += RawTemp1.TotalBytes;
+                if (RawTemp1.TotalBytes > 0)
+                {
+                    Buffer.BlockCopy(RawTemp1.FieldBytes, 0, data, offSet, RawTemp1.TotalBytes);
+                    offSet += RawTemp1.TotalBytes;
+                }
                 //Add Temp2
-                Buffer.BlockCopy(RawTemp2.FieldBytes, 0, data, offSet, RawTemp2.TotalBytes);
-                offSet += RawTemp2.TotalBytes;
+                if (RawTemp2.TotalBytes > 0)
+                {
+                    Buffer.BlockCopy(RawTemp2.FieldBytes, 0, data, offSet, RawTemp2.TotalBytes);
+                    offSet += RawTemp2.TotalBytes;
+                }
                 //Add Rssi
-                Buffer.BlockCopy(RawRssi.FieldBytes, 0, data, offSet, RawRssi.TotalBytes);
-                offSet += RawRssi.TotalBytes;
+                if (RawRssi.TotalBytes > 0)
+                {
+                    Buffer.BlockCopy(RawRssi.FieldBytes, 0, data, offSet, RawRssi.TotalBytes);
+                    offSet += RawRssi.TotalBytes;
+                }
                 //Add LowBattery
-                Buffer.BlockCopy(RawLowBattery.FieldBytes, 0, data, offSet, RawLowBattery.TotalBytes);
-                offSet += RawLowBattery.TotalBytes;
+                if (RawLowBattery.TotalBytes > 0)
+                {
+                    Buffer.BlockCopy(RawLowBattery.FieldBytes, 0, data, offSet, RawLowBattery.TotalBytes);
+                    offSet += RawLowBattery.TotalBytes;
+                }
                 //Add Hummidity
-                Buffer.BlockCopy(RawHummidity.FieldBytes, 0, data, offSet, RawHummidity.TotalBytes);
-                offSet += RawHummidity.TotalBytes;
+                if (RawHummidity.TotalBytes > 0)
+                {
+                    Buffer.BlockCopy(RawHummidity.FieldBytes, 0, data, offSet, RawHummidity.TotalBytes);
+                    offSet += RawHummidity.TotalBytes;
+                }
                 //Add Alarm_Temp1
-                Buffer.BlockCopy(RawAlarmTemp1.FieldBytes, 0, data, offSet, RawAlarmTemp1.TotalBytes);
-                offSet += RawAlarmTemp1.TotalBytes;
+                if (RawAlarmTemp1.TotalBytes > 0)
+                {
+                    Buffer.BlockCopy(RawAlarmTemp1.FieldBytes, 0, data, offSet, RawAlarmTemp1.TotalBytes);
+                    offSet += RawAlarmTemp1.TotalBytes;
+                }
                 //Add Alarm_Temp2
-                Buffer.BlockCopy(RawAlarmTemp2.FieldBytes, 0, data, offSet, RawAlarmTemp2.TotalBytes);
-                offSet += RawAlarmTemp2.TotalBytes;
+                if (RawAlarmTemp2.TotalBytes > 0)
+                {
+                    Buffer.BlockCopy(RawAlarmTemp2.FieldBytes, 0, data, offSet, RawAlarmTemp2.TotalBytes);
+                    offSet += RawAlarmTemp2.TotalBytes;
+                }
                 //Add Alarm_Battery
-                Buffer.BlockCopy(RawAlarmBattery.FieldBytes, 0, data, offSet, RawAlarmBattery.TotalBytes);
-                offSet += RawAlarmBattery.TotalBytes;
+                if (RawAlarmBattery.TotalBytes > 0)
+                {
+                    Buffer.BlockCopy(RawAlarmBattery.FieldBytes, 0, data, offSet, RawAlarmBattery.TotalBytes);
+                    offSet += RawAlarmBattery.TotalBytes;
+                }
                 //Add Alarm_Hummidity
-                Buffer.BlockCopy(RawAlarmHummidity.FieldBytes, 0, data, offSet, RawAlarmHummidity.TotalBytes);
-                offSet += RawAlarmHummidity.TotalBytes;
+                if (RawAlarmHummidity.TotalBytes > 0)
+                {
+                    Buffer.BlockCopy(RawAlarmHummidity.FieldBytes, 0, data, offSet, RawAlarmHummidity.TotalBytes);
+                    offSet += RawAlarmHummidity.TotalBytes;
+                }
                 //Add Alarm_Light
-                Buffer.BlockCopy(RawAlarmLigth.FieldBytes, 0, data, offSet, RawAlarmLigth.TotalBytes);
-                offSet += RawAlarmLigth.TotalBytes;
+                if (RawAlarmLigth.TotalBytes > 0)
+                {
+                    Buffer.BlockCopy(RawAlarmLigth.FieldBytes, 0, data, offSet, RawAlarmLigth.TotalBytes);
+                    offSet += RawAlarmLigth.TotalBytes;
+                }
                 return data;
             }
         }

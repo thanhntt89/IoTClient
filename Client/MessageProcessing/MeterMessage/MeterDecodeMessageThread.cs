@@ -128,6 +128,8 @@ namespace IotSystem.MessageProcessing.MeterMessage
                                 item.Hummidity
                             };
                             SingletonRuntimeTable.Instance.Rows.Add(row);
+
+                            Thread.Sleep(10);
                         }                        
                     }
                 }else if (message.Topic.Contains(messageType.TypeAlarm))
@@ -155,6 +157,8 @@ namespace IotSystem.MessageProcessing.MeterMessage
                                 item.AlarmLigth
                               };
                             SingletonAlarmTable.Instance.Rows.Add(row);
+
+                            Thread.Sleep(10);
                         }
                     }
                 }

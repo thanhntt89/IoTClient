@@ -11,19 +11,20 @@ namespace IotSystem.MessageProcessing.MessageStructure
     public class FieldBase
     {
         public struct FieldStruct
-        {            
+        {
             public byte? Obis { get; set; }
             public byte[] Data { get; set; }
-            
-            public int TotalBytes => FieldBytes == null ? 0 : FieldBytes.Length;
+
+            public int TotalBytes => (Obis == null || Data == null) ? 0 : Data.Length + 2;
 
             public byte[] FieldBytes
             {
                 get
                 {
-                    if (Obis == null || Data == null) return null;
+                    if (Obis == null || Data == null) 
+                        return null;
                     int offSet = 0;
-                    byte[] data = new byte[TotalBytes];
+                    byte[] data = new byte[Data.Length + 2];
                     //Obis
                     Buffer.BlockCopy(new byte[1] { (byte)Obis }, 0, data, offSet, 1);
                     offSet += 1;
