@@ -85,7 +85,7 @@
     <Compile Include="MessageProcessing\DcuMessage\DcuPublishMessageThread.cs" />
     <Compile Include="Core\Queues\SingletonMeterMessageQueue.cs" />
     <Compile Include="MessageProcessing\MeterMessage\MeterMessageRaw.cs" />
-    <Compile Include="MessageProcessing\ProcessingDataFactory.cs" />
+    <Compile Include="MessageProcessing\MeterMessage\FactoryMeterMessageProcessing.cs" />
     <Compile Include="Core\Queues\SingletonDcuMessageQueue.cs" />
     <Compile Include="Core\SqlHelpers.cs" />
     <Compile Include="Core\Connection\IClient.cs" />

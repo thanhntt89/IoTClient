@@ -1,8 +1,6 @@
 ﻿using IotSystem.Core;
 using IotSystem.Core.Queues;
 using IotSystem.Core.ThreadManagement;
-using IotSystem.Core.Utils;
-using System;
 using System.Threading;
 using static IotSystem.ClientEvent;
 
@@ -49,7 +47,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
             int countData = 0;
             Thread currentThread = Thread.CurrentThread;
             EventShowMessage?.Invoke($"ThreadDecode-{currentThread.Name}:Started!!!");
-
+            FactoryMeterMessageProcessing factoryMeterMessage = new FactoryMeterMessageProcessing(messageType);
             while (true)
             {
                 countData = SingletonMessageDataQueue<MessageBase>.Instance.Count;
@@ -62,11 +60,11 @@ namespace IotSystem.MessageProcessing.MeterMessage
                 //Get data from messagequeue
                 if (SingletonMessageDataQueue<MessageBase>.Instance.TryDequeue(out message) && message != null)
                 {
-                    if (ProcessingMessage(message))
-                    {
-                        Thread.Sleep(TimeProcessMessage(countData));
-                        continue;
-                    }
+                    int code = factoryMeterMessage.ProcessingMessage(message).GetHashCode();
+                    EventShowMessage?.Invoke($"ThreadDecode-{currentThread.Name}-ProcessingMessage-HashCode:{code}");
+
+                    Thread.Sleep(TimeProcessMessage(countData));
+                    continue;
                 }
                 //Sleep thread 10sec if queue has no data
                 Thread.Sleep(10000);
@@ -80,7 +78,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
 
             EventShowMessage?.Invoke($"ThreadDecodeByTraffic-{currentThread.Name}:Started!!!");
             int countData = 0;
-
+            FactoryMeterMessageProcessing factoryMeterMessage = new FactoryMeterMessageProcessing(messageType);
             while (true)
             {
                 countData = SingletonMessageDataQueue<MessageBase>.Instance.Count;
@@ -93,86 +91,14 @@ namespace IotSystem.MessageProcessing.MeterMessage
                 //Get data from messagequeue
                 if (SingletonMessageDataQueue<MessageBase>.Instance.TryDequeue(out message) && message != null)
                 {
-                    if (ProcessingMessage(message))
-                    {
-                        Thread.Sleep(TimeProcessMessage(countData));
-                        continue;
-                    }
+                    int code = factoryMeterMessage.ProcessingMessage(message).GetHashCode();
+                    EventShowMessage?.Invoke($"ThreadDecodeByTraffic-{currentThread.Name}-ProcessingMessage-HashCode:{code}");
+
+                    Thread.Sleep(TimeProcessMessage(countData));
+                    continue;
                 }
                 //Sleep thread 10sec if queue has no data
                 Thread.Sleep(10000);
-            }
-        }
-
-        private bool ProcessingMessage(MessageBase message)
-        {
-            try
-            {
-                MeterMessageRaw messageRaw = new MeterMessageRaw(message, messageType);
-                messageRaw.GetMessageRaw();
-
-                if (message.Topic.Contains(messageType.TypeRunTime))
-                {
-                    //Lock table to insert
-                    lock (SingletonRuntimeTable.Instance)
-                    {          
-                        foreach (var item in messageRaw.Runtimes)
-                        {
-                            //Error time
-                            if (messageRaw.Runtimes.RawTime.FieldBytes == null) continue;
-                          var  row = new object[7]
-                            {
-                                messageRaw.Runtimes.Time,
-                                item.DeviceCode,
-                                item.Temp1,
-                                item.Temp2,
-                                item.Rssi,
-                                item.LowBattery,
-                                item.Hummidity
-                            };
-                            SingletonRuntimeTable.Instance.Rows.Add(row);
-
-                            //Thread.Sleep(10);
-                        }                        
-                    }
-                }else if (message.Topic.Contains(messageType.TypeAlarm))
-                {
-                    //Lock table to insert
-                    lock (SingletonAlarmTable.Instance)
-                    {
-                        foreach (var item in messageRaw.Alarms)
-                        {
-                            //Error time
-                            if (messageRaw.Alarms.RawTime.FieldBytes == null) continue;
-                            var row = new object[12]
-                              {
-                                messageRaw.Alarms.Time,
-                                item.DeviceCode,
-                                item.Temp1,
-                                item.Temp2,
-                                item.Rssi,
-                                item.LowBattery,
-                                item.Hummidity,
-                                item.AlarmTemp1,
-                                item.AlarmTemp2,
-                                item.AlarmBattery,
-                                item.AlarmHummidity,
-                                item.AlarmLigth
-                              };
-                            SingletonAlarmTable.Instance.Rows.Add(row);
-
-                            //Thread.Sleep(10);
-                        }
-                    }
-                }
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                EventShowMessage?.Invoke($"DecodeRunning-Fails:{ex.Message}");
-                LogUtil.Intance.WriteLog(LogType.Error, string.Format("DecodeMessageDataThread-ProcessingMessage-Error: {0}", ex.Message));
-                return false;
             }
         }
 
