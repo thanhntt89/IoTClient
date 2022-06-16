@@ -10,10 +10,12 @@ namespace IotSystem.MessageProcessing.MeterMessage
     {
         public event DelegateShowMessage EventShowMessage;
         private MessageType messageType;
+        FactoryMeterMessageProcessing factoryMeterMessage;
 
         public MeterDecodeMessageThread(MessageType type)
         {
             messageType = type;
+            factoryMeterMessage = new FactoryMeterMessageProcessing(messageType);
         }
 
         /// <summary>
@@ -47,7 +49,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
             int countData = 0;
             Thread currentThread = Thread.CurrentThread;
             EventShowMessage?.Invoke($"ThreadDecode-{currentThread.Name}:Started!!!");
-            FactoryMeterMessageProcessing factoryMeterMessage = new FactoryMeterMessageProcessing(messageType);
+           
             while (true)
             {
                 countData = SingletonMessageDataQueue<MessageBase>.Instance.Count;
@@ -77,8 +79,7 @@ namespace IotSystem.MessageProcessing.MeterMessage
             Thread currentThread = Thread.CurrentThread;
 
             EventShowMessage?.Invoke($"ThreadDecodeByTraffic-{currentThread.Name}:Started!!!");
-            int countData = 0;
-            FactoryMeterMessageProcessing factoryMeterMessage = new FactoryMeterMessageProcessing(messageType);
+            int countData = 0;           
             while (true)
             {
                 countData = SingletonMessageDataQueue<MessageBase>.Instance.Count;
